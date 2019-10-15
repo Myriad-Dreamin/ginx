@@ -1,0 +1,16 @@
+{
+    "database": {
+        "connection-type": "mysql",
+        "user_name": "user_name",
+        "password": "password",
+        "host": "localhost" ,
+        "database-name": "database-name",
+        "charset": "charset",
+        "parse-time": true,
+        "location": "Local"
+    },
+    "label": [
+        {"key": "author", "value": "Myriad-Dreamin"},
+        {"key": "validated OS", "value": "ubuntu 18.04 LTS"}
+    ]
+}

@@ -1,0 +1,10 @@
+# do not push it to your repo!
+[database]
+connection-type="mysql"
+user-name="coreoj-admin"
+password="123456"
+host="localhost"
+database-name="coreoj"
+charset="utf8"
+parse-time=true
+location="Local"

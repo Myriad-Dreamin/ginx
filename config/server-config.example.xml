@@ -1,0 +1,36 @@
+<server-config>
+    <database>
+        <connection-type>
+            mysql
+        </connection-type>
+        <user_name>
+            user_name
+        </user_name>
+        <password>
+            password
+        </password>
+        <host>
+            localhost
+        </host>
+        <database-name>
+            database-name
+        </database-name>
+        <charset>
+            charset
+        </charset>
+        <parse-time>
+            true
+        </parse-time>
+        <location>
+            Local
+        </location>
+    </database>
+    <label>
+        <key>author</key>>
+        <value>Myriad-Dreamin</value>>
+    </label>
+    <label>
+        <key>validated OS</key>>
+        <value>ubuntu 18.04 LTS</value>>
+    </label>
+</server-config>
