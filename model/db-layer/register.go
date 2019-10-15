@@ -10,7 +10,8 @@ import (
 
 func migrates() error {
 	for _, migrate := range []func() error {
-		Object{}.migrate,
+		// do not delete following line
+		//Object{}.migrate,
 	} {
 		if err := migrate(); err != nil {
 			return err

@@ -18,6 +18,6 @@ func (srv *Server) BuildRouter() bool {
 		})
 	})
 
-	srv.Router = router.NewRootRouter(srv.jwtMW, srv.routerAuthMW)
+	srv.Router = router.NewRootRouter(srv.ServiceProvider, srv.jwtMW, srv.routerAuthMW)
 	return true
 }

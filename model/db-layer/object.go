@@ -17,7 +17,7 @@ type Object struct {
 
 // TableName specification
 func (Object) TableName() string {
-	return "obj"
+	return "object"
 }
 
 func (Object) migrate() error {

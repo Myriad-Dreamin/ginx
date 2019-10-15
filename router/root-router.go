@@ -2,6 +2,7 @@ package router
 
 import (
 	"github.com/Myriad-Dreamin/gin-middleware/auth/jwt"
+	"github.com/Myriad-Dreamin/ginx/service"
 )
 
 type RootRouter struct {
@@ -10,9 +11,10 @@ type RootRouter struct {
 	AuthRouter *Router
 	Auth       *Middleware
 
+	ObjectRouter *ObjectRouter
 }
 
-func NewRootRouter(jwtMW *jwt.Middleware, routerAuthMW *Middleware) (r *RootRouter) {
+func NewRootRouter(serviceProvider *service.Provider, jwtMW *jwt.Middleware, routerAuthMW *Middleware) (r *RootRouter) {
 	rr := NewRouterGroup()
 	apiRouterV2 := rr.Group("/v1")
 	authRouterV2 := apiRouterV2.Group("", jwtMW.Build())
@@ -23,6 +25,6 @@ func NewRootRouter(jwtMW *jwt.Middleware, routerAuthMW *Middleware) (r *RootRout
 		AuthRouter: authRouterV2,
 		Auth:       routerAuthMW,
 	}
-
+	r.ObjectRouter = BuildObjectRouter(r, serviceProvider)
 	return
 }
