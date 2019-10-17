@@ -1,6 +1,7 @@
 package splayer
 
 import (
+	"github.com/Myriad-Dreamin/ginx/config"
 	dblayer "github.com/Myriad-Dreamin/ginx/model/db-layer"
 	"github.com/Myriad-Dreamin/ginx/types"
 )
@@ -30,7 +31,7 @@ type ObjectDB struct {
 	dblayer.ObjectDB
 }
 
-func NewObjectDB(logger types.Logger) (*ObjectDB, error) {
+func NewObjectDB(logger types.Logger, _ *config.ServerConfig) (*ObjectDB, error) {
 	cdb, err := dblayer.NewObjectDB(logger)
 	if err != nil {
 		return nil, err
@@ -40,7 +41,7 @@ func NewObjectDB(logger types.Logger) (*ObjectDB, error) {
 	return db, nil
 }
 
-func GetObjectDB(logger types.Logger) (*ObjectDB, error) {
+func GetObjectDB(logger types.Logger, _ *config.ServerConfig) (*ObjectDB, error) {
 	cdb, err := dblayer.GetObjectDB(logger)
 	if err != nil {
 		return nil, err
@@ -48,4 +49,8 @@ func GetObjectDB(logger types.Logger) (*ObjectDB, error) {
 	db := new(ObjectDB)
 	db.ObjectDB = *cdb
 	return db, nil
+}
+
+func (s *Provider) ObjectDB() *ObjectDB {
+	return s.objectDB
 }

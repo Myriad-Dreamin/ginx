@@ -49,6 +49,3 @@ if err := s.BaseModuler.Replace(path.Join(s.Namespace, name), router); err != ni
 	panic(fmt.Errorf("unknown router %T", router))
 }
  */
-func (s *Provider) ObjectDB() *ObjectDB {
-	return s.objectDB
-}

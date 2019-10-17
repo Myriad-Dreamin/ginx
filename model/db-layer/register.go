@@ -12,6 +12,16 @@ func migrates() error {
 	for _, migrate := range []func() error {
 		// do not delete following line
 		//Object{}.migrate,
+		Submission{}.migrate,
+		Submission{}.migrate,
+		Submission{}.migrate,
+		Submission{}.migrate,
+		Submission{}.migrate,
+		Submission{}.migrate,
+		Submission{}.migrate,
+		Submission{}.migrate,
+		Submission{}.migrate,
+		Submission{}.migrate,
 	} {
 		if err := migrate(); err != nil {
 			return err

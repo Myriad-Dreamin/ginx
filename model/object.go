@@ -1,6 +1,7 @@
 package model
 
 import (
+	"github.com/Myriad-Dreamin/ginx/config"
 	splayer "github.com/Myriad-Dreamin/ginx/model/sp-layer"
 	"github.com/Myriad-Dreamin/ginx/types"
 )
@@ -8,10 +9,10 @@ import (
 type Object = splayer.Object
 type ObjectDB = splayer.ObjectDB
 
-func NewObjectDB(logger types.Logger) (*ObjectDB, error) {
-	return splayer.NewObjectDB(logger)
+func NewObjectDB(logger types.Logger, cfg *config.ServerConfig) (*ObjectDB, error) {
+	return splayer.NewObjectDB(logger, cfg)
 }
 
-func GetObjectDB(logger types.Logger) (*ObjectDB, error) {
-	return splayer.GetObjectDB(logger)
+func GetObjectDB(logger types.Logger, cfg *config.ServerConfig) (*ObjectDB, error) {
+	return splayer.GetObjectDB(logger, cfg)
 }

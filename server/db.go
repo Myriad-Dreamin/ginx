@@ -1,18 +1,27 @@
 package server
 
 import (
+	"fmt"
 	"github.com/Myriad-Dreamin/ginx/model"
+	"github.com/Myriad-Dreamin/ginx/types"
 )
+
+type dbResult struct {
+	dbName string
+	types.DecayResult
+}
 
 func (srv *Server) registerDatabaseService() bool {
 
-	objectDB, err := model.NewObjectDB(srv.Logger)
-	if err != nil {
-		srv.Logger.Debug("init object DB error", "error", err)
-		return false
+	for _, dbResult := range []dbResult{
+		{"objectDB", types.Decay(model.NewObjectDB(srv.Logger, srv.cfg))},
+	} {
+		if dbResult.Err != nil {
+			srv.Logger.Debug(fmt.Sprintf("init %T DB error", dbResult.First), "error", dbResult.Err)
+			return false
+		}
+		srv.DatabaseProvider.Register(dbResult.dbName, dbResult.First)
 	}
-
-	srv.DatabaseProvider.Register("objectdb", objectDB)
 	return true
 }
 
