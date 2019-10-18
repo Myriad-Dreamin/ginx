@@ -2,32 +2,35 @@ package objectservice
 
 import (
 	"github.com/Myriad-Dreamin/ginx/model"
-	"github.com/Myriad-Dreamin/ginx/service/gin-helper"
+	base_service "github.com/Myriad-Dreamin/ginx/service/base-service"
+	ginhelper "github.com/Myriad-Dreamin/ginx/service/gin-helper"
 	"github.com/Myriad-Dreamin/ginx/types"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
+
+type PostReply struct {
+	Code   int           `json:"code"`
+	Object *model.Object `json:"object"`
+}
+
+func ObjectToPostReply(obj *model.Object) *PostReply {
+	return &PostReply{
+		Code:   types.CodeOK,
+		Object: obj,
+	}
+}
 
 type PostRequest struct {
 }
 
-type PostReply struct {
-	Code   int           `form:"code" json:"code"`
-	Object *model.Object `form:"object" json:"object"`
-}
-
-func (srv *Service) Post(c *gin.Context) {
+func (srv *Service) SerializePost(c *gin.Context) base_service.CRUDObject {
 	var req = new(PostRequest)
 	if !ginhelper.BindRequest(c, req) {
-		return
+		return nil
 	}
 
 	var obj = new(model.Object)
-	if ginhelper.CreateObj(c, obj) {
-		//cr.Submissionr.PushTask(code)
-		c.JSON(http.StatusOK, &PostReply{
-			Code:   types.CodeOK,
-			Object: obj,
-		})
-	}
+	// fill here
+	return obj
 }
+

@@ -3,18 +3,24 @@ package objectservice
 import (
 	"github.com/Myriad-Dreamin/ginx/config"
 	"github.com/Myriad-Dreamin/ginx/model"
+	base_service "github.com/Myriad-Dreamin/ginx/service/base-service"
 	"github.com/Myriad-Dreamin/ginx/types"
 )
 
 type Service struct {
-	db *model.ObjectDB
+	base_service.CRUDService
+	base_service.ListService
+	db     *model.ObjectDB
 	logger types.Logger
 }
+
 
 func NewService(logger types.Logger, provider *model.Provider, _ *config.ServerConfig) (a *Service, err error) {
 	a = new(Service)
 	a.db = provider.ObjectDB()
 	a.logger = logger
+	a.CRUDService = base_service.NewCRUDService(a, "oid")
+	a.ListService = base_service.NewListService(a, "oid")
 	return
 }
 
@@ -22,5 +28,3 @@ func NewService(logger types.Logger, provider *model.Provider, _ *config.ServerC
 type Object struct {
 }
 */
-
-

@@ -2,10 +2,8 @@ package objectservice
 
 import (
 	"github.com/Myriad-Dreamin/ginx/model"
-	"github.com/Myriad-Dreamin/ginx/service/gin-helper"
 	"github.com/Myriad-Dreamin/ginx/types"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 type ListReply struct {
@@ -20,17 +18,14 @@ func ObjectsToListReply(obj []model.Object) (reply *ListReply) {
 	return
 }
 
-func (srv *Service) List(c *gin.Context) {
-	page, pageSize, ok := ginhelper.RosolvePageVariable(c)
-	if !ok {
-		return
-	}
+func (srv *Service) FilterOn(c *gin.Context, page, pageSize int) (interface{}, error) {
+	// parse c
+
 
 	objs, err := srv.db.QueryChain().Page(page, pageSize).Query()
-	if ginhelper.MaybeSelectError(c, objs, err) {
-		return
+	if err != nil {
+		return nil, err
 	}
-
-	c.JSON(http.StatusOK, ObjectsToListReply(objs))
-	return
+	return ObjectsToListReply(objs), nil
 }
+

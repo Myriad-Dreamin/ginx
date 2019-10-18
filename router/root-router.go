@@ -5,6 +5,7 @@ import (
 	"github.com/Myriad-Dreamin/ginx/service"
 )
 
+
 type RootRouter struct {
 	Root       *Router
 	Router     *Router

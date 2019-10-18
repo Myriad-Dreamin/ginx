@@ -13,15 +13,6 @@ func migrates() error {
 		// do not delete following line
 		//Object{}.migrate,
 		Submission{}.migrate,
-		Submission{}.migrate,
-		Submission{}.migrate,
-		Submission{}.migrate,
-		Submission{}.migrate,
-		Submission{}.migrate,
-		Submission{}.migrate,
-		Submission{}.migrate,
-		Submission{}.migrate,
-		Submission{}.migrate,
 	} {
 		if err := migrate(); err != nil {
 			return err
@@ -32,7 +23,10 @@ func migrates() error {
 
 func Register(rdb *gorm.DB, logger types.Logger) error {
 	var err error
-	db = rdb
+	if db == nil {
+		db = new(gorm.DB)
+	}
+	*db = *rdb
 	rawDB = db.DB()
 
 	if err = rawDB.Ping(); err != nil {
