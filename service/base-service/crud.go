@@ -6,29 +6,27 @@ import (
 	"net/http"
 )
 
-
-
-type CRUDObject interface {
+type CRUDEntity interface {
 	Create() (int64, error)
 	UpdateFields(fields []string) (int64, error)
 	Delete() (int64, error)
 }
 
 type CRUDObjectToolLite interface {
-	CreateObject(id uint) CRUDObject
-	GetObject(id uint) (CRUDObject, error)
-	SerializePost(c *gin.Context) CRUDObject
-	ResponsePost(obj CRUDObject) interface{}
-	ResponseGet(obj CRUDObject) interface{}
+	CreateEntity(id uint) CRUDEntity
+	GetEntity(id uint) (CRUDEntity, error)
+	SerializePost(c *gin.Context) CRUDEntity
+	DeleteHook(c *gin.Context, obj CRUDEntity) bool
+	ResponsePost(obj CRUDEntity) interface{}
+	ResponseGet(obj CRUDEntity) interface{}
 	GetPutRequest() interface{}
-	FillPutFields(object CRUDObject, req interface{}) []string
+	FillPutFields(c *gin.Context, object CRUDEntity, req interface{}) []string
 }
 
 type CRUDService struct {
 	Tool CRUDObjectToolLite
 	k    string
 }
-
 
 func NewCRUDService(tool CRUDObjectToolLite, k string) CRUDService {
 	return CRUDService{
@@ -37,24 +35,30 @@ func NewCRUDService(tool CRUDObjectToolLite, k string) CRUDService {
 	}
 }
 
-
 func (srv *CRUDService) Delete(c *gin.Context) {
 	id, ok := ginhelper.ParseUint(c, srv.k)
 	if !ok {
 		return
 	}
-	if ginhelper.DeleteObj(c, srv.Tool.CreateObject(id)) {
+	obj, err := srv.Tool.GetEntity(id)
+	if ginhelper.MaybeSelectError(c, obj, err) {
+		return
+	}
+	if !srv.Tool.DeleteHook(c, obj) {
+		return
+	}
+
+	if ginhelper.DeleteObj(c, obj) {
 		c.JSON(http.StatusOK, &ginhelper.ResponseOK)
 	}
 }
-
 
 func (srv *CRUDService) Get(c *gin.Context) {
 	id, ok := ginhelper.ParseUint(c, srv.k)
 	if !ok {
 		return
 	}
-	obj, err := srv.Tool.GetObject(id)
+	obj, err := srv.Tool.GetEntity(id)
 	if ginhelper.MaybeSelectError(c, obj, err) {
 		return
 	}
@@ -62,20 +66,24 @@ func (srv *CRUDService) Get(c *gin.Context) {
 	c.JSON(http.StatusOK, srv.Tool.ResponseGet(obj))
 }
 
-
 func (srv *CRUDService) Put(c *gin.Context) {
-	var req =  srv.Tool.GetPutRequest()
+	var req = srv.Tool.GetPutRequest()
 	id, ok := ginhelper.ParseUintAndBind(c, srv.k, req)
 	if !ok {
 		return
 	}
 
-	object, err := srv.Tool.GetObject(id)
+	object, err := srv.Tool.GetEntity(id)
 	if ginhelper.MaybeSelectError(c, object, err) {
 		return
 	}
 
-	if ginhelper.UpdateFields(c, object, srv.Tool.FillPutFields(object, req)) {
+	fields := srv.Tool.FillPutFields(c, object, req)
+	if c.IsAborted() {
+		return
+	}
+
+	if ginhelper.UpdateFields(c, object, fields) {
 		c.JSON(http.StatusOK, &ginhelper.ResponseOK)
 	}
 }
@@ -89,6 +97,3 @@ func (srv *CRUDService) Post(c *gin.Context) {
 		c.JSON(http.StatusOK, srv.Tool.ResponsePost(obj))
 	}
 }
-
-
-

@@ -31,8 +31,8 @@ type ObjectDB struct {
 	dblayer.ObjectDB
 }
 
-func NewObjectDB(logger types.Logger, _ *config.ServerConfig) (*ObjectDB, error) {
-	cdb, err := dblayer.NewObjectDB(logger)
+func NewObjectDB(logger types.Logger, cfg *config.ServerConfig) (*ObjectDB, error) {
+	cdb, err := dblayer.NewObjectDB(logger, cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -41,8 +41,8 @@ func NewObjectDB(logger types.Logger, _ *config.ServerConfig) (*ObjectDB, error)
 	return db, nil
 }
 
-func GetObjectDB(logger types.Logger, _ *config.ServerConfig) (*ObjectDB, error) {
-	cdb, err := dblayer.GetObjectDB(logger)
+func GetObjectDB(logger types.Logger, cfg *config.ServerConfig) (*ObjectDB, error) {
+	cdb, err := dblayer.GetObjectDB(logger, cfg)
 	if err != nil {
 		return nil, err
 	}

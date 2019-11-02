@@ -6,6 +6,9 @@ import (
 	"github.com/Myriad-Dreamin/ginx/model/db-layer"
 	"github.com/Myriad-Dreamin/ginx/types"
 	"github.com/jinzhu/gorm"
+
+	_ "github.com/jinzhu/gorm/dialects/mysql"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func Register(rdb *gorm.DB, logger types.Logger) error {
@@ -52,7 +55,6 @@ func parseConfig(cfg *config.DatabaseConfig) (string, string, error) {
 	return cfg.ConnectionType, url + options, nil
 }
 
-
 func OpenORM(cfg *config.ServerConfig) (*gorm.DB, error) {
 	dialect, args, err := parseConfig(cfg.DatabaseConfig)
 	if err != nil {
@@ -63,6 +65,10 @@ func OpenORM(cfg *config.ServerConfig) (*gorm.DB, error) {
 		return nil, err
 	}
 
-
 	return db, nil
+}
+
+func MockORM(_ *config.ServerConfig) (*gorm.DB, error) {
+
+	return gorm.Open("sqlite3", ":memory:")
 }

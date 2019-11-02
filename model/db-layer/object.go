@@ -1,20 +1,22 @@
 package dblayer
 
 import (
-	"github.com/Myriad-Dreamin/dorm"
-	crud_dao "github.com/Myriad-Dreamin/ginx/model/db-layer/crud-dao"
+	"github.com/Myriad-Dreamin/ginx/config"
 	"github.com/Myriad-Dreamin/ginx/types"
 	"github.com/jinzhu/gorm"
 	"time"
 )
 
+func wrapToObject(object interface{}, err error) (*Object, error) {
+	return object.(*Object), err
+}
+
+func ObjectFactory() interface{} {
+	return new(Object)
+}
+
 var (
-	objectModel         *dorm.Model
-	objIDFunc           = crud_dao.ID(db)
-	objCreateFunc       = crud_dao.Create(db)
-	objDeleteFunc       = crud_dao.Delete(db)
-	objUpdateFunc       = crud_dao.Update(db)
-	objUpdateFieldsFunc = crud_dao.UpdateFields(objectModel)
+	objectTraits = NewObjectTraits(Object{})
 )
 
 type Object struct {
@@ -29,14 +31,7 @@ func (Object) TableName() string {
 }
 
 func (Object) migrate() error {
-	err := db.AutoMigrate(&Object{}).Error
-	if err != nil {
-		return err
-	}
-
-	//db.AddIndex()
-	objectModel, err = dormDB.Model(&Object{})
-	return err
+	return objectTraits.Migrate()
 }
 
 func (d Object) GetID() uint {
@@ -44,65 +39,63 @@ func (d Object) GetID() uint {
 }
 
 func (d *Object) Create() (int64, error) {
-	return objCreateFunc(d)
+	return objectTraits.Create(d)
 }
 
 func (d *Object) Update() (int64, error) {
-	return objUpdateFunc(d)
+	return objectTraits.Update(d)
 }
 
 func (d *Object) UpdateFields(fields []string) (int64, error) {
-	return objUpdateFieldsFunc(d, fields)
+	return objectTraits.UpdateFields(d, fields)
 }
 
 func (d *Object) Delete() (int64, error) {
-	return objDeleteFunc(d)
+	return objectTraits.Delete(d)
 }
 
 type ObjectDB struct{}
 
-func NewObjectDB(logger types.Logger) (*ObjectDB, error) {
+func NewObjectDB(logger types.Logger, _ *config.ServerConfig) (*ObjectDB, error) {
 	return new(ObjectDB), nil
 }
 
-func GetObjectDB(logger types.Logger) (*ObjectDB, error) {
+func GetObjectDB(logger types.Logger, _ *config.ServerConfig) (*ObjectDB, error) {
 	return new(ObjectDB), nil
 }
 
-func (objDB *ObjectDB) ID(id uint) (obj *Object, err error) {
-	obj = new(Object)
-	err = objIDFunc(obj, id)
-	return
+func (objectDB *ObjectDB) ID(id uint) (object *Object, err error) {
+	return wrapToObject(objectTraits.ID(id))
 }
 
 type ObjectQuery struct {
 	db *gorm.DB
 }
 
-func (objDB *ObjectDB) QueryChain() *ObjectQuery {
+func (objectDB *ObjectDB) QueryChain() *ObjectQuery {
 	return &ObjectQuery{db: db}
 }
 
-func (objDB *ObjectQuery) Order(order string, reorder ...bool) *ObjectQuery {
-	objDB.db = objDB.db.Order(order, reorder...)
-	return objDB
+func (objectDB *ObjectQuery) Order(order string, reorder ...bool) *ObjectQuery {
+	objectDB.db = objectDB.db.Order(order, reorder...)
+	return objectDB
 }
 
-func (objDB *ObjectQuery) Page(page, pageSize int) *ObjectQuery {
-	objDB.db = objDB.db.Limit(pageSize).Offset((page - 1) * pageSize)
-	return objDB
+func (objectDB *ObjectQuery) Page(page, pageSize int) *ObjectQuery {
+	objectDB.db = objectDB.db.Limit(pageSize).Offset((page - 1) * pageSize)
+	return objectDB
 }
-func (objDB *ObjectQuery) BeforeID(id uint) *ObjectQuery {
-	objDB.db = objDB.db.Where("id <= ?", id)
-	return objDB
-}
-
-func (objDB *ObjectQuery) Preload() *ObjectQuery {
-	objDB.db = objDB.db.Set("gorm:auto_preload", true)
-	return objDB
+func (objectDB *ObjectQuery) BeforeID(id uint) *ObjectQuery {
+	objectDB.db = objectDB.db.Where("id <= ?", id)
+	return objectDB
 }
 
-func (objDB *ObjectQuery) Query() (objs []Object, err error) {
-	err = objDB.db.Find(&objs).Error
+func (objectDB *ObjectQuery) Preload() *ObjectQuery {
+	objectDB.db = objectDB.db.Set("gorm:auto_preload", true)
+	return objectDB
+}
+
+func (objectDB *ObjectQuery) Query() (objects []Object, err error) {
+	err = objectDB.db.Find(&objects).Error
 	return
 }

@@ -20,4 +20,3 @@ func (srv *Server) FetchConfig(cfg interface{}, cfgPath string) bool {
 	}
 	return true
 }
-

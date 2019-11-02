@@ -5,18 +5,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-
-
 func (srv *Server) BuildRouter() bool {
-
-	srv.RouterEngine = gin.Default()
+	gin.DefaultErrorWriter = srv.LoggerWriter
+	gin.DefaultWriter = srv.LoggerWriter
+	srv.RouterEngine = gin.New()
+	srv.RouterEngine.Use(gin.LoggerWithConfig(gin.LoggerConfig{
+		Output: srv.LoggerWriter,
+	}), gin.Recovery())
 	srv.RouterEngine.Use(srv.corsMW)
-
-	srv.RouterEngine.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
 
 	srv.Router = router.NewRootRouter(srv.ServiceProvider, srv.jwtMW, srv.routerAuthMW)
 	return true

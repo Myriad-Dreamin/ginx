@@ -6,9 +6,9 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-var db *gorm.DB
-var rawDB *sql.DB
-var dormDB *dorm.DB
+var db = new(gorm.DB)
+var rawDB = new(sql.DB)
+var dormDB = new(dorm.DB)
 
 func GetInstance() *gorm.DB {
 	return db

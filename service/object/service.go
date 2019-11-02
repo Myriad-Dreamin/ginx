@@ -1,3 +1,4 @@
+//go:generate package-attach-to-path -generate_register_map
 package objectservice
 
 import (
@@ -13,7 +14,6 @@ type Service struct {
 	db     *model.ObjectDB
 	logger types.Logger
 }
-
 
 func NewService(logger types.Logger, provider *model.Provider, _ *config.ServerConfig) (a *Service, err error) {
 	a = new(Service)

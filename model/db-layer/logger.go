@@ -16,4 +16,3 @@ func (l *L) With(kvs ...interface{}) dorm.Logger {
 func adapt(logger types.Logger) dorm.Logger {
 	return &L{logger}
 }
-

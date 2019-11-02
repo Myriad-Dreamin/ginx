@@ -2,22 +2,22 @@ package splayer
 
 import (
 	"fmt"
-	"github.com/Myriad-Dreamin/ginx/types"
+	"github.com/Myriad-Dreamin/minimum-lib/module"
 	"path"
 )
 
 var provider *Provider
 
-
 type Provider struct {
-	types.BaseModuler
-	objectDB *ObjectDB
-	submissionDB *SubmissionDB
+	module.BaseModuler
+	objectDB  *ObjectDB
+	userDB    *UserDB
+	enforcer  *Enforcer
 }
 
 func NewProvider(namespace string) *Provider {
 	return &Provider{
-		BaseModuler: types.BaseModuler{
+		BaseModuler: module.BaseModuler{
 			Namespace: namespace,
 		},
 	}
@@ -29,12 +29,14 @@ func (s *Provider) Register(name string, database interface{}) {
 	}
 
 	switch ss := database.(type) {
-	case *SubmissionDB:
-		s.submissionDB = ss
+	case *Enforcer:
+		s.enforcer = ss
+	case *UserDB:
+		s.userDB = ss
 	case *ObjectDB:
 		s.objectDB = ss
 	default:
-		if mm, ok := ss.(types.Moduler); ok {
+		if mm, ok := ss.(module.Moduler); ok {
 			// todo:
 			_ = mm
 		}
@@ -46,9 +48,3 @@ func SetProvider(p *Provider) (op *Provider) {
 	provider = p
 	return
 }
-
-/**
-if err := s.BaseModuler.Replace(path.Join(s.Namespace, name), router); err != nil {
-	panic(fmt.Errorf("unknown router %T", router))
-}
- */

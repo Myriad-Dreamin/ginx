@@ -7,29 +7,23 @@ import (
 )
 
 type ListableObjectToolLite interface {
-	FilterOn(c *gin.Context, page, pageSize int) (interface{}, error)
+	FilterOn(c *gin.Context) (interface{}, error)
 }
 
 type ListService struct {
 	tool ListableObjectToolLite
-	k string
+	k    string
 }
 
 func NewListService(tool ListableObjectToolLite, k string) ListService {
 	return ListService{
 		tool: tool,
-		k:   k,
+		k:    k,
 	}
 }
 
-
 func (srv *ListService) List(c *gin.Context) {
-	page, pageSize, ok := ginhelper.RosolvePageVariable(c)
-	if !ok {
-		return
-	}
-
-	result, err := srv.tool.FilterOn(c, page, pageSize)
+	result, err := srv.tool.FilterOn(c)
 	if c.IsAborted() || ginhelper.MaybeOnlySelectError(c, err) {
 		return
 	}
@@ -37,4 +31,3 @@ func (srv *ListService) List(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 	return
 }
-

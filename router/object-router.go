@@ -6,8 +6,8 @@ import (
 
 type ObjectRouter struct {
 	*Router
-	Auth       *Middleware
-	IDRouter   *ObjectIDRouter
+	Auth     *Middleware
+	IDRouter *ObjectIDRouter
 
 	Post    *LeafRouter
 	GetList *LeafRouter
@@ -25,8 +25,8 @@ type ObjectIDRouter struct {
 func BuildObjectRouter(parent *RootRouter, serviceProvider *service.Provider) (router *ObjectRouter) {
 	objectService := serviceProvider.ObjectService()
 	router = &ObjectRouter{
-		Router:     parent.Router.Extend("object"),
-		Auth:       parent.Auth.Copy(),
+		Router: parent.Router.Extend("object"),
+		Auth:   parent.Auth.Copy(),
 	}
 	router.GetList = router.GET("object-list", objectService.List)
 	router.Post = router.POST("/object", objectService.Post)
@@ -50,4 +50,8 @@ func (*ObjectIDRouter) subBuild(parent *ObjectRouter, serviceProvider *service.P
 	router.Put = router.PUT("", objectService.Put)
 	router.Delete = router.DELETE("", objectService.Delete)
 	return
+}
+
+func (s *Provider) ObjectRouter() *ObjectRouter {
+	return s.objectRouter
 }

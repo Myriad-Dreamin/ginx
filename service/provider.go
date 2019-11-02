@@ -1,18 +1,76 @@
+//go:generate package-attach-to-path -generate_register_map
 package service
 
 import (
 	"fmt"
+	"github.com/Myriad-Dreamin/minimum-lib/module"
+	"path"
 )
 
-type Provider struct {
-	objectService *ObjectService
+type SubController interface {
+	GetControllers() []interface{}
 }
 
-func (s *Provider) Register(service interface{}) {
+type subController struct {
+	controllers []interface{}
+}
+
+func (s subController) GetControllers() []interface{} {
+	return s.controllers
+}
+
+func JustProvide(controllers ...interface{}) SubController {
+	return subController{controllers: controllers}
+}
+
+// @DocName Minimum-Template
+// @Description this is the minimum backend powered by minimum
+type Provider struct {
+	module.BaseModuler
+
+	objectService *ObjectService
+	userService   UserService
+
+	subControllers []SubController
+}
+
+func NewProvider(namespace string) *Provider {
+	return &Provider{
+		BaseModuler: module.BaseModuler{
+			Namespace: namespace,
+		},
+	}
+}
+
+func (s *Provider) Register(name string, service interface{}) {
+	if err := s.Provide(path.Join(s.Namespace, name), service); err != nil {
+		panic(fmt.Errorf("unknown/registered service %T, err %v", service, err))
+	}
+	if ss, ok := service.(SubController); ok {
+		s.subControllers = append(s.subControllers, ss)
+	}
+
 	switch ss := service.(type) {
+	case UserService:
+		s.userService = ss
+		s.subControllers = append(s.subControllers, JustProvide(&ss))
 	case *ObjectService:
 		s.objectService = ss
+		s.subControllers = append(s.subControllers, JustProvide(&ss))
 	default:
 		panic(fmt.Errorf("unknown service %T", service))
 	}
+}
+
+// for documents
+func (s *Provider) GetControllers() []interface{} {
+	var controllers []interface{}
+	for i := range s.subControllers {
+		controllers = append(controllers, s.subControllers[i].GetControllers()...)
+	}
+	return controllers
+}
+
+func (s *Provider) GetProvider() interface{} {
+	return s
 }

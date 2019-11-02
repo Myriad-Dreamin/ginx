@@ -23,9 +23,9 @@ func ObjectToPostReply(obj *model.Object) *PostReply {
 type PostRequest struct {
 }
 
-func (srv *Service) SerializePost(c *gin.Context) base_service.CRUDObject {
-	var req = new(PostRequest)
-	if !ginhelper.BindRequest(c, req) {
+func (srv *Service) SerializePost(c *gin.Context) base_service.CRUDEntity {
+	var req PostRequest
+	if !ginhelper.BindRequest(c, &req) {
 		return nil
 	}
 
@@ -33,4 +33,3 @@ func (srv *Service) SerializePost(c *gin.Context) base_service.CRUDObject {
 	// fill here
 	return obj
 }
-

@@ -16,4 +16,3 @@ func ObjectToGetReply(obj *model.Object) *GetReply {
 		Object: obj,
 	}
 }
-

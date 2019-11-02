@@ -3,8 +3,8 @@ package router
 import (
 	"github.com/Myriad-Dreamin/gin-middleware/auth/jwt"
 	"github.com/Myriad-Dreamin/ginx/service"
+	"github.com/gin-gonic/gin"
 )
-
 
 type RootRouter struct {
 	Root       *Router
@@ -12,20 +12,34 @@ type RootRouter struct {
 	AuthRouter *Router
 	Auth       *Middleware
 
-	ObjectRouter *ObjectRouter
+	Ping *LeafRouter
+	//ObjectRouter *ObjectRouter
+	UserRouter  *UserRouter
+}
+
+// @title Ping
+// @description result
+func PingFunc(c *gin.Context) {
+	c.JSON(200, gin.H{
+		"message": "pong",
+	})
 }
 
 func NewRootRouter(serviceProvider *service.Provider, jwtMW *jwt.Middleware, routerAuthMW *Middleware) (r *RootRouter) {
 	rr := NewRouterGroup()
-	apiRouterV2 := rr.Group("/v1")
-	authRouterV2 := apiRouterV2.Group("", jwtMW.Build())
+	apiRouterV1 := rr.Group("/v1")
+	authRouterV1 := apiRouterV1.Group("", jwtMW.Build())
 
 	r = &RootRouter{
 		Root:       rr,
-		Router:     apiRouterV2,
-		AuthRouter: authRouterV2,
+		Router:     apiRouterV1,
+		AuthRouter: authRouterV1,
 		Auth:       routerAuthMW,
 	}
-	r.ObjectRouter = BuildObjectRouter(r, serviceProvider)
+
+	r.Ping = r.Root.GET("/ping", PingFunc)
+
+	//r.ObjectRouter = BuildObjectRouter(r, serviceProvider)
+	r.UserRouter = BuildUserRouter(r, serviceProvider)
 	return
 }

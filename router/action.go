@@ -14,7 +14,7 @@ type ValidateFunc func(c *gin.Context, sbj string) bool
 type WrappedValidateFunc func(c *gin.Context) bool
 
 type common struct {
-	object     string
+	object      string
 	placeholder string
 	MissID      func(c *gin.Context)
 	Check       Checker
@@ -41,7 +41,7 @@ func NewObjectMiddleware(object, placeholder string, MissID gin.HandlerFunc, che
 	}
 	return &ObjectMiddleware{
 		common: &common{
-			object:     object + ":",
+			object:      object + ":",
 			placeholder: placeholder,
 			MissID:      MissID,
 			Check:       checker,
@@ -63,7 +63,7 @@ func (objFac *ObjectMiddleware) Validate() ValidateFunc {
 		if id := c.Param(objFac.placeholder); len(id) == 0 {
 			objFac.MissID(c)
 			return false
-		} else if !objFac.validate(c ,sbj, objFac.ToObjectString(id)) {
+		} else if !objFac.validate(c, sbj, objFac.ToObjectString(id)) {
 			return false
 		}
 		return true
@@ -89,16 +89,16 @@ type Validator interface {
 }
 
 type commonX struct {
-	uTable           string
-	idKey            string
-	reportMissID     gin.HandlerFunc
-	authFailed       AuthFailedFunc
-	checker          Checker
+	uTable       string
+	idKey        string
+	reportMissID gin.HandlerFunc
+	authFailed   AuthFailedFunc
+	checker      Checker
 }
 
 type Middleware struct {
 	*commonX
-	reqs Requirements
+	reqs             Requirements
 	objectMiddleware map[string]*ObjectMiddleware
 }
 
@@ -115,11 +115,11 @@ func fromValidatorAndAuthFailed(validator Validator, AuthFailed AuthFailedFunc) 
 	}
 }
 
-func newMiddlewareFromCommonX(reqs Requirements, commonX *commonX)  *Middleware {
+func newMiddlewareFromCommonX(reqs Requirements, commonX *commonX) *Middleware {
 	return &Middleware{
 		objectMiddleware: make(map[string]*ObjectMiddleware),
-		reqs: reqs,
-		commonX: commonX,
+		reqs:             reqs,
+		commonX:          commonX,
 	}
 }
 
@@ -130,46 +130,45 @@ func NewMiddleware(validator Validator, uTable, idKey string, MissID gin.Handler
 	return &Middleware{
 		objectMiddleware: make(map[string]*ObjectMiddleware),
 		commonX: &commonX{
-			uTable:           uTable,
-			idKey:            idKey,
-			reportMissID:     MissID,
-			authFailed:       AuthFailed,
-			checker:          fromValidatorAndAuthFailed(validator, AuthFailed),
+			uTable:       uTable,
+			idKey:        idKey,
+			reportMissID: MissID,
+			authFailed:   AuthFailed,
+			checker:      fromValidatorAndAuthFailed(validator, AuthFailed),
 		},
 	}
 }
 
-func (mw *Middleware) Copy(reqs... Requirement) *Middleware {
+func (mw *Middleware) Copy(reqs ...Requirement) *Middleware {
 	nmw := newMiddlewareFromCommonX(mw.reqs.PlusX(reqs), mw.commonX)
 	for sbj, omw := range mw.objectMiddleware {
 		nmw.objectMiddleware[sbj] = &ObjectMiddleware{
-			common: omw.common,
-			validate:    omw.validate,
+			common:   omw.common,
+			validate: omw.validate,
 		}
 	}
 	return nmw
 }
 
-func (mw *Middleware) Group(object, placeholder string, reqs... Requirement) *Middleware {
+func (mw *Middleware) Group(object, placeholder string, reqs ...Requirement) *Middleware {
 	nmw := mw.Copy(reqs...)
 	nmw.objectMiddleware[object] = NewObjectMiddleware(object, placeholder, nmw.reportMissID, nmw.checker)
 	return nmw
 }
 
-func (mw *Middleware) MaybeGroup(object, placeholder string, reqs... Requirement) (*Middleware, bool) {
+func (mw *Middleware) MaybeGroup(object, placeholder string, reqs ...Requirement) (*Middleware, bool) {
 	if _, ok := mw.objectMiddleware[object]; ok {
 		return nil, false
 	}
 	return mw.Group(object, placeholder, reqs...), true
 }
 
-func (mw *Middleware) MustGroup(object, placeholder string, reqs... Requirement) *Middleware {
+func (mw *Middleware) MustGroup(object, placeholder string, reqs ...Requirement) *Middleware {
 	if _, ok := mw.objectMiddleware[object]; !ok {
 		return mw.Group(object, placeholder, reqs...)
 	}
 	panic(fmt.Errorf("cannot register %v(%v) object", object, placeholder))
 }
-
 
 func (mw *Middleware) useValidate(validate ValidateFunc) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -178,7 +177,7 @@ func (mw *Middleware) useValidate(validate ValidateFunc) gin.HandlerFunc {
 			_ = c.AbortWithError(http.StatusForbidden, errors.New("missing uid"))
 			return
 		}
-		if !validate(c, mw.uTable + subjectID) {
+		if !validate(c, mw.uTable+subjectID) {
 			return
 		}
 	}
@@ -186,7 +185,7 @@ func (mw *Middleware) useValidate(validate ValidateFunc) gin.HandlerFunc {
 
 type Requirement struct {
 	Object string
-	Action  string
+	Action string
 }
 
 type RetrieveFunc func(c *gin.Context) string
@@ -215,7 +214,7 @@ func (mw *Middleware) AdminOnlyValidate() ValidateFunc {
 	}
 }
 
-func (mw *Middleware) BuildValidate(reqs... Requirement) ValidateFunc {
+func (mw *Middleware) BuildValidate(reqs ...Requirement) ValidateFunc {
 	for _, req := range mw.reqs.PlusX(reqs) {
 		if mw, ok := mw.objectMiddleware[req.Object]; !ok {
 			panic(fmt.Errorf("missing requirement object, want %s, but not registered in the middleware", req.Object))
@@ -249,7 +248,7 @@ func (mw *Middleware) Wrap(validate ValidateFunc) WrappedValidateFunc {
 			_ = c.AbortWithError(http.StatusForbidden, errors.New("missing uid"))
 			return false
 		}
-		if !validate(c, mw.uTable + subjectID) {
+		if !validate(c, mw.uTable+subjectID) {
 			return false
 		}
 		return true
@@ -260,8 +259,6 @@ func (mw *Middleware) AdminOnly() gin.HandlerFunc {
 	return mw.useValidate(mw.AdminOnlyValidate())
 }
 
-func (mw *Middleware) Build(reqs... Requirement) gin.HandlerFunc {
+func (mw *Middleware) Build(reqs ...Requirement) gin.HandlerFunc {
 	return mw.useValidate(mw.BuildValidate(reqs...))
 }
-
-

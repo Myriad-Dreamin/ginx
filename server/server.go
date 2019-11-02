@@ -2,33 +2,30 @@ package server
 
 import (
 	"context"
-	"fmt"
 	"github.com/DeanThompson/ginpprof"
 	"github.com/Myriad-Dreamin/gin-middleware/auth/jwt"
 	"github.com/Myriad-Dreamin/ginx/config"
+	"github.com/Myriad-Dreamin/ginx/lib/plugin"
 	"github.com/Myriad-Dreamin/ginx/model"
 	dblayer "github.com/Myriad-Dreamin/ginx/model/db-layer"
-	"github.com/Myriad-Dreamin/ginx/plugin"
 	"github.com/Myriad-Dreamin/ginx/router"
 	"github.com/Myriad-Dreamin/ginx/service"
 	"github.com/Myriad-Dreamin/ginx/types"
+	"github.com/Myriad-Dreamin/minimum-lib/module"
+	"github.com/Myriad-Dreamin/minimum-lib/sugar"
 	"github.com/gin-gonic/gin"
 	"github.com/gomodule/redigo/redis"
 	"github.com/jinzhu/gorm"
-	"runtime"
+	"io"
+	"os"
 	"sync"
 	"syscall"
 )
 
-func printStack() {
-	var buf [1024 * 10]byte
-	n := runtime.Stack(buf[:], false)
-	fmt.Printf("==> %s\n", string(buf[:n]))
-}
-
 type Server struct {
-	cfg    *config.ServerConfig
-	Logger types.Logger
+	cfg          *config.ServerConfig
+	Logger       types.Logger
+	LoggerWriter io.Writer
 
 	DB           *gorm.DB
 	RedisPool    *redis.Pool
@@ -42,7 +39,7 @@ type Server struct {
 	routerAuthMW *router.Middleware
 	corsMW       gin.HandlerFunc
 
-	Module           types.Module
+	Module           module.Module
 	ServiceProvider  *service.Provider
 	DatabaseProvider *model.Provider
 	RouterProvider   *router.Provider
@@ -58,16 +55,46 @@ func (srv *Server) Terminate() {
 	syscall.Exit(0)
 }
 
-func New(cfgPath string) (srv *Server) {
-	srv = new(Server)
+type Option interface {
+	MinimumServerOption() bool
+}
 
-	srv.Module = make(types.Module)
+type OptionImpl struct{}
+
+func (OptionImpl) MinimumServerOption() bool { return false }
+
+type OptionRouterLoggerWriter struct {
+	OptionImpl
+	Writer io.Writer
+}
+
+func newServer(options []Option) *Server {
+	srv := new(Server)
+
+	for i := range options {
+		switch option := options[i].(type) {
+		case OptionRouterLoggerWriter:
+			srv.LoggerWriter = option.Writer
+		case *OptionRouterLoggerWriter:
+			srv.LoggerWriter = option.Writer
+		}
+	}
+
+	if srv.LoggerWriter == nil {
+		srv.LoggerWriter = os.Stdout
+	}
+
+	srv.Module = make(module.Module)
 	srv.ServiceProvider = new(service.Provider)
 	srv.DatabaseProvider = model.NewProvider("/database")
 	srv.RouterProvider = router.NewProvider("/Router")
 
 	_ = model.SetProvider(srv.DatabaseProvider)
+	return srv
+}
 
+func New(cfgPath string, options ...Option) (srv *Server) {
+	srv = newServer(options)
 	if !(srv.InstantiateLogger() &&
 		srv.LoadConfig(cfgPath) &&
 		srv.PrepareDatabase()) {
@@ -76,12 +103,10 @@ func New(cfgPath string) (srv *Server) {
 	}
 	defer func() {
 		if err := recover(); err != nil {
-			printStack()
+			sugar.PrintStack()
 			srv.Logger.Error("panic error", "error", err)
 			srv.Terminate()
-		}
-
-		if srv == nil {
+		} else if srv == nil {
 			srv.Terminate()
 		}
 	}()
@@ -94,10 +119,10 @@ func New(cfgPath string) (srv *Server) {
 	}
 
 	if err := srv.Module.Install(srv.RouterProvider); err != nil {
-		fmt.Println("install Router provider error", err)
+		srv.println("install router provider error", err)
 	}
 	if err := srv.Module.Install(srv.DatabaseProvider); err != nil {
-		fmt.Println("install database provider error", err)
+		srv.println("install database provider error", err)
 	}
 	//
 	//if !PreparePlugin(cfg) {
@@ -111,14 +136,11 @@ func New(cfgPath string) (srv *Server) {
 
 func (srv *Server) Inject(plugins ...plugin.Plugin) (injectSuccess bool) {
 	defer func() {
-
 		if err := recover(); err != nil {
-			printStack()
+			sugar.PrintStack()
 			srv.Logger.Error("panic error", "error", err)
 			srv.Terminate()
-		}
-
-		if injectSuccess == false {
+		} else if injectSuccess == false {
 			srv.Terminate()
 		}
 	}()
@@ -140,7 +162,7 @@ func (srv *Server) Inject(plugins ...plugin.Plugin) (injectSuccess bool) {
 func (srv *Server) Serve(port string) {
 	defer func() {
 		if err := recover(); err != nil {
-			printStack()
+			sugar.PrintStack()
 			srv.Logger.Error("panic error", "error", err)
 			srv.Terminate()
 		}

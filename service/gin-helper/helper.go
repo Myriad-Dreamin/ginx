@@ -119,7 +119,7 @@ func RosolvePageVariable(c *gin.Context) (int, int, bool) {
 		})
 		return 0, 0, false
 	}
-	spageSize, ok := c.GetQuery("page-size")
+	spageSize, ok := c.GetQuery("page_size")
 	if !ok {
 		c.AbortWithStatusJSON(http.StatusOK, &ErrorSerializer{
 			Code:  types.CodeBindError,

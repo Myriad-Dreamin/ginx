@@ -34,4 +34,3 @@ func OpenRedis(cfg *config.ServerConfig) (*redis.Pool, error) {
 func RegisterRedis(pool *redis.Pool, logger types.Logger) error {
 	return splayer.RegisterRedis(pool, logger)
 }
-

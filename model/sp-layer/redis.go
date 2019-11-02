@@ -7,6 +7,7 @@ import (
 
 var pool *redis.Pool
 var logger types.Logger
+
 func RegisterRedis(mpool *redis.Pool, mlogger types.Logger) error {
 	pool = mpool
 	logger = mlogger
