@@ -2,11 +2,11 @@ package service
 
 import (
 	"github.com/Myriad-Dreamin/gin-middleware/auth/jwt"
-	"github.com/Myriad-Dreamin/ginx/config"
-	"github.com/Myriad-Dreamin/ginx/control"
-	"github.com/Myriad-Dreamin/ginx/model"
-	userservice "github.com/Myriad-Dreamin/ginx/service/user"
-	"github.com/Myriad-Dreamin/ginx/types"
+	"github.com/Myriad-Dreamin/minimum-template/config"
+	"github.com/Myriad-Dreamin/minimum-template/control"
+	"github.com/Myriad-Dreamin/minimum-template/model"
+	userservice "github.com/Myriad-Dreamin/minimum-template/service/user"
+	"github.com/Myriad-Dreamin/minimum-template/types"
 )
 
 type UserService = control.UserService

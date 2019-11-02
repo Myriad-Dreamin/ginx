@@ -2,7 +2,7 @@ package tests
 
 import (
 	"fmt"
-	userservice "github.com/Myriad-Dreamin/ginx/service/user"
+	userservice "github.com/Myriad-Dreamin/minimum-template/service/user"
 	"testing"
 )
 

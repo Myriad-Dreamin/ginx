@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/ginx.iml" filepath="$PROJECT_DIR$/.idea/ginx.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/minimum-template.iml" filepath="$PROJECT_DIR$/.idea/minimum-template.iml" />
     </modules>
   </component>
 </project>

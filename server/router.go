@@ -1,7 +1,7 @@
 package server
 
 import (
-	"github.com/Myriad-Dreamin/ginx/router"
+	"github.com/Myriad-Dreamin/minimum-template/router"
 	"github.com/gin-gonic/gin"
 )
 

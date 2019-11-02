@@ -2,5 +2,5 @@
 package main
 
 import (
-	_ "github.com/Myriad-Dreamin/ginx/package-probe"
+	_ "github.com/Myriad-Dreamin/minimum-template/package-probe"
 )

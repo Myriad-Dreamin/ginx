@@ -18,9 +18,9 @@ github.com/Myriad-Dreamin/functional-go v0.0.0-20191102095642-532e6dc9bfd5 h1:+Q
 github.com/Myriad-Dreamin/functional-go v0.0.0-20191102095642-532e6dc9bfd5/go.mod h1:sEA0raCE2EI7YqF5PFR3V25Px0Ck6qPNReaUTegSmJ4=
 github.com/Myriad-Dreamin/gin-middleware v0.0.0-20191001110659-e6949e7c287e h1:SiTngy6SDwkInN5KCqJ9YE+zXMLcwRf4lNKesU8dVFs=
 github.com/Myriad-Dreamin/gin-middleware v0.0.0-20191001110659-e6949e7c287e/go.mod h1:7VGIeMy+H3Yt4jpyPLdSvgemq++kSO8sP4PlPbotXOI=
-github.com/Myriad-Dreamin/ginx v0.0.0-20191102045134-4a108d71ca6f/go.mod h1:bFqLiwxZQmGNxA8XKnnr6KdC9w5ET7cJJ9mWUMDdr/0=
-github.com/Myriad-Dreamin/ginx v0.0.0-20191102111938-1dc512f1c327 h1:RtSURNRewQ6K1z9ETuFAp10cb+5dM8R7vsH3s6fL+J4=
-github.com/Myriad-Dreamin/ginx v0.0.0-20191102111938-1dc512f1c327/go.mod h1:NeOrH0iKZtKW77YmWiMxtkQmVk8O7WzLOpOM+fKjSWM=
+github.com/Myriad-Dreamin/minimum-template v0.0.0-20191102045134-4a108d71ca6f/go.mod h1:bFqLiwxZQmGNxA8XKnnr6KdC9w5ET7cJJ9mWUMDdr/0=
+github.com/Myriad-Dreamin/minimum-template v0.0.0-20191102111938-1dc512f1c327 h1:RtSURNRewQ6K1z9ETuFAp10cb+5dM8R7vsH3s6fL+J4=
+github.com/Myriad-Dreamin/minimum-template v0.0.0-20191102111938-1dc512f1c327/go.mod h1:NeOrH0iKZtKW77YmWiMxtkQmVk8O7WzLOpOM+fKjSWM=
 github.com/Myriad-Dreamin/go-magic-package v0.0.0-20191102072057-cacb4b48d43c/go.mod h1:UwMXBVNT/UuJc6n9skJUpXeOpE9eKWPlTsmiRb2oGBE=
 github.com/Myriad-Dreamin/go-magic-package v0.0.0-20191102091722-9e638a7c9c4b h1:yXe2SoIm7NMq3B4KIIiQwGnMhepKAeeSrVNKeSeaCQg=
 github.com/Myriad-Dreamin/go-magic-package v0.0.0-20191102091722-9e638a7c9c4b/go.mod h1:gKZz9vKJhIc2PGWK0Vxg9Cv1jJmvbspechLEvRORxoQ=

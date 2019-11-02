@@ -3,7 +3,7 @@ package server
 import (
 	"fmt"
 	"github.com/Myriad-Dreamin/functional-go"
-	"github.com/Myriad-Dreamin/ginx/service"
+	"github.com/Myriad-Dreamin/minimum-template/service"
 )
 
 type serviceResult struct {

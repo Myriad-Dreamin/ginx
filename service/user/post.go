@@ -1,10 +1,10 @@
 package userservice
 
 import (
-	"github.com/Myriad-Dreamin/ginx/model"
-	base_service "github.com/Myriad-Dreamin/ginx/service/base-service"
-	ginhelper "github.com/Myriad-Dreamin/ginx/service/gin-helper"
-	"github.com/Myriad-Dreamin/ginx/types"
+	"github.com/Myriad-Dreamin/minimum-template/model"
+	base_service "github.com/Myriad-Dreamin/minimum-template/service/base-service"
+	ginhelper "github.com/Myriad-Dreamin/minimum-template/service/gin-helper"
+	"github.com/Myriad-Dreamin/minimum-template/types"
 	"github.com/gin-gonic/gin"
 )
 

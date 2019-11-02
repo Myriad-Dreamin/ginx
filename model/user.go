@@ -1,9 +1,9 @@
 package model
 
 import (
-	"github.com/Myriad-Dreamin/ginx/config"
-	splayer "github.com/Myriad-Dreamin/ginx/model/sp-layer"
-	"github.com/Myriad-Dreamin/ginx/types"
+	"github.com/Myriad-Dreamin/minimum-template/config"
+	splayer "github.com/Myriad-Dreamin/minimum-template/model/sp-layer"
+	"github.com/Myriad-Dreamin/minimum-template/types"
 )
 
 type User = splayer.User

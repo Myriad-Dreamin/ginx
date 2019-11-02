@@ -1,8 +1,8 @@
 package ginhelper
 
 import (
-	"github.com/Myriad-Dreamin/ginx/model"
-	"github.com/Myriad-Dreamin/ginx/types"
+	"github.com/Myriad-Dreamin/minimum-template/model"
+	"github.com/Myriad-Dreamin/minimum-template/types"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )

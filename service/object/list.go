@@ -1,9 +1,9 @@
 package objectservice
 
 import (
-	"github.com/Myriad-Dreamin/ginx/model"
-	ginhelper "github.com/Myriad-Dreamin/ginx/service/gin-helper"
-	"github.com/Myriad-Dreamin/ginx/types"
+	"github.com/Myriad-Dreamin/minimum-template/model"
+	ginhelper "github.com/Myriad-Dreamin/minimum-template/service/gin-helper"
+	"github.com/Myriad-Dreamin/minimum-template/types"
 	"github.com/gin-gonic/gin"
 )
 

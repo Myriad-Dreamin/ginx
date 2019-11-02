@@ -1,8 +1,8 @@
 package dblayer
 
 import (
-	"github.com/Myriad-Dreamin/ginx/config"
-	"github.com/Myriad-Dreamin/ginx/types"
+	"github.com/Myriad-Dreamin/minimum-template/config"
+	"github.com/Myriad-Dreamin/minimum-template/types"
 	"github.com/jinzhu/gorm"
 	"time"
 )

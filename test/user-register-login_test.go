@@ -1,8 +1,8 @@
 package tests
 
 import (
-	"github.com/Myriad-Dreamin/ginx/model"
-	userservice "github.com/Myriad-Dreamin/ginx/service/user"
+	"github.com/Myriad-Dreamin/minimum-template/model"
+	userservice "github.com/Myriad-Dreamin/minimum-template/service/user"
 	"testing"
 )
 

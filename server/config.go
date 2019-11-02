@@ -1,6 +1,6 @@
 package server
 
-import "github.com/Myriad-Dreamin/ginx/config"
+import "github.com/Myriad-Dreamin/minimum-template/config"
 
 func (srv *Server) LoadConfig(cfgPath string) bool {
 	srv.cfg = new(config.ServerConfig)

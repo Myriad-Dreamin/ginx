@@ -3,11 +3,11 @@ package userservice
 
 import (
 	"github.com/Myriad-Dreamin/gin-middleware/auth/jwt"
-	"github.com/Myriad-Dreamin/ginx/config"
-	"github.com/Myriad-Dreamin/ginx/control"
-	"github.com/Myriad-Dreamin/ginx/model"
-	base_service "github.com/Myriad-Dreamin/ginx/service/base-service"
-	"github.com/Myriad-Dreamin/ginx/types"
+	"github.com/Myriad-Dreamin/minimum-template/config"
+	"github.com/Myriad-Dreamin/minimum-template/control"
+	"github.com/Myriad-Dreamin/minimum-template/model"
+	base_service "github.com/Myriad-Dreamin/minimum-template/service/base-service"
+	"github.com/Myriad-Dreamin/minimum-template/types"
 	"github.com/casbin/casbin/v2"
 )
 

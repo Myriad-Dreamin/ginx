@@ -2,9 +2,9 @@ package model
 
 import (
 	"errors"
-	"github.com/Myriad-Dreamin/ginx/config"
-	"github.com/Myriad-Dreamin/ginx/model/db-layer"
-	"github.com/Myriad-Dreamin/ginx/types"
+	"github.com/Myriad-Dreamin/minimum-template/config"
+	"github.com/Myriad-Dreamin/minimum-template/model/db-layer"
+	"github.com/Myriad-Dreamin/minimum-template/types"
 	"github.com/jinzhu/gorm"
 
 	_ "github.com/jinzhu/gorm/dialects/mysql"

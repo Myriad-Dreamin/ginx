@@ -1,2 +1,2 @@
-# ginx
+# minimum-template
 gin extension

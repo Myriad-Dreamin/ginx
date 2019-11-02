@@ -2,7 +2,7 @@ package dblayer
 
 import (
 	"github.com/Myriad-Dreamin/dorm"
-	"github.com/Myriad-Dreamin/ginx/types"
+	"github.com/Myriad-Dreamin/minimum-template/types"
 )
 
 type L struct {

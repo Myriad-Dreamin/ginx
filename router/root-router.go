@@ -2,7 +2,7 @@ package router
 
 import (
 	"github.com/Myriad-Dreamin/gin-middleware/auth/jwt"
-	"github.com/Myriad-Dreamin/ginx/service"
+	"github.com/Myriad-Dreamin/minimum-template/service"
 	"github.com/gin-gonic/gin"
 )
 

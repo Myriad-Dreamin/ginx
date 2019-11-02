@@ -3,7 +3,7 @@ package ginhelper
 import (
 	"fmt"
 	"github.com/Myriad-Dreamin/gin-middleware/auth/jwt"
-	"github.com/Myriad-Dreamin/ginx/types"
+	"github.com/Myriad-Dreamin/minimum-template/types"
 	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"
 	"net/http"

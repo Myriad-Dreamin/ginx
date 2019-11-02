@@ -1,7 +1,7 @@
 package userservice
 
 import (
-	"github.com/Myriad-Dreamin/ginx/model"
+	"github.com/Myriad-Dreamin/minimum-template/model"
 	"github.com/gin-gonic/gin"
 )
 

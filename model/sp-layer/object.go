@@ -1,9 +1,9 @@
 package splayer
 
 import (
-	"github.com/Myriad-Dreamin/ginx/config"
-	dblayer "github.com/Myriad-Dreamin/ginx/model/db-layer"
-	"github.com/Myriad-Dreamin/ginx/types"
+	"github.com/Myriad-Dreamin/minimum-template/config"
+	dblayer "github.com/Myriad-Dreamin/minimum-template/model/db-layer"
+	"github.com/Myriad-Dreamin/minimum-template/types"
 )
 
 type Object = dblayer.Object

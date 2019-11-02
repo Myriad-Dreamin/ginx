@@ -4,5 +4,5 @@ package service
 import instance "github.com/Myriad-Dreamin/go-magic-package/instance"
 
 func init() {
-	instance.Register("github.com/Myriad-Dreamin/ginx/service", `E:\project\go\src\github.com\Myriad-Dreamin\ginx\service`)
+	instance.Register("github.com/Myriad-Dreamin/minimum-template/service", `E:\project\go\src\github.com\Myriad-Dreamin\minimum-template\service`)
 }

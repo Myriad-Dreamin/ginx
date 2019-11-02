@@ -1,10 +1,10 @@
 package service
 
 import (
-	"github.com/Myriad-Dreamin/ginx/config"
-	"github.com/Myriad-Dreamin/ginx/model"
-	objectservice "github.com/Myriad-Dreamin/ginx/service/object"
-	"github.com/Myriad-Dreamin/ginx/types"
+	"github.com/Myriad-Dreamin/minimum-template/config"
+	"github.com/Myriad-Dreamin/minimum-template/model"
+	objectservice "github.com/Myriad-Dreamin/minimum-template/service/object"
+	"github.com/Myriad-Dreamin/minimum-template/types"
 )
 
 // go:generate go run github.com/Myriad-Dreamin/minimum-lib/code-gen/test-gen -source ./ -destination ../../test/

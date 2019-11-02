@@ -14,8 +14,8 @@ import (
 	"strings"
 	"testing"
 
-	dblayer "github.com/Myriad-Dreamin/ginx/model/db-layer"
-	ginhelper "github.com/Myriad-Dreamin/ginx/service/gin-helper"
+	dblayer "github.com/Myriad-Dreamin/minimum-template/model/db-layer"
+	ginhelper "github.com/Myriad-Dreamin/minimum-template/service/gin-helper"
 	abstract_test "github.com/Myriad-Dreamin/minimum-lib/abstract-test"
 	"github.com/Myriad-Dreamin/minimum-lib/mock"
 	"github.com/Myriad-Dreamin/minimum-lib/sugar"
