@@ -22,3 +22,17 @@ type FObject interface {
 type DObject interface {
 	dHookObject
 }
+
+type RObject interface {
+	ResponseGet(c controller.MContext, obj CRUDEntity) interface{}
+	ResponseInspect(c controller.MContext, obj CRUDEntity) interface{}
+}
+
+type UObject interface {
+	GetPutRequest() interface{}
+	FillPutFields(c controller.MContext, object CRUDEntity, req interface{}) []string
+}
+type CObject interface {
+	SerializePost(c controller.MContext) CRUDEntity
+	ResponsePost(obj CRUDEntity) interface{}
+}

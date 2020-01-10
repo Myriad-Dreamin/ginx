@@ -3,7 +3,7 @@ package objectservice
 import (
 	"github.com/Myriad-Dreamin/minimum-lib/controller"
 	"github.com/Myriad-Dreamin/minimum-template/model"
-	base_service "github.com/Myriad-Dreamin/minimum-template/service/base-service"
+	base_service "github.com/Myriad-Dreamin/minimum-template/lib/base-service"
 )
 
 func (srv *Service) CreateEntity(id uint) base_service.CRUDEntity {
@@ -26,7 +26,7 @@ func (srv *Service) ResponseGet(_ controller.MContext, obj base_service.CRUDEnti
 	return ObjectToGetReply(obj.(*model.Object))
 }
 
-func (srv *Service) ResponseInspect(obj base_service.CRUDEntity) interface{} {
+func (srv *Service) ResponseInspect(_ controller.MContext, obj base_service.CRUDEntity) interface{} {
 	return ObjectToGetReply(obj.(*model.Object))
 }
 

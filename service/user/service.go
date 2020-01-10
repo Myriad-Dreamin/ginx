@@ -6,7 +6,7 @@ import (
 	"github.com/Myriad-Dreamin/minimum-template/control"
 	"github.com/Myriad-Dreamin/minimum-template/lib/jwt"
 	"github.com/Myriad-Dreamin/minimum-template/model"
-	base_service "github.com/Myriad-Dreamin/minimum-template/service/base-service"
+	base_service "github.com/Myriad-Dreamin/minimum-template/lib/base-service"
 	"github.com/Myriad-Dreamin/minimum-template/types"
 	"github.com/Myriad-Dreamin/minimum-lib/module"
 	"github.com/casbin/casbin/v2"

@@ -4,7 +4,7 @@ import (
 	"github.com/Myriad-Dreamin/minimum-template/control/auth"
 	"github.com/Myriad-Dreamin/minimum-lib/controller"
 	"github.com/Myriad-Dreamin/minimum-template/model"
-	base_service "github.com/Myriad-Dreamin/minimum-template/service/base-service"
+	base_service "github.com/Myriad-Dreamin/minimum-template/lib/base-service"
 	ginhelper "github.com/Myriad-Dreamin/minimum-template/service/gin-helper"
 	"github.com/Myriad-Dreamin/minimum-template/types"
 )
