@@ -68,27 +68,6 @@ class MinimumCli:
         pcmds('%s cli.py make down' % MinimumCli.python_interpreter)
         pcmds('%s cli.py make up' % MinimumCli.python_interpreter)
 
-    def generate_cities(self):
-        with open('city_object.json') as f:
-            cities = json.load(f,encoding='utf-8')
-
-        with open('./config/cities.go', 'w+') as f:
-            f.write('''
-package config
-
-import "github.com/Myriad-Dreamin/market/types"
-
-''')
-
-            f.write('var Cities = map[string]types.CityObject{\n' + \
-                ''.join(['''	"%s": {
-        Province: "%s",
-        Name: "%s",
-        ID: "%s",
-    },
-''' % (k, v[u'province'], v[u'name'], v[u'id']) for k, v in cities.items()]) + \
-        '}')
-
     def install(self):
         pcmds('go install github.com/Myriad-Dreamin/go-magic-package/package-attach-to-path')
         pcmds('go install golang.org/x/tools/cmd/stringer')
