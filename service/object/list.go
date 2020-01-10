@@ -1,14 +1,13 @@
 package objectservice
 
 import (
+	"github.com/Myriad-Dreamin/minimum-lib/controller"
 	"github.com/Myriad-Dreamin/minimum-template/model"
-	ginhelper "github.com/Myriad-Dreamin/minimum-template/service/gin-helper"
 	"github.com/Myriad-Dreamin/minimum-template/types"
-	"github.com/gin-gonic/gin"
 )
 
 type ListReply struct {
-	Code    int            `json:"code"`
+	Code    types.CodeType `json:"code"`
 	Objects []model.Object `json:"objects"`
 }
 
@@ -19,17 +18,6 @@ func ObjectsToListReply(obj []model.Object) (reply *ListReply) {
 	return
 }
 
-func (srv *Service) FilterOn(c *gin.Context) (interface{}, error) {
-	// parse c
-
-	page, pageSize, ok := ginhelper.RosolvePageVariable(c)
-	if !ok {
-		return nil, nil
-	}
-
-	objs, err := srv.db.QueryChain().Page(page, pageSize).Query()
-	if err != nil {
-		return nil, err
-	}
-	return ObjectsToListReply(objs), nil
+func (srv *Service) ProcessListResults(_ controller.MContext, result interface{}) interface{} {
+	return ObjectsToListReply(result.([]model.Object))
 }

@@ -2,61 +2,59 @@
  - using env:	export GIN_MODE=release
  - using code:	gin.SetMode(gin.ReleaseMode)
 
-[GIN-debug] GET    /v1/user/:id              --> github.com/Myriad-Dreamin/minimum-template/control.UserService.Get-fm (5 handlers)
-[GIN-debug] POST   /v1/user/:id/password     --> github.com/Myriad-Dreamin/minimum-template/control.UserService.ChangePassword-fm (5 handlers)
-[GIN-debug] PUT    /v1/user/:id              --> github.com/Myriad-Dreamin/minimum-template/control.UserService.Put-fm (5 handlers)
-[GIN-debug] DELETE /v1/user/:id              --> github.com/Myriad-Dreamin/minimum-template/control.UserService.Delete-fm (5 handlers)
-[GIN-debug] GET    /v1/user-list             --> github.com/Myriad-Dreamin/minimum-template/control.UserService.List-fm (5 handlers)
-[GIN-debug] POST   /v1/user                  --> github.com/Myriad-Dreamin/minimum-template/control.UserService.Register-fm (5 handlers)
-[GIN-debug] POST   /v1/login                 --> github.com/Myriad-Dreamin/minimum-template/control.UserService.Login-fm (5 handlers)
-[GIN-debug] GET    /ping                     --> github.com/Myriad-Dreamin/minimum-template/router.PingFunc (5 handlers)
-[GIN] 2019/11/02 - 20:39:42 | 200 |     68.9991ms |                 | POST     /v1/user
+[GIN-debug] PUT    /v1/user/:id/password     --> github.com/Myriad-Dreamin/minimum-template/lib/gin.ToGinHandler.func1 (7 handlers)
+[GIN-debug] PUT    /v1/user/:id              --> github.com/Myriad-Dreamin/minimum-template/lib/gin.ToGinHandler.func1 (7 handlers)
+[GIN-debug] DELETE /v1/user/:id              --> github.com/Myriad-Dreamin/minimum-template/lib/gin.ToGinHandler.func1 (7 handlers)
+[GIN-debug] GET    /v1/user/:id              --> github.com/Myriad-Dreamin/minimum-template/lib/gin.ToGinHandler.func1 (5 handlers)
+[GIN-debug] GET    /v1/user-list             --> github.com/Myriad-Dreamin/minimum-template/lib/gin.ToGinHandler.func1 (5 handlers)
+[GIN-debug] POST   /v1/user                  --> github.com/Myriad-Dreamin/minimum-template/lib/gin.ToGinHandler.func1 (5 handlers)
+[GIN-debug] POST   /v1/login                 --> github.com/Myriad-Dreamin/minimum-template/lib/gin.ToGinHandler.func1 (5 handlers)
+[GIN-debug] GET    /ping                     --> github.com/Myriad-Dreamin/minimum-template/lib/gin.ToGinHandler.func1 (5 handlers)
+[GIN] 2020/01/10 - 22:27:59 | 200 |   84.221319ms |                 | POST     /v1/user
 Method: POST url: /v1/user http: HTTP/1.1
 Request Header: map[Content-Type:[application/json]]
 Response Header: map[Content-Type:[application/json; charset=utf-8] Gin-Context-Matched-Path-Method:[/v1/user@POST]]
-[GIN] 2019/11/02 - 20:39:42 | 200 |     65.9999ms |                 | POST     /v1/login
+[GIN] 2020/01/10 - 22:27:59 | 200 |    82.62209ms |                 | POST     /v1/login
 Method: POST url: /v1/login http: HTTP/1.1
 Request Header: map[Content-Type:[application/json]]
 Response Header: map[Content-Type:[application/json; charset=utf-8] Gin-Context-Matched-Path-Method:[/v1/login@POST]]
-[GIN] 2019/11/02 - 20:39:42 | 200 |     68.0022ms |                 | POST     /v1/user
+[GIN] 2020/01/10 - 22:27:59 | 200 |   82.717629ms |                 | POST     /v1/user
 Method: POST url: /v1/user http: HTTP/1.1
-Request Header: map[Authorization:[Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzI3MDE5ODIsImlzcyI6Ik15cmlhZC1EcmVhbWluIiwibmJmIjoxNTcyNjk4MzcyLCJJc1JlZnJlc2hUb2tlbiI6ZmFsc2UsIlJlZnJlc2hUYXJnZXQiOm51bGwsIkN1c3RvbUZpZWxkIjp7IlVJRCI6MX19.SQvbhD7o2D7RZ7ib51xyDiWythyOE0nYOtbObdFv6tY] Content-Type:[application/json]]
+Request Header: map[Authorization:[Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzkyNzEyNzksImlzcyI6Ik15cmlhZC1EcmVhbWluIiwibmJmIjoxNTc4NjY2NDY5LCJJc1JlZnJlc2hUb2tlbiI6ZmFsc2UsIlJlZnJlc2hUYXJnZXQiOm51bGwsIkN1c3RvbUZpZWxkIjp7IlVJRCI6MX19.Ejm6FMAPQIUuHRMGhHBvy_r0VB6efNDwR4AjdN-qdDI] Content-Type:[application/json]]
 Response Header: map[Content-Type:[application/json; charset=utf-8] Gin-Context-Matched-Path-Method:[/v1/user@POST]]
-[GIN] 2019/11/02 - 20:39:42 | 200 |     64.0003ms |                 | POST     /v1/login
+[GIN] 2020/01/10 - 22:27:59 | 200 |   81.268653ms |                 | POST     /v1/login
 Method: POST url: /v1/login http: HTTP/1.1
-Request Header: map[Authorization:[Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzI3MDE5ODIsImlzcyI6Ik15cmlhZC1EcmVhbWluIiwibmJmIjoxNTcyNjk4MzcyLCJJc1JlZnJlc2hUb2tlbiI6ZmFsc2UsIlJlZnJlc2hUYXJnZXQiOm51bGwsIkN1c3RvbUZpZWxkIjp7IlVJRCI6MX19.SQvbhD7o2D7RZ7ib51xyDiWythyOE0nYOtbObdFv6tY] Content-Type:[application/json]]
+Request Header: map[Authorization:[Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzkyNzEyNzksImlzcyI6Ik15cmlhZC1EcmVhbWluIiwibmJmIjoxNTc4NjY2NDY5LCJJc1JlZnJlc2hUb2tlbiI6ZmFsc2UsIlJlZnJlc2hUYXJnZXQiOm51bGwsIkN1c3RvbUZpZWxkIjp7IlVJRCI6MX19.Ejm6FMAPQIUuHRMGhHBvy_r0VB6efNDwR4AjdN-qdDI] Content-Type:[application/json]]
 Response Header: map[Content-Type:[application/json; charset=utf-8] Gin-Context-Matched-Path-Method:[/v1/login@POST]]
-[GIN] 2019/11/02 - 20:39:42 | 200 |     63.9974ms |                 | POST     /v1/login
+[GIN] 2020/01/10 - 22:27:59 | 200 |   82.328488ms |                 | POST     /v1/login
 Method: POST url: /v1/login http: HTTP/1.1
-Request Header: map[Authorization:[Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzI3MDE5ODIsImlzcyI6Ik15cmlhZC1EcmVhbWluIiwibmJmIjoxNTcyNjk4MzcyLCJJc1JlZnJlc2hUb2tlbiI6ZmFsc2UsIlJlZnJlc2hUYXJnZXQiOm51bGwsIkN1c3RvbUZpZWxkIjp7IlVJRCI6MX19.SQvbhD7o2D7RZ7ib51xyDiWythyOE0nYOtbObdFv6tY] Content-Type:[application/json]]
+Request Header: map[Authorization:[Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzkyNzEyNzksImlzcyI6Ik15cmlhZC1EcmVhbWluIiwibmJmIjoxNTc4NjY2NDY5LCJJc1JlZnJlc2hUb2tlbiI6ZmFsc2UsIlJlZnJlc2hUYXJnZXQiOm51bGwsIkN1c3RvbUZpZWxkIjp7IlVJRCI6MX19.Ejm6FMAPQIUuHRMGhHBvy_r0VB6efNDwR4AjdN-qdDI] Content-Type:[application/json]]
 Response Header: map[Content-Type:[application/json; charset=utf-8] Gin-Context-Matched-Path-Method:[/v1/login@POST]]
-[GIN] 2019/11/02 - 20:39:42 | 200 |     65.0001ms |                 | POST     /v1/login
+[GIN] 2020/01/10 - 22:27:59 | 200 |   82.870322ms |                 | POST     /v1/login
 Method: POST url: /v1/login http: HTTP/1.1
-Request Header: map[Authorization:[Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzI3MDE5ODIsImlzcyI6Ik15cmlhZC1EcmVhbWluIiwibmJmIjoxNTcyNjk4MzcyLCJJc1JlZnJlc2hUb2tlbiI6ZmFsc2UsIlJlZnJlc2hUYXJnZXQiOm51bGwsIkN1c3RvbUZpZWxkIjp7IlVJRCI6MX19.SQvbhD7o2D7RZ7ib51xyDiWythyOE0nYOtbObdFv6tY] Content-Type:[application/json]]
+Request Header: map[Authorization:[Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzkyNzEyNzksImlzcyI6Ik15cmlhZC1EcmVhbWluIiwibmJmIjoxNTc4NjY2NDY5LCJJc1JlZnJlc2hUb2tlbiI6ZmFsc2UsIlJlZnJlc2hUYXJnZXQiOm51bGwsIkN1c3RvbUZpZWxkIjp7IlVJRCI6MX19.Ejm6FMAPQIUuHRMGhHBvy_r0VB6efNDwR4AjdN-qdDI] Content-Type:[application/json]]
 Response Header: map[Content-Type:[application/json; charset=utf-8] Gin-Context-Matched-Path-Method:[/v1/login@POST]]
-[GIN] 2019/11/02 - 20:39:42 | 200 |            0s |                 | GET      /v1/user/1
+[GIN] 2020/01/10 - 22:27:59 | 200 |      325.57µs |                 | GET      /v1/user/1
 Method: GET url: /v1/user/1 http: HTTP/1.1
-Request Header: map[Authorization:[Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzI3MDE5ODIsImlzcyI6Ik15cmlhZC1EcmVhbWluIiwibmJmIjoxNTcyNjk4MzcyLCJJc1JlZnJlc2hUb2tlbiI6ZmFsc2UsIlJlZnJlc2hUYXJnZXQiOm51bGwsIkN1c3RvbUZpZWxkIjp7IlVJRCI6MX19.SQvbhD7o2D7RZ7ib51xyDiWythyOE0nYOtbObdFv6tY] Content-Type:[]]
+Request Header: map[Authorization:[Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzkyNzEyNzksImlzcyI6Ik15cmlhZC1EcmVhbWluIiwibmJmIjoxNTc4NjY2NDY5LCJJc1JlZnJlc2hUb2tlbiI6ZmFsc2UsIlJlZnJlc2hUYXJnZXQiOm51bGwsIkN1c3RvbUZpZWxkIjp7IlVJRCI6MX19.Ejm6FMAPQIUuHRMGhHBvy_r0VB6efNDwR4AjdN-qdDI] Content-Type:[]]
 Response Header: map[Content-Type:[application/json; charset=utf-8] Gin-Context-Matched-Path-Method:[/v1/user/:id@GET]]
-[GIN] 2019/11/02 - 20:39:42 | 200 |      1.0001ms |                 | GET      /v1/user-list?page=1&page_size=1
+[GIN] 2020/01/10 - 22:27:59 | 200 |     231.065µs |                 | GET      /v1/user-list?page=1&page_size=1
 Method: GET url: /v1/user-list?page=1&page_size=1 http: HTTP/1.1
-Request Header: map[Authorization:[Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzI3MDE5ODIsImlzcyI6Ik15cmlhZC1EcmVhbWluIiwibmJmIjoxNTcyNjk4MzcyLCJJc1JlZnJlc2hUb2tlbiI6ZmFsc2UsIlJlZnJlc2hUYXJnZXQiOm51bGwsIkN1c3RvbUZpZWxkIjp7IlVJRCI6MX19.SQvbhD7o2D7RZ7ib51xyDiWythyOE0nYOtbObdFv6tY] Content-Type:[]]
+Request Header: map[Authorization:[Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzkyNzEyNzksImlzcyI6Ik15cmlhZC1EcmVhbWluIiwibmJmIjoxNTc4NjY2NDY5LCJJc1JlZnJlc2hUb2tlbiI6ZmFsc2UsIlJlZnJlc2hUYXJnZXQiOm51bGwsIkN1c3RvbUZpZWxkIjp7IlVJRCI6MX19.Ejm6FMAPQIUuHRMGhHBvy_r0VB6efNDwR4AjdN-qdDI] Content-Type:[]]
 Response Header: map[Content-Type:[application/json; charset=utf-8] Gin-Context-Matched-Path-Method:[/v1/user-list@GET]]
-t-Matched-Path-Method:[/v1/user-list@GET]]
-
-9.-95d9mlaHzfnB7-4ZMU5WAyNW2B2FSj9lg8kcmik4jU] Content-Type:[application/json]]
-Response Header: map[Content-Type:[application/json; charset=utf-8] Gin-Context-Matched-Path-Method:[/v1/login@POST]]
-[GIN] 2019/11/02 - 19:59:36 | 200 |            0s |                 | GET      /v1/user/1
-Method: GET url: /v1/user/1 http: HTTP/1.1
-Request Header: map[Authorization:[Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzI2OTk1NzYsImlzcyI6Ik15cmlhZC1EcmVhbWluIiwibmJmIjoxNTcyNjk1OTY2LCJJc1JlZnJlc2hUb2tlbiI6ZmFsc2UsIlJlZnJlc2hUYXJnZXQiOm51bGwsIkN1c3RvbUZpZWxkIjp7IlVJRCI6MX19.-95d9mlaHzfnB7-4ZMU5WAyNW2B2FSj9lg8kcmik4jU] Content-Type:[]]
+[GIN] 2020/01/10 - 22:27:59 | 200 |  162.698192ms |                 | PUT      /v1/user/2/password
+Method: PUT url: /v1/user/2/password http: HTTP/1.1
+Request Header: map[Authorization:[Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzkyNzEyNzksImlzcyI6Ik15cmlhZC1EcmVhbWluIiwibmJmIjoxNTc4NjY2NDY5LCJJc1JlZnJlc2hUb2tlbiI6ZmFsc2UsIlJlZnJlc2hUYXJnZXQiOm51bGwsIkN1c3RvbUZpZWxkIjp7IlVJRCI6MX19.Ejm6FMAPQIUuHRMGhHBvy_r0VB6efNDwR4AjdN-qdDI] Content-Type:[application/json]]
+Response Header: map[Content-Type:[application/json; charset=utf-8] Gin-Context-Matched-Path-Method:[/v1/user/:id/password@PUT]]
+[GIN] 2020/01/10 - 22:27:59 | 200 |     581.378µs |                 | DELETE   /v1/user/2
+Method: DELETE url: /v1/user/2 http: HTTP/1.1
+Request Header: map[Authorization:[Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzkyNzEyNzksImlzcyI6Ik15cmlhZC1EcmVhbWluIiwibmJmIjoxNTc4NjY2NDY5LCJJc1JlZnJlc2hUb2tlbiI6ZmFsc2UsIlJlZnJlc2hUYXJnZXQiOm51bGwsIkN1c3RvbUZpZWxkIjp7IlVJRCI6MX19.Ejm6FMAPQIUuHRMGhHBvy_r0VB6efNDwR4AjdN-qdDI] Content-Type:[]]
+Response Header: map[Content-Type:[application/json; charset=utf-8] Gin-Context-Matched-Path-Method:[/v1/user/:id@DELETE]]
+[GIN] 2020/01/10 - 22:27:59 | 200 |       93.48µs |                 | GET      /v1/user/2
+Method: GET url: /v1/user/2 http: HTTP/1.1
+Request Header: map[Authorization:[Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzkyNzEyNzksImlzcyI6Ik15cmlhZC1EcmVhbWluIiwibmJmIjoxNTc4NjY2NDY5LCJJc1JlZnJlc2hUb2tlbiI6ZmFsc2UsIlJlZnJlc2hUYXJnZXQiOm51bGwsIkN1c3RvbUZpZWxkIjp7IlVJRCI6MX19.Ejm6FMAPQIUuHRMGhHBvy_r0VB6efNDwR4AjdN-qdDI] Content-Type:[]]
 Response Header: map[Content-Type:[application/json; charset=utf-8] Gin-Context-Matched-Path-Method:[/v1/user/:id@GET]]
-[GIN] 2019/11/02 - 19:59:36 | 200 |            0s |                 | GET      /v1/user-list?page=1&page_size=1
-Method: GET url: /v1/user-list?page=1&page_size=1 http: HTTP/1.1
-Request Header: map[Authorization:[Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzI2OTk1NzYsImlzcyI6Ik15cmlhZC1EcmVhbWluIiwibmJmIjoxNTcyNjk1OTY2LCJJc1JlZnJlc2hUb2tlbiI6ZmFsc2UsIlJlZnJlc2hUYXJnZXQiOm51bGwsIkN1c3RvbUZpZWxkIjp7IlVJRCI6MX19.-95d9mlaHzfnB7-4ZMU5WAyNW2B2FSj9lg8kcmik4jU] Content-Type:[]]
-Response Header: map[Content-Type:[application/json; charset=utf-8] Gin-Context-Matched-Path-Method:[/v1/user-list@GET]]
-2019-11-02T19:01:33.916+0800	Debug	[38;5;230m test/tester_test.go:33 [0m		{"level": "info", "_msg": "test open"}
-2019-11-02T19:59:35.891+0800	Debug	[38;5;230m module/module.go:92 [0m		{"level": "debug", "_msg": "module installed", "path": "/database/enforcer", "name": "*casbin.SyncedEnforcer"}
-2019-11-02T19:59:35.891+0800	Debug	[38;5;230m module/module.go:92 [0m		{"level": "debug", "_msg": "module installed", "path": "/database/needsDB", "name": "*splayer.NeedsDB"}
+.891+0800	Debug	[38;5;230m module/module.go:92 [0m		{"level": "debug", "_msg": "module installed", "path": "/database/needsDB", "name": "*splayer.NeedsDB"}
 2019-11-02T19:59:35.891+0800	Debug	[38;5;230m module/module.go:92 [0m		{"level": "debug", "_msg": "module installed", "path": "/database/goodsDB", "name": "*splayer.GoodsDB"}
 2019-11-02T19:59:35.891+0800	Debug	[38;5;230m module/module.go:92 [0m		{"level": "debug", "_msg": "module installed", "path": "/database/userDB", "name": "*splayer.UserDB"}
 2019-11-02T19:59:35.891+0800	Debug	[38;5;230m module/module.go:92 [0m		{"level": "debug", "_msg": "module installed", "path": "/database/objectDB", "name": "*splayer.ObjectDB"}

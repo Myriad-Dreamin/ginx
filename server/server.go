@@ -3,12 +3,14 @@ package server
 import (
 	"context"
 	"github.com/DeanThompson/ginpprof"
-	"github.com/Myriad-Dreamin/gin-middleware/auth/jwt"
 	"github.com/Myriad-Dreamin/minimum-template/config"
+	"github.com/Myriad-Dreamin/minimum-template/control"
+	"github.com/Myriad-Dreamin/minimum-template/control/router"
+	"github.com/Myriad-Dreamin/minimum-lib/controller"
+	"github.com/Myriad-Dreamin/minimum-template/lib/jwt"
 	"github.com/Myriad-Dreamin/minimum-template/lib/plugin"
 	"github.com/Myriad-Dreamin/minimum-template/model"
 	dblayer "github.com/Myriad-Dreamin/minimum-template/model/db-layer"
-	"github.com/Myriad-Dreamin/minimum-template/router"
 	"github.com/Myriad-Dreamin/minimum-template/service"
 	"github.com/Myriad-Dreamin/minimum-template/types"
 	"github.com/Myriad-Dreamin/minimum-lib/module"
@@ -23,28 +25,32 @@ import (
 )
 
 type Server struct {
-	cfg          *config.ServerConfig
+	Cfg          *config.ServerConfig
 	Logger       types.Logger
 	LoggerWriter io.Writer
 
-	DB           *gorm.DB
-	RedisPool    *redis.Pool
-	RouterEngine *gin.Engine
-	Router       *router.RootRouter
+	DB         *gorm.DB
+	RedisPool  *redis.Pool
+	HttpEngine *control.HttpEngine
+	Router     *router.RootRouter
 
 	contestPath string
 
 	jwtMW *jwt.Middleware
 	//var authMW *privileger.MiddleWare
-	routerAuthMW *router.Middleware
+	routerAuthMW *controller.Middleware
 	corsMW       gin.HandlerFunc
 
-	Module           module.Module
-	ServiceProvider  *service.Provider
-	DatabaseProvider *model.Provider
-	RouterProvider   *router.Provider
+	Module          module.Module
+	ServiceProvider *service.Provider
+	ModelProvider   *model.Provider
+	RouterProvider  *router.Provider
 
 	plugins []plugin.Plugin
+}
+
+func NewServer() *Server {
+	return &Server{Module: make(module.Module)}
 }
 
 func (srv *Server) Terminate() {
@@ -69,7 +75,7 @@ type OptionRouterLoggerWriter struct {
 }
 
 func newServer(options []Option) *Server {
-	srv := new(Server)
+	srv := NewServer()
 
 	for i := range options {
 		switch option := options[i].(type) {
@@ -84,12 +90,14 @@ func newServer(options []Option) *Server {
 		srv.LoggerWriter = os.Stdout
 	}
 
-	srv.Module = make(module.Module)
 	srv.ServiceProvider = new(service.Provider)
-	srv.DatabaseProvider = model.NewProvider("/database")
-	srv.RouterProvider = router.NewProvider("/Router")
+	srv.ModelProvider = model.NewProvider(config.ModulePath.Provider.Model)
+	srv.RouterProvider = router.NewProvider(config.ModulePath.Provider.Router)
 
-	_ = model.SetProvider(srv.DatabaseProvider)
+	_ = model.SetProvider(srv.ModelProvider)
+	srv.Module.Provide(config.ModulePath.Provider.Service, srv.ServiceProvider)
+	srv.Module.Provide(config.ModulePath.Provider.Model, srv.ModelProvider)
+	srv.Module.Provide(config.ModulePath.Provider.Router, srv.RouterProvider)
 	return srv
 }
 
@@ -97,6 +105,7 @@ func New(cfgPath string, options ...Option) (srv *Server) {
 	srv = newServer(options)
 	if !(srv.InstantiateLogger() &&
 		srv.LoadConfig(cfgPath) &&
+		srv.PrepareFileSystem() &&
 		srv.PrepareDatabase()) {
 		srv = nil
 		return
@@ -121,7 +130,7 @@ func New(cfgPath string, options ...Option) (srv *Server) {
 	if err := srv.Module.Install(srv.RouterProvider); err != nil {
 		srv.println("install router provider error", err)
 	}
-	if err := srv.Module.Install(srv.DatabaseProvider); err != nil {
+	if err := srv.Module.Install(srv.ModelProvider); err != nil {
 		srv.println("install database provider error", err)
 	}
 	//
@@ -146,11 +155,11 @@ func (srv *Server) Inject(plugins ...plugin.Plugin) (injectSuccess bool) {
 	}()
 
 	for _, plg := range plugins {
-		plg = plg.Configuration(srv.Logger, srv.FetchConfig, srv.cfg)
+		plg = plg.Configuration(srv.Logger, srv.FetchConfig, srv.Cfg)
 		if plg == nil {
 			return false
 		}
-		plg = plg.Inject(srv.ServiceProvider, srv.DatabaseProvider, srv.Module)
+		plg = plg.Inject(srv.ServiceProvider, srv.ModelProvider, srv.Module)
 		if plg == nil {
 			return false
 		}
@@ -168,7 +177,7 @@ func (srv *Server) Serve(port string) {
 		}
 	}()
 
-	srv.Router.Root.Build(srv.RouterEngine)
+	control.BuildHttp(srv.Router.Root, srv.HttpEngine)
 	srv.Module.Debug(srv.Logger)
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -188,8 +197,8 @@ func (srv *Server) Serve(port string) {
 	var wg sync.WaitGroup
 	wg.Add(1)
 	go func() {
-		if err := srv.RouterEngine.Run(port); err != nil {
-			srv.Logger.Debug("Router run error", "error", err)
+		if err := srv.HttpEngine.Run(port); err != nil {
+			srv.Logger.Debug("IRouter run error", "error", err)
 		}
 		wg.Done()
 	}()
@@ -199,6 +208,6 @@ func (srv *Server) Serve(port string) {
 }
 
 func (srv *Server) ServeWithPProf(port string) {
-	ginpprof.Wrap(srv.RouterEngine)
+	ginpprof.Wrap(srv.HttpEngine)
 	srv.Serve(port)
 }

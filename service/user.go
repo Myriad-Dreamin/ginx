@@ -1,18 +1,15 @@
 package service
 
 import (
-	"github.com/Myriad-Dreamin/gin-middleware/auth/jwt"
-	"github.com/Myriad-Dreamin/minimum-template/config"
 	"github.com/Myriad-Dreamin/minimum-template/control"
-	"github.com/Myriad-Dreamin/minimum-template/model"
 	userservice "github.com/Myriad-Dreamin/minimum-template/service/user"
-	"github.com/Myriad-Dreamin/minimum-template/types"
+	"github.com/Myriad-Dreamin/minimum-lib/module"
 )
 
 type UserService = control.UserService
 
-func NewUserService(logger types.Logger, provider *model.Provider, middleware *jwt.Middleware, config *config.ServerConfig) (UserService, error) {
-	return userservice.NewService(logger, provider, middleware, config)
+func NewUserService(m module.Module) (UserService, error) {
+	return userservice.NewService(m)
 }
 
 func (s *Provider) UserService() UserService {

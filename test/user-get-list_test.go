@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func testList(t *testing.T) {
+func testUserList(t *testing.T) {
 	srv := srv.Context(t).AssertNoError(true)
 
 	resp := srv.Get("/v1/user-list?page=1&page_size=1")

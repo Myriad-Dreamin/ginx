@@ -1,18 +1,17 @@
 package model
 
 import (
-	"github.com/Myriad-Dreamin/minimum-template/config"
 	splayer "github.com/Myriad-Dreamin/minimum-template/model/sp-layer"
-	"github.com/Myriad-Dreamin/minimum-template/types"
+	"github.com/Myriad-Dreamin/minimum-lib/module"
 )
 
 type User = splayer.User
 type UserDB = splayer.UserDB
 
-func NewUserDB(logger types.Logger, cfg *config.ServerConfig) (*UserDB, error) {
-	return splayer.NewUserDB(logger, cfg)
+func NewUserDB(m module.Module) (*UserDB, error) {
+	return splayer.NewUserDB(m)
 }
 
-func GetUserDB(logger types.Logger, cfg *config.ServerConfig) (*UserDB, error) {
-	return splayer.GetUserDB(logger, cfg)
+func GetUserDB(m module.Module) (*UserDB, error) {
+	return splayer.GetUserDB(m)
 }

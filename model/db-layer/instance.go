@@ -7,7 +7,7 @@ import (
 )
 
 var db = new(gorm.DB)
-var rawDB = new(sql.DB)
+var rawDB = new(*sql.DB)
 var dormDB = new(dorm.DB)
 
 func GetInstance() *gorm.DB {
@@ -15,7 +15,7 @@ func GetInstance() *gorm.DB {
 }
 
 func GetRawInstance() *sql.DB {
-	return rawDB
+	return *rawDB
 }
 
 func GetDormInstance() *dorm.DB {

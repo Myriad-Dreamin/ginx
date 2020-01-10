@@ -6,25 +6,32 @@ import (
 	"github.com/Myriad-Dreamin/minimum-template/model"
 	base_service "github.com/Myriad-Dreamin/minimum-template/service/base-service"
 	"github.com/Myriad-Dreamin/minimum-template/types"
+	"github.com/Myriad-Dreamin/minimum-lib/module"
 )
 
 type Service struct {
 	base_service.CRUDService
 	base_service.ListService
 	db     *model.ObjectDB
+	cfg    *config.ServerConfig
 	logger types.Logger
+	key    string
 }
 
-func NewService(logger types.Logger, provider *model.Provider, _ *config.ServerConfig) (a *Service, err error) {
+func (srv *Service) CreateFilter() interface{} {
+	return new(model.Filter)
+}
+
+func (srv *Service) ObjectSignatureXXX() interface{} { return srv }
+
+func NewService(m module.Module) (a *Service, err error) {
 	a = new(Service)
+	provider := m.Require(config.ModulePath.Provider.Model).(*model.Provider)
+	a.logger = m.Require(config.ModulePath.Global.Logger).(types.Logger)
+	a.cfg = m.Require(config.ModulePath.Global.Configuration).(*config.ServerConfig)
+	a.key = "oid"
 	a.db = provider.ObjectDB()
-	a.logger = logger
-	a.CRUDService = base_service.NewCRUDService(a, "oid")
-	a.ListService = base_service.NewListService(a, "oid")
+	a.CRUDService = base_service.NewCRUDService(a, a.key)
+	a.ListService = base_service.NewListService(a, a.db.FilterI)
 	return
 }
-
-/*
-type Object struct {
-}
-*/

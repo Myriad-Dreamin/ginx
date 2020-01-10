@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"time"
+	"strings"
 
 	"github.com/pelletier/go-toml"
 	"gopkg.in/yaml.v2"
@@ -35,7 +36,19 @@ type DatabaseConfig struct {
 	Charset        string `json:"charset" yaml:"charset" toml:"charset" xml:"charset"`
 	ParseTime      bool   `json:"parse-time" yaml:"parse-time" toml:"parse-time" xml:"parse-time"`
 	Location       string `json:"location" yaml:"location" toml:"location" xml:"location"`
+	MaxIdle        int    `json:"max-idle" yaml:"max-idle" toml:"max-idle" xml:"max-idle"`
+	MaxActive      int    `json:"max-active" yaml:"max-active" toml:"max-active" xml:"max-active"`
+	Escaper        string `json:"escaper" yaml:"escaper" toml:"escaper" xml:"escaper"`
 }
+
+type PathPlaceholder struct {
+	User string `json:"user" yaml:"user" toml:"user" xml:"user"`
+}
+
+type BaseParametersConfig struct {
+	PathPlaceholder         PathPlaceholder `json:"path-placeholder" yaml:"path-placeholder" toml:"path-placeholder" xml:"path-placeholder"`
+}
+
 
 type Label struct {
 	Key   string `json:"key" yaml:"key" toml:"key" xml:"key"`
@@ -46,70 +59,67 @@ type ServerConfig struct {
 	LoadType       string         `json:"-" yaml:"-" toml:"-" xml:"-"`
 	Name           xml.Name       `json:"-" yaml:"-" toml:"-" xml:"server-config"`
 	Labels         []Label        `json:"label" yaml:"label" toml:"label" xml:"label"`
-	DatabaseConfig *DatabaseConfig `json:"database" yaml:"database" toml:"database" xml:"database"`
-	RedisConfig    *RedisConfig    `json:"redis" yaml:"redis" toml:"redis" xml:"redis"`
+	DatabaseConfig DatabaseConfig `json:"database" yaml:"database" toml:"database" xml:"database"`
+	BaseParametersConfig BaseParametersConfig `json:"base-cfg" yaml:"base-cfg" toml:"base-cfg" xml:"base-cfg"`
+	RedisConfig    RedisConfig    `json:"redis" yaml:"redis" toml:"redis" xml:"redis"`
 }
 
-func Load(config *ServerConfig, configpath string) error {
+
+func Default() *ServerConfig {
+	return &ServerConfig{
+		LoadType: "json",
+		BaseParametersConfig: BaseParametersConfig{
+			PathPlaceholder: PathPlaceholder{
+				User: "id",
+			},
+		},
+	}
+}
+
+func Load(config *ServerConfig, configPath string) error {
+	return LoadStatic(config, configPath)
+}
+func unmarshal(config interface{}, unmarshaler func(b []byte, i interface{}) error,
+	configPath string) error {
+	f, err := os.Open(configPath)
+	if err != nil {
+		return err
+	}
+
+	b, err := ioutil.ReadAll(f)
+	_ = f.Close()
+	if err != nil {
+		return err
+	}
+	err = unmarshaler(b, config)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func LoadStatic(config interface{}, configPath string) error {
+
 	for _, configX := range []struct {
 		Type      string
 		Unmarshal func([]byte, interface{}) error
 	}{
 		{".json", json.Unmarshal}, {".yml", yaml.Unmarshal},
 		{".toml", toml.Unmarshal}, {".xml", xml.Unmarshal}} {
-		if _, err := os.Stat(configpath + configX.Type); err == nil {
-			f, err := os.Open(configpath + configX.Type)
-			if err != nil {
-				return err
-			}
 
-			b, err := ioutil.ReadAll(f)
-			_ = f.Close()
-			if err != nil {
-				return err
-			}
-			err = configX.Unmarshal(b, config)
-			if err != nil {
-				return err
-			}
-			config.LoadType = configX.Type
-			return nil
+		if strings.HasSuffix(configPath, configX.Type) {
+			return unmarshal(config, configX.Unmarshal, configPath)
+		}
+
+		if _, err := os.Stat(configPath + configX.Type); err == nil {
+			return unmarshal(config, configX.Unmarshal, configPath+configX.Type)
 		}
 	}
 
 	return errors.New("no such file in the root directory")
 }
 
-func LoadStatic(config interface{}, configpath string) error {
-	for _, configX := range []struct {
-		Type      string
-		Unmarshal func([]byte, interface{}) error
-	}{
-		{".json", json.Unmarshal}, {".yml", yaml.Unmarshal},
-		{".toml", toml.Unmarshal}, {".xml", xml.Unmarshal}} {
-		if _, err := os.Stat(configpath + configX.Type); err == nil {
-			f, err := os.Open(configpath + configX.Type)
-			if err != nil {
-				return err
-			}
-
-			b, err := ioutil.ReadAll(f)
-			_ = f.Close()
-			if err != nil {
-				return err
-			}
-			err = configX.Unmarshal(b, config)
-			if err != nil {
-				return err
-			}
-			return nil
-		}
-	}
-
-	return errors.New("no such file in the root directory")
-}
-
-func Save(config *ServerConfig, configpath string) error {
+func Save(config *ServerConfig, configPath string) error {
 	var b []byte
 	var err error
 	switch config.LoadType {
@@ -134,8 +144,8 @@ func Save(config *ServerConfig, configpath string) error {
 			return err
 		}
 	}
-	if _, err := os.Stat(configpath + config.LoadType); err == nil {
-		f, err := os.OpenFile(configpath+config.LoadType, os.O_WRONLY|os.O_TRUNC, 0333)
+	if _, err := os.Stat(configPath + config.LoadType); err == nil {
+		f, err := os.OpenFile(configPath+config.LoadType, os.O_WRONLY|os.O_TRUNC, 0333)
 		if err != nil {
 			return err
 		}

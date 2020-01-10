@@ -1,13 +1,13 @@
 package server
 
 import (
-	"github.com/Myriad-Dreamin/gin-middleware/auth/jwt"
-	"github.com/Myriad-Dreamin/minimum-template/router"
+	"github.com/Myriad-Dreamin/minimum-template/config"
+	"github.com/Myriad-Dreamin/minimum-lib/controller"
+	"github.com/Myriad-Dreamin/minimum-template/lib/jwt"
 	ginhelper "github.com/Myriad-Dreamin/minimum-template/service/gin-helper"
 	"github.com/Myriad-Dreamin/minimum-template/types"
 	"github.com/gin-contrib/cors"
 	//"github.com/Myriad-Dreamin/gin-middleware/auth/privileger"
-	"github.com/gin-gonic/gin"
 	"strconv"
 )
 
@@ -16,15 +16,15 @@ func (srv *Server) PrepareMiddleware() bool {
 		var cc = new(jwt.CustomClaims)
 		cc.CustomField = &types.CustomFields{}
 		return cc
-	}, func(c *gin.Context, cc *jwt.CustomClaims) error {
+	}, func(c controller.MContext, cc *jwt.CustomClaims) error {
 		c.Set("uid", strconv.FormatInt(cc.CustomField.(*types.CustomFields).UID, 10))
 		return nil
 	})
-	srv.jwtMW.ExpireSecond = 3600
+	srv.jwtMW.ExpireSecond = 3600 * 24 * 7
 	srv.jwtMW.RefreshSecond = 3600 * 24 * 7
 
-	srv.routerAuthMW = router.NewMiddleware(srv.DatabaseProvider.Enforcer(),
-		"user:", "id", ginhelper.MissID, ginhelper.AuthFailed)
+	srv.routerAuthMW = controller.NewMiddleware(srv.ModelProvider.Enforcer(),
+		"user:", "uid", ginhelper.MissID, ginhelper.AuthFailed)
 
 	srv.corsMW = cors.New(cors.Config{
 		//AllowAllOrigins: true,
@@ -36,5 +36,8 @@ func (srv *Server) PrepareMiddleware() bool {
 		AllowCredentials: true,
 	})
 
+	srv.Module.Provide(config.ModulePath.Middleware.JWT, srv.jwtMW)
+	srv.Module.Provide(config.ModulePath.Middleware.RouteAuth, srv.routerAuthMW)
+	srv.Module.Provide(config.ModulePath.Middleware.CORS, srv.corsMW)
 	return true
 }

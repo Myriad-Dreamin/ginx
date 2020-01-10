@@ -1,18 +1,17 @@
 package dblayer
 
 import (
-	"github.com/Myriad-Dreamin/minimum-template/config"
-	"github.com/Myriad-Dreamin/minimum-template/types"
+	"github.com/Myriad-Dreamin/dorm"
+	"github.com/Myriad-Dreamin/minimum-lib/module"
 	"github.com/jinzhu/gorm"
 	"time"
 )
 
 func wrapToObject(object interface{}, err error) (*Object, error) {
+	if object == nil {
+		return nil, err
+	}
 	return object.(*Object), err
-}
-
-func ObjectFactory() interface{} {
-	return new(Object)
 }
 
 var (
@@ -50,22 +49,43 @@ func (d *Object) UpdateFields(fields []string) (int64, error) {
 	return objectTraits.UpdateFields(d, fields)
 }
 
+func (d *Object) UpdateFields_(db *dorm.DB, fields []string) (int64, error) {
+	return objectTraits.UpdateFields_(db, d, fields)
+}
+
+func (d *Object) UpdateFields__(db dorm.SQLCommon, fields []string) (int64, error) {
+	return objectTraits.UpdateFields__(db, d, fields)
+}
+
 func (d *Object) Delete() (int64, error) {
 	return objectTraits.Delete(d)
 }
 
 type ObjectDB struct{}
 
-func NewObjectDB(logger types.Logger, _ *config.ServerConfig) (*ObjectDB, error) {
+func NewObjectDB(_ module.Module) (*ObjectDB, error) {
 	return new(ObjectDB), nil
 }
 
-func GetObjectDB(logger types.Logger, _ *config.ServerConfig) (*ObjectDB, error) {
+func GetObjectDB(_ module.Module) (*ObjectDB, error) {
 	return new(ObjectDB), nil
+}
+
+func (objectDB *ObjectDB) Filter(f *Filter) (user []Object, err error) {
+	err = objectTraits.Filter(f, &user)
+	return
+}
+
+func (objectDB *ObjectDB) FilterI(f interface{}) (interface{}, error) {
+	return objectDB.Filter(f.(*Filter))
 }
 
 func (objectDB *ObjectDB) ID(id uint) (object *Object, err error) {
 	return wrapToObject(objectTraits.ID(id))
+}
+
+func (objectDB *ObjectDB) ID_(db *gorm.DB, id uint) (goods *Object, err error) {
+	return wrapToObject(objectTraits.ID_(db, id))
 }
 
 type ObjectQuery struct {
@@ -97,5 +117,10 @@ func (objectDB *ObjectQuery) Preload() *ObjectQuery {
 
 func (objectDB *ObjectQuery) Query() (objects []Object, err error) {
 	err = objectDB.db.Find(&objects).Error
+	return
+}
+
+func (objectDB *ObjectQuery) Scan(desc interface{}) (err error) {
+	err = objectDB.db.Scan(desc).Error
 	return
 }

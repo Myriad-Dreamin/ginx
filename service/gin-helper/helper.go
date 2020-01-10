@@ -2,61 +2,51 @@ package ginhelper
 
 import (
 	"fmt"
-	"github.com/Myriad-Dreamin/gin-middleware/auth/jwt"
+	"github.com/Myriad-Dreamin/minimum-lib/controller"
+	"github.com/Myriad-Dreamin/minimum-template/lib/errorc"
+	"github.com/Myriad-Dreamin/minimum-template/lib/jwt"
 	"github.com/Myriad-Dreamin/minimum-template/types"
-	"github.com/gin-gonic/gin"
-	"github.com/go-sql-driver/mysql"
+	"github.com/tidwall/gjson"
 	"net/http"
 	"reflect"
 	"strconv"
 )
 
-type Response struct {
-	Code int `json:"code"`
-}
+var ResponseOK = types.Response{Code: types.CodeOK}
 
-type ErrorSerializer struct {
-	Code  int    `json:"code"`
-	Error string `json:"error"`
-}
-
-var ResponseOK = Response{Code: types.CodeOK}
-
-func CheckInsertError(c *gin.Context, err error) bool {
-	if mysqlError, ok := err.(*mysql.MySQLError); ok {
-		if mysqlError.Number == 1062 {
-			c.AbortWithStatusJSON(http.StatusOK, &Response{Code: types.CodeDuplicatePrimaryKey})
-			return true
-		}
+func CheckInsertError(c controller.MContext, err error) bool {
+	if code, errs := errorc.CheckInsertError(err); code != types.CodeOK {
+		c.AbortWithStatusJSON(http.StatusOK, types.ErrorSerializer{Code: code, Error: errs})
+		return true
 	}
 	return false
 }
 
-func MissID(c *gin.Context) {
-	c.AbortWithStatusJSON(http.StatusOK, &ErrorSerializer{
-		Code:  types.CodeBindError,
+func MissID(c controller.MContext) {
+	c.AbortWithStatusJSON(http.StatusOK, &types.ErrorSerializer{
+		Code:  types.CodeInvalidParameters,
 		Error: "id missing in the path",
 	})
 }
 
-func AuthFailed(c *gin.Context, errorString string) {
-	c.AbortWithStatusJSON(http.StatusOK, &ErrorSerializer{
+func AuthFailed(c controller.MContext, errorString string) {
+	c.AbortWithStatusJSON(http.StatusOK, &types.ErrorSerializer{
 		Code:  types.CodeAuthenticatePolicyError,
 		Error: errorString,
 	})
 }
 
-func ParseUint(c *gin.Context, key string) (uint, bool) {
+func ParseUint(c controller.MContext, key string) (uint, bool) {
 	id, err := strconv.Atoi(c.Param(key))
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusOK, &ErrorSerializer{
-			Code:  types.CodeBindError,
+		c.AbortWithStatusJSON(http.StatusOK, &types.ErrorSerializer{
+			Code:  types.CodeInvalidParameters,
 			Error: err.Error(),
 		})
 		return 0, false
 	}
 	if id < 0 {
-		c.AbortWithStatusJSON(http.StatusOK, &ErrorSerializer{
+		c.AbortWithStatusJSON(http.StatusOK, &types.ErrorSerializer{
 			Code:  types.CodeInvalidParameters,
 			Error: "bad negative id",
 		})
@@ -65,10 +55,10 @@ func ParseUint(c *gin.Context, key string) (uint, bool) {
 	return uint(id), true
 }
 
-func BindRequest(c *gin.Context, req interface{}) bool {
+func BindRequest(c controller.MContext, req interface{}) bool {
 	if err := c.ShouldBind(req); err != nil {
-		c.AbortWithStatusJSON(http.StatusOK, &ErrorSerializer{
-			Code:  types.CodeBindError,
+		c.AbortWithStatusJSON(http.StatusOK, &types.ErrorSerializer{
+			Code:  types.CodeInvalidParameters,
 			Error: err.Error(),
 		})
 		return false
@@ -76,25 +66,37 @@ func BindRequest(c *gin.Context, req interface{}) bool {
 	return true
 }
 
-func ParseUintAndBind(c *gin.Context, key string, req interface{}) (uint, bool) {
+func RawJson(c controller.MContext) (gjson.Result, bool) {
+	if b, err := c.GetRawData(); err != nil {
+		c.AbortWithStatusJSON(http.StatusOK, &types.ErrorSerializer{
+			Code:  types.CodeInvalidParameters,
+			Error: err.Error(),
+		})
+		return gjson.Result{}, false
+	} else {
+		return gjson.ParseBytes(b), true
+	}
+}
+
+func ParseUintAndBind(c controller.MContext, key string, req interface{}) (uint, bool) {
 	id, err := strconv.Atoi(c.Param(key))
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusOK, &ErrorSerializer{
-			Code:  types.CodeBindError,
+		c.AbortWithStatusJSON(http.StatusOK, &types.ErrorSerializer{
+			Code:  types.CodeInvalidParameters,
 			Error: err.Error(),
 		})
 		return 0, false
 	}
 	if id < 0 {
-		c.AbortWithStatusJSON(http.StatusOK, &ErrorSerializer{
+		c.AbortWithStatusJSON(http.StatusOK, &types.ErrorSerializer{
 			Code:  types.CodeInvalidParameters,
 			Error: "bad negative id",
 		})
 		return 0, false
 	}
 	if err := c.ShouldBind(req); err != nil {
-		c.AbortWithStatusJSON(http.StatusOK, &ErrorSerializer{
-			Code:  types.CodeBindError,
+		c.AbortWithStatusJSON(http.StatusOK, &types.ErrorSerializer{
+			Code:  types.CodeInvalidParameters,
 			Error: err.Error(),
 		})
 		return 0, false
@@ -102,18 +104,18 @@ func ParseUintAndBind(c *gin.Context, key string, req interface{}) (uint, bool) 
 	return uint(id), true
 }
 
-func RosolvePageVariable(c *gin.Context) (int, int, bool) {
+func RosolvePageVariable(c controller.MContext) (int, int, bool) {
 	spage, ok := c.GetQuery("page")
 	if !ok {
-		c.AbortWithStatusJSON(http.StatusOK, &ErrorSerializer{
-			Code:  types.CodeBindError,
+		c.AbortWithStatusJSON(http.StatusOK, &types.ErrorSerializer{
+			Code:  types.CodeInvalidParameters,
 			Error: "missing page number",
 		})
 		return 0, 0, false
 	}
 	page, err := strconv.Atoi(spage)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusOK, &ErrorSerializer{
+		c.AbortWithStatusJSON(http.StatusOK, &types.ErrorSerializer{
 			Code:  types.CodeUnserializeDataError,
 			Error: "can not convert page number to integer",
 		})
@@ -121,22 +123,22 @@ func RosolvePageVariable(c *gin.Context) (int, int, bool) {
 	}
 	spageSize, ok := c.GetQuery("page_size")
 	if !ok {
-		c.AbortWithStatusJSON(http.StatusOK, &ErrorSerializer{
-			Code:  types.CodeBindError,
+		c.AbortWithStatusJSON(http.StatusOK, &types.ErrorSerializer{
+			Code:  types.CodeInvalidParameters,
 			Error: "missing page size",
 		})
 		return 0, 0, false
 	}
 	pageSize, err := strconv.Atoi(spageSize)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusOK, &ErrorSerializer{
+		c.AbortWithStatusJSON(http.StatusOK, &types.ErrorSerializer{
 			Code:  types.CodeUnserializeDataError,
 			Error: "can not convert page size to integer",
 		})
 		return 0, 0, false
 	}
 	if page <= 0 || pageSize <= 0 {
-		c.AbortWithStatusJSON(http.StatusOK, &ErrorSerializer{
+		c.AbortWithStatusJSON(http.StatusOK, &types.ErrorSerializer{
 			Code:  types.CodeInvalidParameters,
 			Error: "bad negative params",
 		})
@@ -145,9 +147,9 @@ func RosolvePageVariable(c *gin.Context) (int, int, bool) {
 	return page, pageSize, true
 }
 
-func MaybeGetRawDataError(c *gin.Context, err error) bool {
+func MaybeGetRawDataError(c controller.MContext, err error) bool {
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusOK, &ErrorSerializer{
+		c.AbortWithStatusJSON(http.StatusOK, &types.ErrorSerializer{
 			Code:  types.CodeGetRawDataError,
 			Error: err.Error(),
 		})
@@ -156,9 +158,9 @@ func MaybeGetRawDataError(c *gin.Context, err error) bool {
 	return false
 }
 
-func MaybeCountError(c *gin.Context, err error) bool {
+func MaybeCountError(c controller.MContext, err error) bool {
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, &ErrorSerializer{
+		c.AbortWithStatusJSON(http.StatusInternalServerError, &types.ErrorSerializer{
 			Code:  types.CodeSelectError,
 			Error: err.Error(),
 		})
@@ -168,34 +170,33 @@ func MaybeCountError(c *gin.Context, err error) bool {
 	return false
 }
 
-func MaybeSelectError(c *gin.Context, anyObj interface{}, err error) bool {
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, &ErrorSerializer{
-			Code:  types.CodeSelectError,
-			Error: err.Error(),
-		})
-		return true
-	}
-	if reflect.ValueOf(anyObj).IsNil() {
-		c.AbortWithStatusJSON(http.StatusOK, &Response{
-			Code: types.CodeNotFound,
-		})
-		return true
-	}
+type applyContext struct{ controller.MContext }
 
+func (ctx applyContext) applyError(code errorc.Code, errs string) bool {
+	if code != types.CodeOK {
+		ctx.AbortWithStatusJSON(http.StatusOK, types.ErrorSerializer{
+			Code:  code,
+			Error: errs,
+		})
+		return true
+	}
 	return false
 }
 
-func MaybeSelectErrorWithTip(c *gin.Context, anyObj interface{}, err error, missError string) bool {
+func MaybeSelectError(c controller.MContext, anyObj interface{}, err error) bool {
+	return applyContext{c}.applyError(errorc.MaybeSelectError(anyObj, err))
+}
+
+func MaybeSelectErrorWithTip(c controller.MContext, anyObj interface{}, err error, missError string) bool {
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, &ErrorSerializer{
+		c.AbortWithStatusJSON(http.StatusInternalServerError, &types.ErrorSerializer{
 			Code:  types.CodeSelectError,
 			Error: err.Error(),
 		})
 		return true
 	}
 	if reflect.ValueOf(anyObj).IsNil() {
-		c.AbortWithStatusJSON(http.StatusOK, &ErrorSerializer{
+		c.AbortWithStatusJSON(http.StatusOK, &types.ErrorSerializer{
 			Code:  types.CodeNotFound,
 			Error: missError,
 		})
@@ -205,16 +206,16 @@ func MaybeSelectErrorWithTip(c *gin.Context, anyObj interface{}, err error, miss
 	return false
 }
 
-func MaybeMissingError(c *gin.Context, has bool, err error) bool {
+func MaybeMissingError(c controller.MContext, has bool, err error) bool {
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, &ErrorSerializer{
+		c.AbortWithStatusJSON(http.StatusInternalServerError, &types.ErrorSerializer{
 			Code:  types.CodeSelectError,
 			Error: err.Error(),
 		})
 		return true
 	}
 	if !has {
-		c.AbortWithStatusJSON(http.StatusOK, &Response{
+		c.AbortWithStatusJSON(http.StatusOK, &types.Response{
 			Code: types.CodeNotFound,
 		})
 		return true
@@ -223,16 +224,16 @@ func MaybeMissingError(c *gin.Context, has bool, err error) bool {
 	return false
 }
 
-func MaybeMissingErrorWithTip(c *gin.Context, has bool, err error, missError string) bool {
+func MaybeMissingErrorWithTip(c controller.MContext, has bool, err error, missError string) bool {
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, &ErrorSerializer{
+		c.AbortWithStatusJSON(http.StatusInternalServerError, &types.ErrorSerializer{
 			Code:  types.CodeSelectError,
 			Error: err.Error(),
 		})
 		return true
 	}
 	if !has {
-		c.AbortWithStatusJSON(http.StatusOK, &ErrorSerializer{
+		c.AbortWithStatusJSON(http.StatusOK, &types.ErrorSerializer{
 			Code:  types.CodeNotFound,
 			Error: missError,
 		})
@@ -241,9 +242,9 @@ func MaybeMissingErrorWithTip(c *gin.Context, has bool, err error, missError str
 
 	return false
 }
-func MaybeOnlySelectError(c *gin.Context, err error) bool {
+func MaybeOnlySelectError(c controller.MContext, err error) bool {
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, &ErrorSerializer{
+		c.AbortWithStatusJSON(http.StatusInternalServerError, &types.ErrorSerializer{
 			Code:  types.CodeSelectError,
 			Error: err.Error(),
 		})
@@ -257,16 +258,16 @@ type Deletable interface {
 	Delete() (int64, error)
 }
 
-func DeleteObj(c *gin.Context, deleteObj Deletable) bool {
+func DeleteObj(c controller.MContext, deleteObj Deletable) bool {
 	affected, err := deleteObj.Delete()
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusOK, &ErrorSerializer{
+		c.AbortWithStatusJSON(http.StatusOK, &types.ErrorSerializer{
 			Code:  types.CodeDeleteError,
 			Error: err.Error(),
 		})
 		return false
 	} else if affected == 0 {
-		c.AbortWithStatusJSON(http.StatusOK, &Response{
+		c.AbortWithStatusJSON(http.StatusOK, &types.Response{
 			Code: types.CodeDeleteNoEffect,
 		})
 		return false
@@ -274,67 +275,40 @@ func DeleteObj(c *gin.Context, deleteObj Deletable) bool {
 	return true
 }
 
-type Creatable interface {
-	Create() (int64, error)
-}
-
-func CreateObj(c *gin.Context, createObj Creatable) bool {
-	affected, err := createObj.Create()
-	if err != nil {
-		if CheckInsertError(c, err) {
-			return false
-		}
-		c.AbortWithStatusJSON(http.StatusInternalServerError, &ErrorSerializer{
-			Code:  types.CodeInsertError,
-			Error: err.Error(),
-		})
-		return false
-	} else if affected == 0 {
-		c.AbortWithStatusJSON(http.StatusOK, &Response{
-			Code: types.CodeInsertError,
-		})
+func CreateObj(c controller.MContext, createObj errorc.Creatable) bool {
+	if code, errs := errorc.CreateObj(createObj); code != types.CodeOK {
+		c.AbortWithStatusJSON(http.StatusOK, types.ErrorSerializer{Code: code, Error: errs})
 		return false
 	}
 	return true
 }
 
-func CreateObjWithTip(c *gin.Context, createObj Creatable) bool {
-	affected, err := createObj.Create()
-	if err != nil {
-		if CheckInsertError(c, err) {
-			return false
-		}
-		c.AbortWithStatusJSON(http.StatusInternalServerError, &ErrorSerializer{
-			Code:  types.CodeInsertError,
-			Error: fmt.Sprintf("create %T failed: %v", createObj, err.Error()),
-		})
-		return false
-	} else if affected == 0 {
-		c.AbortWithStatusJSON(http.StatusOK, &Response{
-			Code: types.CodeInsertError,
-		})
+func CreateObjWithTip(c controller.MContext, createObj errorc.Creatable) bool {
+	if code, errs := errorc.CreateObj(createObj); code != types.CodeOK {
+		c.AbortWithStatusJSON(http.StatusOK, types.ErrorSerializer{Code: code, Error: fmt.Sprintf("create %T failed: %v", createObj, errs)})
 		return false
 	}
 	return true
+
 }
 
 type Updatable interface {
 	Update() (int64, error)
 }
 
-func UpdateObj(c *gin.Context, updateObj Updatable) bool {
+func UpdateObj(c controller.MContext, updateObj Updatable) bool {
 	affected, err := updateObj.Update()
 	if err != nil {
 		if CheckInsertError(c, err) {
 			return false
 		}
-		c.AbortWithStatusJSON(http.StatusInternalServerError, &ErrorSerializer{
+		c.AbortWithStatusJSON(http.StatusInternalServerError, &types.ErrorSerializer{
 			Code:  types.CodeUpdateError,
 			Error: err.Error(),
 		})
 		return false
 	} else if affected == 0 {
-		c.AbortWithStatusJSON(http.StatusOK, &Response{
+		c.AbortWithStatusJSON(http.StatusOK, &types.Response{
 			Code: types.CodeUpdateError,
 		})
 		return false
@@ -342,23 +316,11 @@ func UpdateObj(c *gin.Context, updateObj Updatable) bool {
 	return true
 }
 
-type UpdateFieldsable interface {
-	UpdateFields(fields []string) (int64, error)
+func UpdateFields(c controller.MContext, obj errorc.UpdateFieldsable, fields []string) bool {
+	return !applyContext{c}.applyError(errorc.UpdateFields(obj, fields))
 }
 
-func UpdateFields(c *gin.Context, obj UpdateFieldsable, fields []string) bool {
-	_, err := obj.UpdateFields(fields)
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, &ErrorSerializer{
-			Code:  types.CodeUpdateError,
-			Error: err.Error(),
-		})
-		return false
-	}
-	return true
-}
-
-func GetCustomFields(c *gin.Context) *types.CustomFields {
+func GetCustomFields(c controller.MContext) *types.CustomFields {
 	claims, _ := c.Get("claims")
 	return claims.(*jwt.CustomClaims).CustomField.(*types.CustomFields)
 }

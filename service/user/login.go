@@ -1,10 +1,10 @@
 package userservice
 
 import (
+	"github.com/Myriad-Dreamin/minimum-lib/controller"
 	"github.com/Myriad-Dreamin/minimum-template/model"
 	ginhelper "github.com/Myriad-Dreamin/minimum-template/service/gin-helper"
 	"github.com/Myriad-Dreamin/minimum-template/types"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
 	"time"
@@ -14,24 +14,22 @@ type LoginRequest struct {
 	// ID: 用户的id
 	ID uint `form:"id" json:"id"`
 	// Name: 用户的唯一名称
-	Name string `form:"user_name" json:"user_name"`
-	// Phone: 用户的邮箱
+	NickName string `form:"nick_name" json:"nick_name"`
+	// Phone: 用户的电话
 	Phone string `form:"phone" json:"phone"`
-	// Aborted
-	//Phone    string `form:"phone" json:"phone"`
 	// Password: 用户的密码
 	Password string `form:"password" json:"password" xorm:"'password'" binding:"required"`
 }
 
 type LoginReply struct {
-	Code         int      `json:"code"`
-	Identity     []string `json:"identity"`
-	Phone        string   `json:"phone"`
-	ID           uint     `json:"id"`
-	NickName     string   `json:"nick_name"`
-	Name         string   `json:"name"`
-	Token        string   `json:"token"`
-	RefreshToken string   `json:"refresh_token"`
+	Code         types.CodeType `json:"code"`
+	Identity     []string       `json:"identity"`
+	Phone        string         `json:"phone"`
+	ID           uint           `json:"id"`
+	NickName     string         `json:"nick_name"`
+	Name         string         `json:"name"`
+	Token        string         `json:"token"`
+	RefreshToken string         `json:"refresh_token"`
 }
 
 func UserToLoginReply(user *model.User, token, refreshToken string, identities []string) *LoginReply {
@@ -80,7 +78,7 @@ generating the token for logging
 authenticating the password
 */
 
-func (srv *Service) Login(c *gin.Context) {
+func (srv *Service) Login(c controller.MContext) {
 	var req = new(LoginRequest)
 
 	if !ginhelper.BindRequest(c, req) {
@@ -90,13 +88,13 @@ func (srv *Service) Login(c *gin.Context) {
 	var user *model.User
 	var err error
 	if req.ID != 0 {
-		user, err = srv.db.Query(req.ID)
-	} else if len(req.Name) != 0 {
-		user, err = srv.db.QueryName(req.Name)
+		user, err = srv.userDB.Query(req.ID)
+	} else if len(req.NickName) != 0 {
+		user, err = srv.userDB.QueryNickName(req.NickName)
 	} else if len(req.Phone) != 0 {
-		user, err = srv.db.QueryPhone(req.Phone)
+		user, err = srv.userDB.QueryPhone(req.Phone)
 	} else {
-		c.JSON(http.StatusOK, &ginhelper.Response{
+		c.JSON(http.StatusOK, &types.Response{
 			Code: types.CodeUserIDMissing,
 		})
 		return
@@ -110,7 +108,7 @@ func (srv *Service) Login(c *gin.Context) {
 	}
 
 	if token, refreshToken, err := srv.middleware.GenerateTokenWithRefreshToken(&types.CustomFields{UID: int64(user.ID)}); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, &ginhelper.ErrorSerializer{
+		c.AbortWithStatusJSON(http.StatusInternalServerError, &types.ErrorSerializer{
 			Code:  types.CodeAuthGenerateTokenError,
 			Error: err.Error(),
 		})
@@ -119,8 +117,10 @@ func (srv *Service) Login(c *gin.Context) {
 		user.LastLogin = time.Now()
 
 		var identities []string
-		if srv.enforcer.HasGroupingPolicy("user:"+strconv.Itoa(int(user.ID)), "admin") {
-			identities = append(identities, "admin")
+		for tst := range types.Groups {
+			if srv.enforcer.HasGroupingPolicy("user:"+strconv.Itoa(int(user.ID)), types.Groups[tst]) {
+				identities = append(identities, types.Groups[tst])
+			}
 		}
 
 		c.JSON(http.StatusOK, UserToLoginReply(user, token, refreshToken, identities))

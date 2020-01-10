@@ -3,26 +3,57 @@ package tester
 import (
 	"encoding/json"
 	"errors"
-	"github.com/Myriad-Dreamin/minimum-lib/mock"
-	"github.com/Myriad-Dreamin/minimum-lib/sugar"
+	"fmt"
 	"github.com/Myriad-Dreamin/minimum-template/server"
 	userservice "github.com/Myriad-Dreamin/minimum-template/service/user"
+	"github.com/Myriad-Dreamin/minimum-template/types"
+	"github.com/Myriad-Dreamin/minimum-lib/mock"
+	"github.com/Myriad-Dreamin/minimum-lib/rbac"
+	"github.com/Myriad-Dreamin/minimum-lib/sugar"
 	"io"
 	"log"
+	"strconv"
 	"testing"
 )
 
 type Tester struct {
 	*server.Mocker
+
+	ContextVars map[string]interface{}
 }
 
 type TesterContext struct {
 	*server.MockerContext
 	t *testing.T
+	sugar.HandlerErrorLogger
+}
+
+func (tester Tester) Set(k string, v interface{}) interface{} {
+	res, _ := tester.ContextVars[k]
+	tester.ContextVars[k] = v
+	return res
+}
+
+func (tester Tester) Get(k string) interface{} {
+	return tester.ContextVars[k]
+}
+
+func (tester Tester) ShouldGet(k string) (v interface{}, ok bool) {
+	v, ok = tester.ContextVars[k]
+	return
+}
+
+func (tester Tester) MustGet(k string) interface{} {
+	v, ok := tester.ContextVars[k]
+	if !ok {
+		panic(fmt.Errorf("could not get %v from context", k))
+	}
+	return v
 }
 
 func StartTester(serverOptions []server.Option) (tester *Tester) {
 	tester = new(Tester)
+	tester.ContextVars = make(map[string]interface{})
 	tester.Mocker = server.Mock(serverOptions...)
 	if tester.Mocker == nil {
 		panic(errors.New("req mocker error"))
@@ -30,10 +61,11 @@ func StartTester(serverOptions []server.Option) (tester *Tester) {
 	return tester
 }
 
-func (t *Tester) Context(tt *testing.T) (s *TesterContext) {
+func (tester *Tester) Context(tt *testing.T) (s *TesterContext) {
 	return &TesterContext{
-		MockerContext: t.Mocker.Context(tt),
-		t:             tt,
+		MockerContext:      tester.Mocker.Context(tt),
+		t:                  tt,
+		HandlerErrorLogger: sugar.NewHandlerErrorLogger(tt),
 	}
 }
 
@@ -54,19 +86,18 @@ func (t *TesterContext) DecodeJSON(body io.Reader, req interface{}) interface{} 
 	return req
 }
 
-func (t *Tester) Release() {
-	t.Mocker.ReleaseMock()
+func (tester *Tester) Release() {
+	tester.Mocker.ReleaseMock()
 }
 
-func (t *Tester) MakeAdminContext() bool {
-	resp := t.Post("/v1/user", userservice.RegisterRequest{
-		Name:         "admin_context",
-		Password:     "admin",
-		NickName:     "admin_context",
-		Phone:        "1234567891011",
-		RegisterCity: "Qing Dao S.D.",
-	})
-	if !t.NoErr(resp) {
+func (tester *Tester) MakeAdminContext() bool {
+	resp := tester.Post("/v1/user", userservice.RegisterRequest{
+		Name:     "admin_context",
+		Password: "Admin12345678",
+		NickName: "admin_context",
+		Phone:    "1234567891011",
+	}, mock.Comment("admin register for test"))
+	if !tester.NoErr(resp) {
 		return false
 	}
 
@@ -76,12 +107,12 @@ func (t *Tester) MakeAdminContext() bool {
 		log.Fatal(err)
 		return false
 	}
-	resp = t.Post("/v1/login",
+	resp = tester.Post("/v1/login",
 		userservice.LoginRequest{
 			ID:       r.ID,
-			Password: "admin",
+			Password: "Admin12345678",
 		}, mock.Comment("admin login for test"))
-	if !t.NoErr(resp) {
+	if !tester.NoErr(resp) {
 		return false
 	}
 
@@ -94,26 +125,47 @@ func (t *Tester) MakeAdminContext() bool {
 
 	//fmt.Println(r2)
 	//r2.RefreshToken
-	t.UseToken(r2.Token)
+	_, err = rbac.AddGroupingPolicy("user:"+strconv.Itoa(int(r2.ID)), types.GroupAdmin)
+	if err != nil {
+		tester.Logger.Debug("update group error", "error", err)
+	}
+	//fmt.Println("QAQQQ", rbac.GetPolicy())
+	//fmt.Println("QAQQQ", rbac.GetGroupingPolicy())
+	tester.UseToken(r2.Token)
 	return true
 }
 
-func (t *Tester) MainM(m *testing.M) {
-	t.Main(func() {
+func (tester *Tester) MainM(m *testing.M) {
+	tester.Main(func() {
 		m.Run()
 	})
 }
 
-func (t *Tester) Main(doSomething func()) {
+func (tester *Tester) Main(doSomething func()) {
 	defer func() {
 		if err := recover(); err != nil {
 			sugar.PrintStack()
-			t.Logger.Error("panic", "error", err)
+			tester.Logger.Error("panic", "error", err)
 		}
-		t.Release()
+		tester.Release()
 	}()
-	if !t.MakeAdminContext() {
+	if !tester.MakeAdminContext() {
 		return
 	}
 	doSomething()
+}
+
+type GoStyleTestFunc func(*testing.T)
+type MinimumStyleTestFunc func(ctx *TesterContext)
+
+func (tester *Tester) HandleTest(testFunc MinimumStyleTestFunc) GoStyleTestFunc {
+	return func(t *testing.T) {
+		testFunc(tester.Context(t))
+	}
+}
+
+func (tester *Tester) HandleTestWithOutError(testFunc MinimumStyleTestFunc) GoStyleTestFunc {
+	return func(t *testing.T) {
+		testFunc(tester.Context(t).AssertNoError(true))
+	}
 }

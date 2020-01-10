@@ -6,6 +6,9 @@ import (
 	"encoding/json"
 	"github.com/Myriad-Dreamin/go-magic-package/instance"
 	parser "github.com/Myriad-Dreamin/go-parse-package"
+	"github.com/Myriad-Dreamin/minimum-template/control"
+	"github.com/Myriad-Dreamin/minimum-lib/controller"
+	"github.com/Myriad-Dreamin/minimum-template/types"
 	"io"
 	"io/ioutil"
 	"log"
@@ -14,8 +17,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/Myriad-Dreamin/gin-middleware/mock"
 	dblayer "github.com/Myriad-Dreamin/minimum-template/model/db-layer"
-	ginhelper "github.com/Myriad-Dreamin/minimum-template/service/gin-helper"
 	abstract_test "github.com/Myriad-Dreamin/minimum-lib/abstract-test"
 	"github.com/Myriad-Dreamin/minimum-lib/mock"
 	"github.com/Myriad-Dreamin/minimum-lib/sugar"
@@ -26,7 +29,7 @@ type Mocker struct {
 	*Server
 	cancel             func()
 	header             map[string]string
-	routes             map[string]*mock.Results
+	routes             map[string]*Results
 	contextHelper      abstract_test.ContextHelperInterface
 	shouldPrintRequest bool
 	assertNoError      bool
@@ -45,6 +48,8 @@ func Mock(options ...Option) (srv *Mocker) {
 	srv.Server = newServer(options)
 	srv.header = make(map[string]string)
 	if !(srv.InstantiateLogger() &&
+		srv.UseDefaultConfig() &&
+		srv.PrepareFileSystem() &&
 		srv.MockDatabase()) {
 		srv = nil
 		return
@@ -69,7 +74,7 @@ func Mock(options ...Option) (srv *Mocker) {
 	if err := srv.Module.Install(srv.RouterProvider); err != nil {
 		srv.println("install router provider error", err)
 	}
-	if err := srv.Module.Install(srv.DatabaseProvider); err != nil {
+	if err := srv.Module.Install(srv.ModelProvider); err != nil {
 		srv.println("install database provider error", err)
 	}
 
@@ -81,8 +86,8 @@ func Mock(options ...Option) (srv *Mocker) {
 		}
 	}()
 
-	srv.RouterEngine.Use(mock.ContextRecorder())
-	srv.Router.Root.Build(srv.RouterEngine)
+	srv.HttpEngine.Use(mockw.ContextRecorder())
+	control.BuildHttp(srv.Router.Root, srv.HttpEngine)
 	srv.Module.Debug(srv.Logger)
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -105,16 +110,41 @@ func Mock(options ...Option) (srv *Mocker) {
 	srv.cancel = cancel
 	srv.contextHelper = &abstract_test.ContextHelper{Logger: log.New(srv.LoggerWriter, "mocker", log.Ldate|log.Ltime|log.Llongfile|log.LstdFlags)}
 
-	routes := srv.RouterEngine.Routes()
-	srv.routes = make(map[string]*mock.Results)
+	routes := srv.Router.Root.Routes()
+	srv.routes = make(map[string]*Results)
 	for _, route := range routes {
-		srv.routes[route.Path+"@"+route.Method] = &mock.Results{
+		srv.routes[route.Path+"@"+route.Method] = &Results{
 			RouteInfo: route,
 			Recs:      nil,
 		}
 	}
 
 	return
+}
+
+type Results struct {
+	controller.RouteInfo
+	Recs []mock.RecordsI
+}
+
+func (r Results) GetMethod() string {
+	return r.Method
+}
+
+func (r Results) GetPath() string {
+	return r.Path
+}
+
+func (r Results) GetHandlerFunc() interface{} {
+	return r.HandlerFunc
+}
+
+func (r Results) GetHandler() string {
+	return r.Handler
+}
+
+func (r Results) GetRecords() []mock.RecordsI {
+	return r.Recs
 }
 
 func (mocker *Mocker) PrintRequest(p bool) {
@@ -158,18 +188,23 @@ func (rc) Close() error {
 func (mocker *Mocker) mockServe(r *Request, params ...interface{}) (w *mock.Response) {
 
 	w = mock.NewResponse()
-	var b []byte
-	var err error
-	var comment string
+	var (
+		b           []byte
+		err         error
+		comment     string = "the request url is " + r.URL.String() + ". "
+		abortRecord        = false
+	)
 
 	for i := range params {
 		switch p := params[i].(type) {
 		case mock.Comment:
-			comment = string(p)
+			comment = comment + string(p)
+		case mock.AbortRecord:
+			abortRecord = bool(p)
 		}
 	}
 
-	if mocker.collectResults {
+	if !abortRecord && mocker.collectResults {
 		if r.Body != nil {
 			b, err = ioutil.ReadAll(r.Body)
 			_ = r.Body.Close()
@@ -180,7 +215,7 @@ func (mocker *Mocker) mockServe(r *Request, params ...interface{}) (w *mock.Resp
 		}
 	}
 
-	mocker.RouterEngine.ServeHTTP(w, r)
+	mocker.HttpEngine.ServeHTTP(w, r)
 
 	if mocker.contextHelper != nil && mocker.assertNoError {
 		if !mocker.NoErr(w) {
@@ -194,7 +229,7 @@ func (mocker *Mocker) mockServe(r *Request, params ...interface{}) (w *mock.Resp
 		mocker.println("Response Header:", w.Header())
 	}
 
-	if mocker.collectResults {
+	if !abortRecord && mocker.collectResults {
 		c := make([]byte, w.Body().Len())
 		copy(c, w.Body().Bytes())
 		pattern := w.Header().Get("Gin-Context-Matched-Path-Method")
@@ -232,10 +267,21 @@ func (mocker *Mocker) report(err error) {
 	}
 }
 
+type emptyBody struct{}
+
+func (body emptyBody) Read(p []byte) (n int, err error) {
+	return 0, io.EOF
+}
+
+var _emptyBody = emptyBody{}
+
 func (mocker *Mocker) Method(method, path string, params ...interface{}) mock.ResponseI {
-	var body io.Reader
-	var contentType string
-	var serveParams []interface{}
+	var (
+		body        io.Reader = _emptyBody
+		contentType string
+		serveParams []interface{}
+		r           *http.Request
+	)
 	for i := range params {
 		switch p := params[i].(type) {
 		case string, []byte:
@@ -253,10 +299,10 @@ func (mocker *Mocker) Method(method, path string, params ...interface{}) mock.Re
 		case io.Reader:
 			body = p
 		case *http.Request:
-			return mocker.mockServe(p, serveParams...)
+			r = p
 		case http.Request:
-			return mocker.mockServe(&p, serveParams...)
-		case mock.Comment:
+			r = &p
+		case mock.Comment, mock.AbortRecord:
 			serveParams = append(serveParams, p)
 		default:
 			buf := bytes.NewBuffer(nil)
@@ -267,14 +313,17 @@ func (mocker *Mocker) Method(method, path string, params ...interface{}) mock.Re
 			contentType = "application/json"
 		}
 	}
-	r, err := http.NewRequest(method, path, body)
-	if err != nil {
-		mocker.report(err)
-		return nil
-	}
-	r.Header.Set("Content-Type", contentType)
-	for k, v := range mocker.header {
-		r.Header.Set(k, v)
+	if r == nil {
+		var err error
+		r, err = http.NewRequest(method, path, body)
+		if err != nil {
+			mocker.report(err)
+			return nil
+		}
+		r.Header.Set("Content-Type", contentType)
+		for k, v := range mocker.header {
+			r.Header.Set(k, v)
+		}
 	}
 	return mocker.mockServe(r, serveParams...)
 }
@@ -344,18 +393,45 @@ func (mocker *Mocker) NoErr(resp mock.ResponseI) bool {
 		return false
 	}
 	body := resp.Body()
-	var obj ginhelper.ErrorSerializer
+	var obj types.ErrorSerializer
 	if err := json.Unmarshal(body.Bytes(), &obj); err != nil {
 		mocker.contextHelper.Error(err)
 		return false
 	}
 	if len(obj.Error) != 0 || obj.Code != 0 {
 		mocker.contextHelper.Errorf("Code, Error (%v, %v)", obj.Code, obj.Error)
+		return false
 	}
 	return true
 	//if gjson
 }
 
+type Error struct {
+	RespCode int
+	Code     types.CodeType `json:"code"`
+	Error    string         `json:"error"`
+}
+
+func (mocker *Mocker) FetchError(resp mock.ResponseI) Error {
+	if mocker.contextHelper == nil {
+		panic("only used in test")
+	}
+	mocker.contextHelper.Helper()
+	var obj Error
+	body := resp.Body()
+	if err := json.Unmarshal(body.Bytes(), &obj); err != nil {
+		mocker.contextHelper.Error(err)
+		return obj
+	}
+	obj.RespCode = resp.Code()
+	return obj
+	//if gjson
+}
+
 func init() {
 	parser.SetPackageMapper(instance.Get)
+}
+
+func (mocker *Mocker) DropMock() {
+	mocker.DropFileSystem()
 }

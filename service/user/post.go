@@ -1,16 +1,21 @@
 package userservice
 
 import (
+	"github.com/Myriad-Dreamin/minimum-template/control/auth"
+	"github.com/Myriad-Dreamin/minimum-lib/controller"
 	"github.com/Myriad-Dreamin/minimum-template/model"
 	base_service "github.com/Myriad-Dreamin/minimum-template/service/base-service"
 	ginhelper "github.com/Myriad-Dreamin/minimum-template/service/gin-helper"
 	"github.com/Myriad-Dreamin/minimum-template/types"
-	"github.com/gin-gonic/gin"
 )
 
 type PostReply struct {
-	Code int         `json:"code"`
-	User *model.User `json:"user"`
+	Code types.CodeType `json:"code"`
+	User *model.User    `json:"user"`
+}
+
+func (p PostReply) GetID() uint {
+	return p.User.ID
 }
 
 func UserToPostReply(obj *model.User) *PostReply {
@@ -27,7 +32,7 @@ func UserToPostReply(obj *model.User) *PostReply {
 type PostRequest struct {
 }
 
-func (srv *Service) SerializePost(c *gin.Context) base_service.CRUDEntity {
+func (srv *Service) SerializePost(c controller.MContext) base_service.CRUDEntity {
 	var req PostRequest
 	if !ginhelper.BindRequest(c, &req) {
 		return nil
@@ -36,4 +41,39 @@ func (srv *Service) SerializePost(c *gin.Context) base_service.CRUDEntity {
 	var obj = new(model.User)
 	// fill here
 	return obj
+}
+
+type PostReplyI interface {
+	GetID() uint
+}
+
+func (srv *Service) AfterPost(reply PostReplyI) interface{} {
+	if b, err := auth.UserEntity.AddReadPolicy(srv.enforcer, auth.UserEntity.CreateObj(reply.GetID()), reply.GetID()); err != nil {
+		if !b {
+			srv.logger.Debug("add failed")
+		}
+		return types.ErrorSerializer{
+			Code:  types.CodeAddReadPrivilegeError,
+			Error: err.Error(),
+		}
+	} else {
+		if !b {
+			srv.logger.Debug("add failed")
+		}
+	}
+
+	if b, err := auth.UserEntity.AddWritePolicy(srv.enforcer, auth.UserEntity.CreateObj(reply.GetID()), reply.GetID()); err != nil {
+		if !b {
+			srv.logger.Debug("add failed")
+		}
+		return types.ErrorSerializer{
+			Code:  types.CodeAddWritePrivilegeError,
+			Error: err.Error(),
+		}
+	} else {
+		if !b {
+			srv.logger.Debug("add failed")
+		}
+	}
+	return reply
 }

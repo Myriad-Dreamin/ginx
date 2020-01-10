@@ -1,25 +1,24 @@
 package dblayer
 
 import (
-	"github.com/Myriad-Dreamin/minimum-template/config"
 	"github.com/Myriad-Dreamin/minimum-lib/crypto"
-	"github.com/Myriad-Dreamin/minimum-template/types"
+	"github.com/Myriad-Dreamin/minimum-lib/module"
 	"github.com/jinzhu/gorm"
 	"time"
 )
 
 func wrapToUser(user interface{}, err error) (*User, error) {
+	if user == nil {
+		return nil, err
+	}
 	return user.(*User), err
 }
 
-func UserFactory() interface{} {
-	return new(User)
-}
-
 var (
-	userTraits         = NewUserTraits(User{})
-	userQueryNameFunc  = userTraits.Where1("name = ?")
-	userQueryPhoneFunc = userTraits.Where1("phone = ?")
+	userTraits            = NewUserTraits(User{})
+	userQueryNameFunc     = userTraits.Where1("name = ?")
+	userQueryNickNameFunc = userTraits.Where1("nick_name = ?")
+	userQueryPhoneFunc    = userTraits.Where1("phone = ?")
 )
 
 type User struct {
@@ -29,11 +28,10 @@ type User struct {
 	LastLogin time.Time `dorm:"last_login" gorm:"column:last_login;default:CURRENT_TIMESTAMP;not null;" json:"last_login"`
 
 	NickName string `dorm:"nick_name" gorm:"column:nick_name;unique;not_null"`
-	Name     string `dorm:"name" gorm:"column:name;unique;not_null"`
+	Name     string `dorm:"name" gorm:"column:name;not_null"`
 	Password string `dorm:"password" gorm:"column:password;not_null"`
 	Phone    string `dorm:"phone" gorm:"column:phone;unique;not_null"`
-	//Rank         string `dorm:"rank" gorm:"column:rank;unique;not_null"`
-	RegisterCity string `dorm:"register_city" gorm:"column:register_city;not_null"`
+	
 }
 
 // TableName specification
@@ -91,12 +89,21 @@ func (d *User) AuthenticatePassword(pswd string) (bool, error) {
 
 type UserDB struct{}
 
-func NewUserDB(logger types.Logger, _ *config.ServerConfig) (*UserDB, error) {
+func NewUserDB(_ module.Module) (*UserDB, error) {
 	return new(UserDB), nil
 }
 
-func GetUserDB(logger types.Logger, _ *config.ServerConfig) (*UserDB, error) {
+func GetUserDB(_ module.Module) (*UserDB, error) {
 	return new(UserDB), nil
+}
+
+func (userDB *UserDB) Filter(f *Filter) (user []User, err error) {
+	err = userTraits.Filter(f, &user)
+	return
+}
+
+func (userDB *UserDB) FilterI(f interface{}) (interface{}, error) {
+	return userDB.Filter(f.(*Filter))
 }
 
 func (userDB *UserDB) ID(id uint) (user *User, err error) {
@@ -145,6 +152,10 @@ func (userDB *UserDB) Query(id uint) (user *User, err error) {
 
 func (userDB *UserDB) QueryName(id string) (user *User, err error) {
 	return wrapToUser(userQueryNameFunc(id))
+}
+
+func (userDB *UserDB) QueryNickName(id string) (user *User, err error) {
+	return wrapToUser(userQueryNickNameFunc(id))
 }
 
 func (userDB *UserDB) QueryPhone(id string) (user *User, err error) {

@@ -1,8 +1,8 @@
 FORMAT: 1A
 HOST: 127.0.0.1
 
-# Minimum-Market
-this is the market backend powered by minimum
+# Minimum-minimum-template
+this is the minimum-template backend powered by minimum
 
 ## Ping [/ping]
 

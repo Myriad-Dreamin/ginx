@@ -4,15 +4,15 @@ import (
 	"errors"
 	"github.com/Myriad-Dreamin/minimum-template/config"
 	"github.com/Myriad-Dreamin/minimum-template/model/db-layer"
-	"github.com/Myriad-Dreamin/minimum-template/types"
+	"github.com/Myriad-Dreamin/minimum-lib/module"
 	"github.com/jinzhu/gorm"
 
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func Register(rdb *gorm.DB, logger types.Logger) error {
-	return dblayer.Register(rdb, logger)
+func Register(rdb *gorm.DB, m module.Module) error {
+	return dblayer.Register(rdb, m)
 }
 
 func booleanString(b bool) string {
@@ -56,7 +56,7 @@ func parseConfig(cfg *config.DatabaseConfig) (string, string, error) {
 }
 
 func OpenORM(cfg *config.ServerConfig) (*gorm.DB, error) {
-	dialect, args, err := parseConfig(cfg.DatabaseConfig)
+	dialect, args, err := parseConfig(&cfg.DatabaseConfig)
 	if err != nil {
 		return nil, err
 	}

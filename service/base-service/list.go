@@ -1,33 +1,53 @@
 package base_service
 
 import (
+	"github.com/Myriad-Dreamin/minimum-lib/controller"
 	ginhelper "github.com/Myriad-Dreamin/minimum-template/service/gin-helper"
-	"github.com/gin-gonic/gin"
+	"github.com/Myriad-Dreamin/minimum-template/types"
 	"net/http"
 )
 
 type ListableObjectToolLite interface {
-	FilterOn(c *gin.Context) (interface{}, error)
+	CreateFilter() interface{}
+	ProcessListResults(c controller.MContext, r interface{}) interface{}
 }
 
 type ListService struct {
-	tool ListableObjectToolLite
-	k    string
+	tool       ListableObjectToolLite
+	filterFunc FilterFunc
 }
 
-func NewListService(tool ListableObjectToolLite, k string) ListService {
+func NewListService(tool ListableObjectToolLite, filterFunc FilterFunc) ListService {
 	return ListService{
-		tool: tool,
-		k:    k,
+		tool:       tool,
+		filterFunc: filterFunc,
 	}
 }
 
-func (srv *ListService) List(c *gin.Context) {
-	result, err := srv.tool.FilterOn(c)
-	if c.IsAborted() || ginhelper.MaybeOnlySelectError(c, err) {
+type FilterFunc = func(f interface{}) (interface{}, error)
+
+type ListReply struct {
+	Code   int         `json:"code"`
+	Result interface{} `json:"result"`
+}
+
+func (srv *ListService) List(c controller.MContext) {
+	var f = srv.tool.CreateFilter()
+	if !ginhelper.BindRequest(c, f) {
+		return
+	}
+	result, err := srv.filterFunc(f)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusOK, types.ErrorSerializer{
+			Code:  types.CodeSelectError,
+			Error: err.Error(),
+		})
 		return
 	}
 
-	c.JSON(http.StatusOK, result)
+	result = srv.tool.ProcessListResults(c, result)
+	if !c.IsAborted() {
+		c.JSON(http.StatusOK, result)
+	}
 	return
 }

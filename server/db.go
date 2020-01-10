@@ -15,21 +15,21 @@ type dbResult struct {
 func (srv *Server) registerDatabaseService() bool {
 
 	for _, dbResult := range []dbResult{
-		{"userDB", functional.Decay(model.NewUserDB(srv.Logger, srv.cfg))},
-		{"objectDB", functional.Decay(model.NewObjectDB(srv.Logger, srv.cfg))},
+		{"userDB", functional.Decay(model.NewUserDB(srv.Module))},
+		{"objectDB", functional.Decay(model.NewObjectDB(srv.Module))},
 	} {
 		if dbResult.Err != nil {
 			srv.Logger.Debug(fmt.Sprintf("init %T DB error", dbResult.First), "error", dbResult.Err)
 			return false
 		}
-		srv.DatabaseProvider.Register(dbResult.dbName, dbResult.First)
+		srv.ModelProvider.Register(dbResult.dbName, dbResult.First)
 	}
 	return true
 }
 
 func (srv *Server) PrepareDatabase() bool {
 	var err error
-	cfg := srv.cfg
+	cfg := srv.Cfg
 	srv.DB, err = model.OpenORM(cfg)
 	if err != nil {
 		srv.Logger.Error("open database error", "error", err)
@@ -44,7 +44,7 @@ func (srv *Server) PrepareDatabase() bool {
 		"location", cfg.DatabaseConfig.Location,
 	)
 
-	err = model.Register(srv.DB, srv.Logger)
+	err = model.Register(srv.DB, srv.Module)
 	if err != nil {
 		srv.Logger.Error("register and migrate error", "error", err)
 		return false
@@ -78,20 +78,21 @@ func (srv *Server) PrepareDatabase() bool {
 		srv.Logger.Debug("rbac to database error", "error", err)
 		return false
 	}
-	srv.DatabaseProvider.Register("enforcer", rbac.GetEnforcer())
+	srv.ModelProvider.Register("enforcer", rbac.GetEnforcer())
 
 	return srv.registerDatabaseService()
 }
 
 func (srv *Server) MockDatabase() bool {
+	srv.Cfg.DatabaseConfig.Escaper = "\""
 	var err error
-	srv.DB, err = model.MockORM(srv.cfg)
+	srv.DB, err = model.MockORM(srv.Cfg)
 	if err != nil {
 		srv.Logger.Error("open database error", "error", err)
 		return false
 	}
 
-	err = model.Register(srv.DB, srv.Logger)
+	err = model.Register(srv.DB, srv.Module)
 	if err != nil {
 		srv.Logger.Error("register and migrate error", "error", err)
 		return false
@@ -102,7 +103,7 @@ func (srv *Server) MockDatabase() bool {
 		srv.Logger.Debug("rbac to database error", "error", err)
 		return false
 	}
-	srv.DatabaseProvider.Register("enforcer", rbac.GetEnforcer())
+	srv.ModelProvider.Register("enforcer", rbac.GetEnforcer())
 
 	return srv.registerDatabaseService()
 }

@@ -1,41 +1,37 @@
 package base_service
 
 import (
+	"github.com/Myriad-Dreamin/minimum-lib/controller"
 	ginhelper "github.com/Myriad-Dreamin/minimum-template/service/gin-helper"
-	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-type CRUDEntity interface {
-	Create() (int64, error)
-	UpdateFields(fields []string) (int64, error)
-	Delete() (int64, error)
-}
-
 type CRUDObjectToolLite interface {
-	CreateEntity(id uint) CRUDEntity
-	GetEntity(id uint) (CRUDEntity, error)
-	SerializePost(c *gin.Context) CRUDEntity
-	DeleteHook(c *gin.Context, obj CRUDEntity) bool
+	FObject
+	DObject
+	SerializePost(c controller.MContext) CRUDEntity
 	ResponsePost(obj CRUDEntity) interface{}
-	ResponseGet(obj CRUDEntity) interface{}
+	ResponseGet(c controller.MContext, obj CRUDEntity) interface{}
+	ResponseInspect(obj CRUDEntity) interface{}
 	GetPutRequest() interface{}
-	FillPutFields(c *gin.Context, object CRUDEntity, req interface{}) []string
+	FillPutFields(c controller.MContext, object CRUDEntity, req interface{}) []string
 }
 
 type CRUDService struct {
 	Tool CRUDObjectToolLite
 	k    string
+	DServiceInterface
 }
 
 func NewCRUDService(tool CRUDObjectToolLite, k string) CRUDService {
 	return CRUDService{
-		Tool: tool,
-		k:    k,
+		Tool:              tool,
+		k:                 k,
+		DServiceInterface: NewDService(tool, k),
 	}
 }
 
-func (srv *CRUDService) Delete(c *gin.Context) {
+func (srv *CRUDService) Get(c controller.MContext) {
 	id, ok := ginhelper.ParseUint(c, srv.k)
 	if !ok {
 		return
@@ -44,16 +40,14 @@ func (srv *CRUDService) Delete(c *gin.Context) {
 	if ginhelper.MaybeSelectError(c, obj, err) {
 		return
 	}
-	if !srv.Tool.DeleteHook(c, obj) {
+	x := srv.Tool.ResponseGet(c, obj)
+	if c.IsAborted() {
 		return
 	}
-
-	if ginhelper.DeleteObj(c, obj) {
-		c.JSON(http.StatusOK, &ginhelper.ResponseOK)
-	}
+	c.JSON(http.StatusOK, x)
 }
 
-func (srv *CRUDService) Get(c *gin.Context) {
+func (srv *CRUDService) Inspect(c controller.MContext) {
 	id, ok := ginhelper.ParseUint(c, srv.k)
 	if !ok {
 		return
@@ -63,10 +57,10 @@ func (srv *CRUDService) Get(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, srv.Tool.ResponseGet(obj))
+	c.JSON(http.StatusOK, srv.Tool.ResponseInspect(obj))
 }
 
-func (srv *CRUDService) Put(c *gin.Context) {
+func (srv *CRUDService) Put(c controller.MContext) {
 	var req = srv.Tool.GetPutRequest()
 	id, ok := ginhelper.ParseUintAndBind(c, srv.k, req)
 	if !ok {
@@ -88,7 +82,7 @@ func (srv *CRUDService) Put(c *gin.Context) {
 	}
 }
 
-func (srv *CRUDService) Post(c *gin.Context) {
+func (srv *CRUDService) Post(c controller.MContext) {
 	var obj = srv.Tool.SerializePost(c)
 	if c.IsAborted() {
 		return
