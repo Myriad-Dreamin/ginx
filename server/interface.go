@@ -3,8 +3,8 @@
 package server
 
 import (
-	"github.com/Myriad-Dreamin/minimum-template/lib/plugin"
 	"github.com/Myriad-Dreamin/minimum-lib/mock"
+	"github.com/Myriad-Dreamin/minimum-template/lib/plugin"
 	"testing"
 )
 

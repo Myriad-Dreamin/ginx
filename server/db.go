@@ -3,8 +3,9 @@ package server
 import (
 	"fmt"
 	"github.com/Myriad-Dreamin/functional-go"
-	"github.com/Myriad-Dreamin/minimum-template/model"
 	"github.com/Myriad-Dreamin/minimum-lib/rbac"
+	"github.com/Myriad-Dreamin/minimum-template/config"
+	"github.com/Myriad-Dreamin/minimum-template/model"
 )
 
 type dbResult struct {
@@ -35,6 +36,7 @@ func (srv *Server) PrepareDatabase() bool {
 		srv.Logger.Error("open database error", "error", err)
 		return false
 	}
+	srv.Module.Provide(config.ModulePath.Global.GormDB, srv.DB)
 
 	srv.Logger.Info("connected to database",
 		"connection-type", cfg.DatabaseConfig.ConnectionType,
@@ -44,7 +46,7 @@ func (srv *Server) PrepareDatabase() bool {
 		"location", cfg.DatabaseConfig.Location,
 	)
 
-	err = model.Register(srv.DB, srv.Module)
+	err = model.Register(srv.Module)
 	if err != nil {
 		srv.Logger.Error("register and migrate error", "error", err)
 		return false
@@ -91,8 +93,9 @@ func (srv *Server) MockDatabase() bool {
 		srv.Logger.Error("open database error", "error", err)
 		return false
 	}
+	srv.Module.Provide(config.ModulePath.Global.GormDB, srv.DB)
 
-	err = model.Register(srv.DB, srv.Module)
+	err = model.Register(srv.Module)
 	if err != nil {
 		srv.Logger.Error("register and migrate error", "error", err)
 		return false

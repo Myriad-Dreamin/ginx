@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	port = flag.String("port", ":23336", "serve on port")
+	port    = flag.String("port", ":23336", "serve on port")
 	isDebug = flag.Bool("debug", false, "serve with debug mode")
 )
 
@@ -24,6 +24,5 @@ func main() {
 	} else {
 		srv.Serve(*port)
 	}
-
 
 }

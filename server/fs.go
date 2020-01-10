@@ -11,8 +11,7 @@ type FST struct {
 }
 
 func (srv *Server) IterOnFileSystemPaths(mapFunc func(fst FST) bool) bool {
-	for _, cfg := range []FST{
-	} {
+	for _, cfg := range []FST{} {
 		if !mapFunc(cfg) {
 			return false
 		}

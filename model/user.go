@@ -1,8 +1,8 @@
 package model
 
 import (
-	splayer "github.com/Myriad-Dreamin/minimum-template/model/sp-layer"
 	"github.com/Myriad-Dreamin/minimum-lib/module"
+	splayer "github.com/Myriad-Dreamin/minimum-template/model/sp-layer"
 )
 
 type User = splayer.User

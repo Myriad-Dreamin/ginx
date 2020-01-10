@@ -6,8 +6,8 @@ import (
 	"errors"
 	"io/ioutil"
 	"os"
-	"time"
 	"strings"
+	"time"
 
 	"github.com/pelletier/go-toml"
 	"gopkg.in/yaml.v2"
@@ -46,9 +46,8 @@ type PathPlaceholder struct {
 }
 
 type BaseParametersConfig struct {
-	PathPlaceholder         PathPlaceholder `json:"path-placeholder" yaml:"path-placeholder" toml:"path-placeholder" xml:"path-placeholder"`
+	PathPlaceholder PathPlaceholder `json:"path-placeholder" yaml:"path-placeholder" toml:"path-placeholder" xml:"path-placeholder"`
 }
-
 
 type Label struct {
 	Key   string `json:"key" yaml:"key" toml:"key" xml:"key"`
@@ -56,14 +55,13 @@ type Label struct {
 }
 
 type ServerConfig struct {
-	LoadType       string         `json:"-" yaml:"-" toml:"-" xml:"-"`
-	Name           xml.Name       `json:"-" yaml:"-" toml:"-" xml:"server-config"`
-	Labels         []Label        `json:"label" yaml:"label" toml:"label" xml:"label"`
-	DatabaseConfig DatabaseConfig `json:"database" yaml:"database" toml:"database" xml:"database"`
+	LoadType             string               `json:"-" yaml:"-" toml:"-" xml:"-"`
+	Name                 xml.Name             `json:"-" yaml:"-" toml:"-" xml:"server-config"`
+	Labels               []Label              `json:"label" yaml:"label" toml:"label" xml:"label"`
+	DatabaseConfig       DatabaseConfig       `json:"database" yaml:"database" toml:"database" xml:"database"`
 	BaseParametersConfig BaseParametersConfig `json:"base-cfg" yaml:"base-cfg" toml:"base-cfg" xml:"base-cfg"`
-	RedisConfig    RedisConfig    `json:"redis" yaml:"redis" toml:"redis" xml:"redis"`
+	RedisConfig          RedisConfig          `json:"redis" yaml:"redis" toml:"redis" xml:"redis"`
 }
-
 
 func Default() *ServerConfig {
 	return &ServerConfig{

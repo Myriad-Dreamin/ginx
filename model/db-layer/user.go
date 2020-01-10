@@ -7,19 +7,30 @@ import (
 	"time"
 )
 
+
+var (
+	userTraits Traits
+	userQueryNameFunc where1Func
+	userQueryNickNameFunc where1Func
+	userQueryPhoneFunc where1Func
+)
+
+
+func injectUserTraits() error {
+	userTraits            = NewTraits(User{})
+
+	userQueryNameFunc     = userTraits.Where1("name = ?")
+	userQueryNickNameFunc = userTraits.Where1("nick_name = ?")
+	userQueryPhoneFunc    = userTraits.Where1("phone = ?")
+	return nil
+}
+
 func wrapToUser(user interface{}, err error) (*User, error) {
 	if user == nil {
 		return nil, err
 	}
 	return user.(*User), err
 }
-
-var (
-	userTraits            = NewUserTraits(User{})
-	userQueryNameFunc     = userTraits.Where1("name = ?")
-	userQueryNickNameFunc = userTraits.Where1("nick_name = ?")
-	userQueryPhoneFunc    = userTraits.Where1("phone = ?")
-)
 
 type User struct {
 	ID        uint      `dorm:"id" gorm:"column:id;primary_key;not_null"`
@@ -115,7 +126,7 @@ type UserQuery struct {
 }
 
 func (userDB *UserDB) QueryChain() *UserQuery {
-	return &UserQuery{db: db}
+	return &UserQuery{db: p.DB}
 }
 
 func (userDB *UserQuery) Order(order string, reorder ...bool) *UserQuery {

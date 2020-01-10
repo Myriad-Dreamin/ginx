@@ -4,7 +4,6 @@ import (
 	"github.com/Myriad-Dreamin/minimum-lib/controller"
 )
 
-
 // UserService defines the interface of user service
 // @Category User - Login
 // @Description Login with password
@@ -45,12 +44,12 @@ var UserCates []interface{}
 
 func init() {
 	var (
-		loginCate    userLoginCate       = 0
-		registerCate userRegisterCate    = 0
-		cgCate       userCgPasswordCate  = 0
-		d            userCgPasswordCate  = 0
-		i            userIdGroupCate     = 0
-		j            userListCate        = 0
+		loginCate    userLoginCate      = 0
+		registerCate userRegisterCate   = 0
+		cgCate       userCgPasswordCate = 0
+		d            userCgPasswordCate = 0
+		i            userIdGroupCate    = 0
+		j            userListCate       = 0
 	)
 	UserCates = []interface{}{
 		&loginCate,

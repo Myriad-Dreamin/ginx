@@ -2,17 +2,17 @@ package model
 
 import (
 	"errors"
+	"github.com/Myriad-Dreamin/minimum-lib/module"
 	"github.com/Myriad-Dreamin/minimum-template/config"
 	"github.com/Myriad-Dreamin/minimum-template/model/db-layer"
-	"github.com/Myriad-Dreamin/minimum-lib/module"
 	"github.com/jinzhu/gorm"
 
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func Register(rdb *gorm.DB, m module.Module) error {
-	return dblayer.Register(rdb, m)
+func Register(m module.Module) error {
+	return dblayer.Register(m)
 }
 
 func booleanString(b bool) string {

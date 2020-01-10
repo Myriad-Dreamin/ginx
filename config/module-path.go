@@ -11,6 +11,7 @@ var (
 	middlewareCORS      = filepath.Join(middleware, "cors")
 	globalCities        = filepath.Join(global, "cities")
 	globalLogger        = filepath.Join(global, "logger")
+	globalGormDB        = filepath.Join(global, "gormDB")
 	globalConfiguration = filepath.Join(global, "configuration")
 	globalHttpEngine    = filepath.Join(global, "httpEngine")
 	providerModel       = filepath.Join(provider, "model")
@@ -21,6 +22,7 @@ var (
 var ModulePath = ModulePathS{
 	Global: globalS{
 		Logger:        globalLogger,
+		GormDB:        globalGormDB,
 		Configuration: globalConfiguration,
 		HttpEngine:    globalHttpEngine,
 		Cities:        globalCities,
@@ -46,6 +48,7 @@ type middlewareS struct {
 type globalS struct {
 	Logger        string
 	Configuration string
+	GormDB        string
 	HttpEngine    string
 	Cities        string
 }

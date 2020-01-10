@@ -7,16 +7,21 @@ import (
 	"time"
 )
 
+var (
+	objectTraits Traits
+)
+
+func injectObjectTraits() error {
+	objectTraits = NewTraits(Object{})
+	return nil
+}
+
 func wrapToObject(object interface{}, err error) (*Object, error) {
 	if object == nil {
 		return nil, err
 	}
 	return object.(*Object), err
 }
-
-var (
-	objectTraits = NewObjectTraits(Object{})
-)
 
 type Object struct {
 	ID        uint      `dorm:"id" gorm:"column:id;primary_key;not_null"`
@@ -93,7 +98,7 @@ type ObjectQuery struct {
 }
 
 func (objectDB *ObjectDB) QueryChain() *ObjectQuery {
-	return &ObjectQuery{db: db}
+	return &ObjectQuery{db: p.DB}
 }
 
 func (objectDB *ObjectQuery) Order(order string, reorder ...bool) *ObjectQuery {

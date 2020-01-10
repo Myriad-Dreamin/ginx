@@ -3,8 +3,8 @@ package service
 
 import (
 	"fmt"
-	"github.com/Myriad-Dreamin/minimum-template/control"
 	"github.com/Myriad-Dreamin/minimum-lib/module"
+	"github.com/Myriad-Dreamin/minimum-template/control"
 	"path"
 )
 
@@ -29,9 +29,9 @@ func JustProvide(controllers ...interface{}) SubController {
 type Provider struct {
 	module.BaseModuler
 
-	objectService    ObjectService
-	userService      UserService
-	authService      AuthService
+	objectService ObjectService
+	userService   UserService
+	authService   AuthService
 
 	subControllers []SubController
 }
