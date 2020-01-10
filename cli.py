@@ -57,7 +57,7 @@ class MinimumCli:
             json.dump(context, f1, indent=4)
 
     def hello(self):
-        print('minimum-cli v0.1')
+        print('minimum-cli v0.2')
 
     def get_cities(self):
         urllib.request.urlretrieve('https://raw.githubusercontent.com/wecatch/china_regions/master/json/city_object.json', 'city_object.json')
