@@ -1,0 +1,24 @@
+package router
+
+import (
+	"github.com/Myriad-Dreamin/market/service"
+)
+
+type ObjectRouter struct {
+	*Router
+	AuthRouter *Router
+	Auth     *Middleware
+}
+
+func BuildObjectRouter(parent *RootRouter, serviceProvider *service.Provider) (router *ObjectRouter) {
+	router = &ObjectRouter{
+		Router: parent.Router.Extend("object"),
+		AuthRouter: parent.AuthRouter.Extend("object"),
+		Auth:   parent.Auth.Copy(),
+	}
+	return
+}
+
+func (s *Provider) ObjectRouter() *ObjectRouter {
+	return s.objectRouter
+}
