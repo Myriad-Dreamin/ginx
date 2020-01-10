@@ -31,6 +31,7 @@ type Provider struct {
 
 	objectService    ObjectService
 	userService      UserService
+	authService      AuthService
 
 	subControllers []SubController
 }
@@ -55,6 +56,9 @@ func (s *Provider) Register(name string, service interface{}) {
 	case UserService:
 		s.userService = ss
 		s.subControllers = append(s.subControllers, JustProvide(append([]interface{}{&ss}, control.UserCates...)...))
+	case AuthService:
+		s.authService = ss
+		s.subControllers = append(s.subControllers, JustProvide(append([]interface{}{&ss}, control.AuthCates...)...))
 	case ObjectService:
 		s.objectService = ss
 		s.subControllers = append(s.subControllers, JustProvide(append([]interface{}{&ss}, control.ObjectCates...)...))

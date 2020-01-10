@@ -34,12 +34,15 @@ github.com/Myriad-Dreamin/go-model-traits v0.0.0-20191209220601-85cd28b274b0 h1:
 github.com/Myriad-Dreamin/go-model-traits v0.0.0-20191209220601-85cd28b274b0/go.mod h1:rsNfGfVzS4/h5PguW5xBoIYyQ4XtEwRoo7FGajrNN50=
 github.com/Myriad-Dreamin/go-parse-package v1.0.0 h1:g+9U+tgoImXzCwCQc/XNV29igpZ0IgxZUUOCB7NkvFI=
 github.com/Myriad-Dreamin/go-parse-package v1.0.0/go.mod h1:kb2R+hypYiYQm3D4JqY/IuI4GG9cdh735vW/AMJyFgE=
-github.com/Myriad-Dreamin/market v0.0.0-20191102045134-4a108d71ca6f h1:5I/w625OsN0Ima8/jQT+fPFB211VcGbfufF9KgxWohE=
 github.com/Myriad-Dreamin/market v0.0.0-20191102045134-4a108d71ca6f/go.mod h1:bFqLiwxZQmGNxA8XKnnr6KdC9w5ET7cJJ9mWUMDdr/0=
+github.com/Myriad-Dreamin/minimum-lib v0.0.0-20191102045134-4a108d71ca6f h1:5I/w625OsN0Ima8/jQT+fPFB211VcGbfufF9KgxWohE=
+github.com/Myriad-Dreamin/minimum-lib v0.0.0-20191102045134-4a108d71ca6f/go.mod h1:bFqLiwxZQmGNxA8XKnnr6KdC9w5ET7cJJ9mWUMDdr/0=
 github.com/Myriad-Dreamin/minimum-lib v0.0.0-20191102115830-cff59e521d3b h1:e7QXAOBnqyw5oubrnSmX5O4k5aa5VZfpk2EVvLcd/e4=
 github.com/Myriad-Dreamin/minimum-lib v0.0.0-20191102115830-cff59e521d3b/go.mod h1:40LzcaYjInElEojao50ff2Bzwp6ZzasZwmebCVJfC3Q=
 github.com/Myriad-Dreamin/minimum-lib v0.0.0-20191222020721-aa5c7417baf3 h1:4rke91jxsv7nPbFu5TblxkgvEkUphFs/sADpPvwTxlU=
 github.com/Myriad-Dreamin/minimum-lib v0.0.0-20191222020721-aa5c7417baf3/go.mod h1:GKUoai77HJVOQtM7DoI3qwm77AOzFAy3LpeUzYjLgzg=
+github.com/Myriad-Dreamin/minimum-lib v1.0.0 h1:YvF82UL670jPQdGLbFCcmypwLWmL3I3D38fQKyJlcbE=
+github.com/Myriad-Dreamin/minimum-lib v1.0.0/go.mod h1:F4303xd4AaykUa5FhZQeivB/aDIIl+kWlX3jPMJr2bo=
 github.com/Myriad-Dreamin/minimum-template v0.0.0-20191102045134-4a108d71ca6f h1:5I/w625OsN0Ima8/jQT+fPFB211VcGbfufF9KgxWohE=
 github.com/Myriad-Dreamin/minimum-template v0.0.0-20191102045134-4a108d71ca6f h1:5I/w625OsN0Ima8/jQT+fPFB211VcGbfufF9KgxWohE=
 github.com/Myriad-Dreamin/minimum-template v0.0.0-20191102045134-4a108d71ca6f/go.mod h1:bFqLiwxZQmGNxA8XKnnr6KdC9w5ET7cJJ9mWUMDdr/0=

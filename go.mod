@@ -12,7 +12,6 @@ require (
 	github.com/Myriad-Dreamin/go-magic-package v0.0.0-20191102120213-a407f918fece
 	github.com/Myriad-Dreamin/go-model-traits v0.0.0-20191209220601-85cd28b274b0
 	github.com/Myriad-Dreamin/go-parse-package v1.0.0
-	github.com/Myriad-Dreamin/market v0.0.0-20191102045134-4a108d71ca6f
 	github.com/Myriad-Dreamin/minimum-lib v0.0.0-20191222020721-aa5c7417baf3
 	github.com/casbin/casbin/v2 v2.1.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible

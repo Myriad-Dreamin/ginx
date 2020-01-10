@@ -1,7 +1,7 @@
 package router
 
 import (
-	"github.com/Myriad-Dreamin/market/service"
+	"github.com/Myriad-Dreamin/minimum-lib/service"
 )
 
 type ObjectRouter struct {

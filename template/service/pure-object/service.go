@@ -2,8 +2,8 @@
 package objectservice
 
 import (
-	"github.com/Myriad-Dreamin/market/config"
-	"github.com/Myriad-Dreamin/market/types"
+	"github.com/Myriad-Dreamin/minimum-lib/config"
+	"github.com/Myriad-Dreamin/minimum-lib/types"
 	"github.com/Myriad-Dreamin/minimum-lib/module"
 )
 

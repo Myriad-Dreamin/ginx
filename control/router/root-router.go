@@ -33,7 +33,8 @@ type RootRouter struct {
 
 	//ObjectRouter *ObjectRouter
 	UserRouter      *UserRouter
-	
+	AuthRouter *AuthRouter
+
 	Ping              *LeafRouter
 }
 

@@ -44,7 +44,7 @@ class MinimumCli:
 
     def apply_context(self, *key_values, f=None, c=False):
         key_values = map(lambda x: x if x[1] else x,map(lambda x: x.split('=', 2), key_values))
-        with open('.market-env.json', 'r+') as f1:
+        with open('.minimum-lib-env.json', 'r+') as f1:
             content = f1.read()
             context = json.loads('{}' if len(content) == 0 or c else content)
             if f is not None:
@@ -74,7 +74,7 @@ class MinimumCli:
         self.fast_generate()
 
     def fmt(self):
-        pcmds('go fmt github.com/Myriad-Dreamin/market/...')
+        pcmds('go fmt github.com/Myriad-Dreamin/minimum-lib/...')
 
     def create_service(self, object_name, placeholder, service_folder=None, router_template=None):
         self._update_obj_vars(object_name, placeholder)
