@@ -68,6 +68,11 @@ func getDatabaseConfiguration(dep module.Module) core_cfg.DatabaseConfig {
 		(DatabaseConfiguration).GetDatabaseConfiguration()
 }
 
+func getRedisConfiguration(dep module.Module) core_cfg.RedisConfig {
+	return dep.Require(DefaultNamespace.Global.Configuration).
+		(RedisConfiguration).GetRedisConfiguration()
+}
+
 func parseConfig(dep module.Module) (string, string, error) {
 	// user:password@/dbname?charset=utf8&parseTime=True&loc=Local
 

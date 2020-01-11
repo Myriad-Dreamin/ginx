@@ -53,6 +53,10 @@ type DatabaseConfiguration interface {
 	GetDatabaseConfiguration() core_cfg.DatabaseConfig
 }
 
+type RedisConfiguration interface {
+	GetRedisConfiguration() core_cfg.RedisConfig
+}
+
 func (m *DormModule) getEscaper(dep module.Module) string {
 	return dep.Require(DefaultNamespace.Global.Configuration).
 		(DatabaseConfiguration).GetDatabaseConfiguration().Escaper

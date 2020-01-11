@@ -41,9 +41,11 @@ func InstallMock(dep module.Module) bool {
 }
 
 func Close(dep module.Module) bool {
-	if err := p.GormDB.Close(); err != nil {
-		p.Logger.Error("close DB error", "error", err)
-		return false
+	if p.Opened {
+		if err := p.GormDB.Close(); err != nil {
+			p.Logger.Error("close DB error", "error", err)
+			return false
+		}
 	}
 	return true
 }
@@ -68,10 +70,14 @@ type modelModule struct {
 	mcore.RawSQLModule
 	mcore.DormModule
 	mcore.LoggerModule
+
+	Opened bool
 }
 
 func newModelModule() modelModule {
-	return modelModule{}
+	return modelModule{
+		Opened: false,
+	}
 }
 
 func (m *modelModule) install(
@@ -84,15 +90,18 @@ func (m *modelModule) install(
 }
 
 func (m *modelModule) FromContext(dep module.Module) bool {
-	return m.install(m.GormModule.FromContext, dep)
+	m.Opened = m.install(m.GormModule.FromContext, dep)
+	return m.Opened
 }
 
 func (m *modelModule) Install(dep module.Module) bool {
-	return m.install(m.GormModule.InstallFromConfiguration, dep)
+	m.Opened = m.install(m.GormModule.InstallFromConfiguration, dep)
+	return m.Opened
 }
 
 func (m *modelModule) InstallMock(dep module.Module) bool {
-	return m.install(m.GormModule.InstallMockFromConfiguration, dep)
+	m.Opened = m.install(m.GormModule.InstallMockFromConfiguration, dep)
+	return m.Opened
 }
 // var p = &P
 
