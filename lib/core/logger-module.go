@@ -6,17 +6,17 @@ import (
 )
 
 type LoggerModule struct {
-	logger logger.Logger
+	Logger logger.Logger
 }
 
 func (m *LoggerModule) FromRaw(mlogger logger.Logger, dep module.Module) bool {
-	m.logger = mlogger
+	m.Logger = mlogger
 	dep.Provide(DefaultNamespace.Global.Logger, mlogger)
 	return true
 }
 
 func (m *LoggerModule) FromContext(dep module.Module) bool {
-	m.logger = dep.Require(DefaultNamespace.Global.Logger).(logger.Logger)
+	m.Logger = dep.Require(DefaultNamespace.Global.Logger).(logger.Logger)
 
 	return true
 }
@@ -26,5 +26,5 @@ func (m *LoggerModule) Install(dep module.Module) bool {
 }
 
 func (m *LoggerModule) GetLoggerInstance() logger.Logger {
-	return m.logger
+	return m.Logger
 }

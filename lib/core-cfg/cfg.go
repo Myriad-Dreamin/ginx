@@ -15,4 +15,21 @@ type DatabaseConfig struct {
 	Escaper        string `json:"escaper" yaml:"escaper" toml:"escaper" xml:"escaper"`
 }
 
+type DebugLogger interface {
+	Debug(msg string, keyvals ...interface{})
+}
+
+func (cfg DatabaseConfig) Debug(debugLogger DebugLogger) {
+	debugLogger.Debug("connected to database",
+		"connection-type", cfg.ConnectionType,
+		"host", cfg.Host,
+		"user", cfg.User,
+		"database", cfg.DatabaseName,
+		"charset", cfg.Charset,
+		"location", cfg.Location,
+		"escaper", cfg.Escaper,
+	)
+
+}
+
 

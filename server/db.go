@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/Myriad-Dreamin/functional-go"
 	"github.com/Myriad-Dreamin/minimum-lib/rbac"
-	"github.com/Myriad-Dreamin/minimum-template/config"
 	"github.com/Myriad-Dreamin/minimum-template/model"
+	"github.com/Myriad-Dreamin/minimum-template/config"
 )
 
 type dbResult struct {
@@ -29,24 +29,9 @@ func (srv *Server) registerDatabaseService() bool {
 }
 
 func (srv *Server) PrepareDatabase() bool {
-	var err error
-	cfg := srv.Cfg
-	srv.DB, err = model.OpenORM(cfg)
-	if err != nil {
-		srv.Logger.Error("open database error", "error", err)
-		return false
-	}
-	srv.Module.Provide(config.ModulePath.DBInstance.GormDB, srv.DB)
+	srv.Cfg.DatabaseConfig.Debug(srv.Logger)
 
-	srv.Logger.Info("connected to database",
-		"connection-type", cfg.DatabaseConfig.ConnectionType,
-		"user", cfg.DatabaseConfig.User,
-		"database", cfg.DatabaseConfig.DatabaseName,
-		"charset", cfg.DatabaseConfig.Charset,
-		"location", cfg.DatabaseConfig.Location,
-	)
-
-	if !model.Register(srv.Module) {
+	if !model.Install(srv.Module) {
 		return false
 	}
 
@@ -73,7 +58,9 @@ func (srv *Server) PrepareDatabase() bool {
 	//	srv.Logger.Debug("register redis error", "error", err)
 	//	return false
 	//}
-	err = rbac.InitGorm(srv.DB)
+	err := rbac.InitGorm(
+		srv.Module.Require(config.ModulePath.DBInstance.GormDB).(*model.GormDB),
+	)
 	if err != nil {
 		srv.Logger.Debug("rbac to database error", "error", err)
 		return false
@@ -84,20 +71,15 @@ func (srv *Server) PrepareDatabase() bool {
 }
 
 func (srv *Server) MockDatabase() bool {
-	srv.Cfg.DatabaseConfig.Escaper = "\""
-	var err error
-	srv.DB, err = model.MockORM(srv.Cfg)
-	if err != nil {
-		srv.Logger.Error("open database error", "error", err)
-		return false
-	}
-	srv.Module.Provide(config.ModulePath.DBInstance.GormDB, srv.DB)
+	srv.Cfg.DatabaseConfig.Debug(srv.Logger)
 
-	if !model.Register(srv.Module) {
+	if !model.InstallMock(srv.Module) {
 		return false
 	}
 
-	err = rbac.InitGorm(srv.DB)
+	err := rbac.InitGorm(
+		srv.Module.Require(config.ModulePath.DBInstance.GormDB).(*model.GormDB),
+	)
 	if err != nil {
 		srv.Logger.Debug("rbac to database error", "error", err)
 		return false

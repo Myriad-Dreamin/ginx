@@ -21,8 +21,14 @@ func (m *DormModule) FromRaw(db *dorm.DB, dep module.Module) bool {
 
 func (m *DormModule) FromRawSQL(db *sql.DB, dep module.Module) bool {
 	logger := dep.Require(DefaultNamespace.Global.Logger).(logger.Logger)
-	xdb, err := dorm.FromRaw(db,
-		adapt(logger), dorm.Escaper(m.getEscaper(dep)))
+	options := []interface{}{adapt(logger)}
+
+	escaper := m.getEscaper(dep)
+	if len(escaper) != 0 { 
+		options = append(options, dorm.Escaper(escaper))
+	}
+
+	xdb, err := dorm.FromRaw(db, options)
 	
 	m.DormDB = xdb
 	dep.Provide(DefaultNamespace.DBInstance.DormDB, xdb)

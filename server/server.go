@@ -17,7 +17,6 @@ import (
 	"github.com/Myriad-Dreamin/minimum-template/types"
 	"github.com/gin-gonic/gin"
 	"github.com/gomodule/redigo/redis"
-	"github.com/jinzhu/gorm"
 	"io"
 	"os"
 	"sync"
@@ -29,7 +28,6 @@ type Server struct {
 	Logger       types.Logger
 	LoggerWriter io.Writer
 
-	DB         *gorm.DB
 	RedisPool  *redis.Pool
 	HttpEngine *control.HttpEngine
 	Router     *router.RootRouter
@@ -54,10 +52,7 @@ func NewServer() *Server {
 }
 
 func (srv *Server) Terminate() {
-	err := srv.DB.Close()
-	if err != nil {
-		srv.Logger.Error("close DB error", "error", err)
-	}
+	model.Close(srv.Module)
 	syscall.Exit(0)
 }
 

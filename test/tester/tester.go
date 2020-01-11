@@ -91,7 +91,6 @@ func (tester *Tester) Release() {
 }
 
 func (tester *Tester) MakeAdminContext() bool {
-	fmt.Println("...")
 	resp := tester.Post("/v1/user", userservice.RegisterRequest{
 		Name:     "admin_context",
 		Password: "Admin12345678",
@@ -133,7 +132,6 @@ func (tester *Tester) MakeAdminContext() bool {
 	//fmt.Println("QAQQQ", rbac.GetPolicy())
 	//fmt.Println("QAQQQ", rbac.GetGroupingPolicy())
 	tester.UseToken(r2.Token)
-	fmt.Println("...")
 	return true
 }
 
