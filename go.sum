@@ -355,6 +355,7 @@ github.com/swaggo/swag v1.6.3/go.mod h1:wcc83tB4Mb2aNiL/HP4MFeQdpHUrca+Rp/DRNgWA
 github.com/syndtr/goleveldb v1.0.1-0.20190318030020-c3a204f8e965/go.mod h1:9OrXJhf154huy1nPWmuSrkgjPUtUNhA+Zmy+6AESzuA=
 github.com/tecbot/gorocksdb v0.0.0-20190930194452-65a88f08537a h1:fLY9CcXoPY3fTvKU863LO7aB1hGD18ZqXo6YS/QwyBI=
 github.com/tecbot/gorocksdb v0.0.0-20190930194452-65a88f08537a/go.mod h1:ahpPrc7HpcfEWDQRZEmnXMzHY03mLDYMCxeDzy46i+8=
+github.com/tecbot/gorocksdb v0.0.0-20191019123150-400c56251341 h1:p1zZ8WMsWL4FpigtmLF2deoLKNdolFZWXIDabAynIQI=
 github.com/tecbot/gorocksdb v0.0.0-20191019123150-400c56251341/go.mod h1:ahpPrc7HpcfEWDQRZEmnXMzHY03mLDYMCxeDzy46i+8=
 github.com/tendermint/go-amino v0.14.1/go.mod h1:i/UKE5Uocn+argJJBb12qTZsCDBcAYMbR92AaJVmKso=
 github.com/tendermint/tendermint v0.32.2 h1:FvZWdksfDg/65vKKr5Lgo57keARFnmhrUEXHwyrV1QY=

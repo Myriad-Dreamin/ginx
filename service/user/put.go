@@ -3,8 +3,8 @@ package userservice
 import (
 	"github.com/Myriad-Dreamin/minimum-lib/controller"
 	"github.com/Myriad-Dreamin/minimum-template/model"
-	"net/http"
 	"github.com/Myriad-Dreamin/minimum-template/types"
+	"net/http"
 )
 
 type PutRequest struct {
@@ -20,7 +20,6 @@ func (srv *Service) fillPutFields(c controller.MContext, user *model.User, req *
 			})
 			return
 		}
-
 
 		user.Phone = req.Phone
 		fields = append(fields, "phone")

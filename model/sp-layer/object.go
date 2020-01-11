@@ -1,12 +1,11 @@
 package splayer
 
 import (
-	dblayer "github.com/Myriad-Dreamin/minimum-template/model/db-layer"
 	"github.com/Myriad-Dreamin/minimum-lib/module"
+	dblayer "github.com/Myriad-Dreamin/minimum-template/model/db-layer"
 )
 
 type Object = dblayer.Object
-
 
 type ObjectDB struct {
 	dblayer.ObjectDB

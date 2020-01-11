@@ -27,4 +27,3 @@ func NewCRUDService(tool CRUDObjectToolLite, k string) CRUDService {
 		DServiceInterface: NewDService(tool, k),
 	}
 }
-

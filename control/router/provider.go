@@ -11,8 +11,8 @@ type Provider struct {
 
 	objectRouter *ObjectRouter
 
-	rootRouter      *RootRouter
-	userRouter      *UserRouter
+	rootRouter *RootRouter
+	userRouter *UserRouter
 	authRouter *AuthRouter
 }
 

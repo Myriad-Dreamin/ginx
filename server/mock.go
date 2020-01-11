@@ -16,7 +16,7 @@ import (
 	"net/url"
 	"strings"
 	"testing"
-
+	
 	"github.com/Myriad-Dreamin/gin-middleware/mock"
 	abstract_test "github.com/Myriad-Dreamin/minimum-lib/abstract-test"
 	"github.com/Myriad-Dreamin/minimum-lib/mock"
@@ -54,6 +54,8 @@ func Mock(options ...Option) (srv *Mocker) {
 		srv = nil
 		return
 	}
+
+
 	defer func() {
 		if err := recover(); err != nil {
 			sugar.PrintStack()
@@ -89,7 +91,6 @@ func Mock(options ...Option) (srv *Mocker) {
 	srv.HttpEngine.Use(mockw.ContextRecorder())
 	control.BuildHttp(srv.Router.Root, srv.HttpEngine)
 	srv.Module.Debug(srv.Logger)
-
 	ctx, cancel := context.WithCancel(context.Background())
 	defer func() {
 		if srv == nil {
@@ -106,7 +107,6 @@ func Mock(options ...Option) (srv *Mocker) {
 		srv = nil
 		return
 	}
-
 	srv.cancel = cancel
 	srv.contextHelper = &abstract_test.ContextHelper{Logger: log.New(srv.LoggerWriter, "mocker", log.Ldate|log.Ltime|log.Llongfile|log.LstdFlags)}
 

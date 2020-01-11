@@ -10,9 +10,9 @@ var provider *Provider
 
 type Provider struct {
 	module.BaseModuler
-	objectDB  *ObjectDB
-	userDB    *UserDB
-	enforcer  *Enforcer
+	objectDB *ObjectDB
+	userDB   *UserDB
+	enforcer *Enforcer
 }
 
 func NewProvider(namespace string) *Provider {

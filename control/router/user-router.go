@@ -10,16 +10,16 @@ type UserRouter struct {
 	Auth       *Middleware
 	IDRouter   *UserIDRouter
 
-	Login     *LeafRouter
-	Register  *LeafRouter
-	GetList   *LeafRouter
+	Login    *LeafRouter
+	Register *LeafRouter
+	GetList  *LeafRouter
 }
 
 type UserIDRouter struct {
 	*Router
-	AuthRouter    *Router
-	Auth          *Middleware
-	
+	AuthRouter *Router
+	Auth       *Middleware
+
 	ChangePassword *LeafRouter
 	Get            *LeafRouter
 	Put            *LeafRouter

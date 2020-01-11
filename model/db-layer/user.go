@@ -7,21 +7,19 @@ import (
 	"time"
 )
 
-
 var (
-	userTraits Traits
-	userQueryNameFunc where1Func
+	userTraits            Traits
+	userQueryNameFunc     where1Func
 	userQueryNickNameFunc where1Func
-	userQueryPhoneFunc where1Func
+	userQueryPhoneFunc    where1Func
 )
 
-
 func injectUserTraits() error {
-	userTraits            = NewTraits(User{})
+	userTraits = NewTraits(User{})
 
-	userQueryNameFunc     = userTraits.Where1("name = ?")
+	userQueryNameFunc = userTraits.Where1("name = ?")
 	userQueryNickNameFunc = userTraits.Where1("nick_name = ?")
-	userQueryPhoneFunc    = userTraits.Where1("phone = ?")
+	userQueryPhoneFunc = userTraits.Where1("phone = ?")
 	return nil
 }
 
@@ -42,7 +40,6 @@ type User struct {
 	Name     string `dorm:"name" gorm:"column:name;not_null"`
 	Password string `dorm:"password" gorm:"column:password;not_null"`
 	Phone    string `dorm:"phone" gorm:"column:phone;unique;not_null"`
-	
 }
 
 // TableName specification
@@ -126,7 +123,7 @@ type UserQuery struct {
 }
 
 func (userDB *UserDB) QueryChain() *UserQuery {
-	return &UserQuery{db: p.DB}
+	return &UserQuery{db: p.GormDB}
 }
 
 func (userDB *UserQuery) Order(order string, reorder ...bool) *UserQuery {

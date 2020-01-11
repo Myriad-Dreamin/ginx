@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/Myriad-Dreamin/minimum-template/server"
-	userservice "github.com/Myriad-Dreamin/minimum-template/service/user"
-	"github.com/Myriad-Dreamin/minimum-template/types"
 	"github.com/Myriad-Dreamin/minimum-lib/mock"
 	"github.com/Myriad-Dreamin/minimum-lib/rbac"
 	"github.com/Myriad-Dreamin/minimum-lib/sugar"
+	"github.com/Myriad-Dreamin/minimum-template/server"
+	userservice "github.com/Myriad-Dreamin/minimum-template/service/user"
+	"github.com/Myriad-Dreamin/minimum-template/types"
 	"io"
 	"log"
 	"strconv"
@@ -91,6 +91,7 @@ func (tester *Tester) Release() {
 }
 
 func (tester *Tester) MakeAdminContext() bool {
+	fmt.Println("...")
 	resp := tester.Post("/v1/user", userservice.RegisterRequest{
 		Name:     "admin_context",
 		Password: "Admin12345678",
@@ -132,6 +133,7 @@ func (tester *Tester) MakeAdminContext() bool {
 	//fmt.Println("QAQQQ", rbac.GetPolicy())
 	//fmt.Println("QAQQQ", rbac.GetGroupingPolicy())
 	tester.UseToken(r2.Token)
+	fmt.Println("...")
 	return true
 }
 

@@ -2,13 +2,13 @@
 package authservice
 
 import (
-	"github.com/Myriad-Dreamin/minimum-template/config"
 	"github.com/Myriad-Dreamin/minimum-lib/controller"
+	"github.com/Myriad-Dreamin/minimum-lib/module"
+	"github.com/Myriad-Dreamin/minimum-template/config"
 	"github.com/Myriad-Dreamin/minimum-template/lib/jwt"
 	"github.com/Myriad-Dreamin/minimum-template/model"
 	"github.com/Myriad-Dreamin/minimum-template/model/sp-layer"
 	"github.com/Myriad-Dreamin/minimum-template/types"
-	"github.com/Myriad-Dreamin/minimum-lib/module"
 	"net/http"
 )
 
@@ -18,7 +18,6 @@ type Service struct {
 	middleware *jwt.Middleware
 	enforcer   *splayer.Enforcer
 }
-
 
 func (svc *Service) AuthSignatureXXX() interface{} { return svc }
 

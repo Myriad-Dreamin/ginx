@@ -10,4 +10,3 @@ func Calls(funcs []MaybeInitor) error {
 	}
 	return nil
 }
-

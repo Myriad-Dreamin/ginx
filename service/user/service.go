@@ -2,13 +2,13 @@
 package userservice
 
 import (
+	"github.com/Myriad-Dreamin/minimum-lib/module"
 	"github.com/Myriad-Dreamin/minimum-template/config"
 	"github.com/Myriad-Dreamin/minimum-template/control"
+	base_service "github.com/Myriad-Dreamin/minimum-template/lib/base-service"
 	"github.com/Myriad-Dreamin/minimum-template/lib/jwt"
 	"github.com/Myriad-Dreamin/minimum-template/model"
-	base_service "github.com/Myriad-Dreamin/minimum-template/lib/base-service"
 	"github.com/Myriad-Dreamin/minimum-template/types"
-	"github.com/Myriad-Dreamin/minimum-lib/module"
 	"github.com/casbin/casbin/v2"
 )
 
@@ -21,7 +21,6 @@ type Service struct {
 	cfg        *config.ServerConfig
 	middleware *jwt.Middleware
 }
-
 
 func (srv *Service) UserSignatureXXX() interface{} { return srv }
 

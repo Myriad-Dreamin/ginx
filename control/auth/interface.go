@@ -5,11 +5,9 @@ package auth
 import (
 	"github.com/Myriad-Dreamin/minimum-lib/controller"
 	"github.com/casbin/casbin/v2"
-
 )
 
 type Enforcer = casbin.SyncedEnforcer
-
 
 // EntityInterface Interface
 type EntityInterface interface {

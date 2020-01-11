@@ -1,11 +1,11 @@
 package router
 
 import (
-	"github.com/Myriad-Dreamin/minimum-template/config"
 	"github.com/Myriad-Dreamin/minimum-lib/controller"
+	"github.com/Myriad-Dreamin/minimum-lib/module"
+	"github.com/Myriad-Dreamin/minimum-template/config"
 	"github.com/Myriad-Dreamin/minimum-template/lib/jwt"
 	"github.com/Myriad-Dreamin/minimum-template/service"
-	"github.com/Myriad-Dreamin/minimum-lib/module"
 	"github.com/gin-gonic/gin"
 )
 
@@ -32,10 +32,10 @@ type RootRouter struct {
 	Root *Router
 
 	//ObjectRouter *ObjectRouter
-	UserRouter      *UserRouter
+	UserRouter *UserRouter
 	AuthRouter *AuthRouter
 
-	Ping              *LeafRouter
+	Ping *LeafRouter
 }
 
 // @title Ping
@@ -51,7 +51,7 @@ func NewRootRouter(m module.Module) (r *RootRouter) {
 	apiRouterV1 := rr.Group("/v1")
 	b := m.Require(config.ModulePath.Middleware.JWT).(*jwt.Middleware).Build()
 	authRouterV1 := apiRouterV1.Group("", b)
-	
+
 	r = &RootRouter{
 		Root: rr,
 		H: &BaseH{
@@ -68,8 +68,7 @@ func NewRootRouter(m module.Module) (r *RootRouter) {
 	serviceProvider := m.Require(config.ModulePath.Provider.Service).(*service.Provider)
 
 	r.UserRouter = BuildUserRouter(r, serviceProvider)
-	
-	
+
 	ApplyAuth(r)
 	return
 }

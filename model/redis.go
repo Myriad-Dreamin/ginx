@@ -2,8 +2,8 @@ package model
 
 import (
 	"github.com/Myriad-Dreamin/minimum-template/config"
+	"github.com/Myriad-Dreamin/minimum-lib/module"
 	splayer "github.com/Myriad-Dreamin/minimum-template/model/sp-layer"
-	"github.com/Myriad-Dreamin/minimum-template/types"
 	"github.com/gomodule/redigo/redis"
 	"time"
 )
@@ -31,6 +31,6 @@ func OpenRedis(cfg *config.ServerConfig) (*redis.Pool, error) {
 	return pool, nil
 }
 
-func RegisterRedis(pool *redis.Pool, logger types.Logger) error {
-	return splayer.RegisterRedis(pool, logger)
+func RegisterRedis(dep module.Module) bool {
+	return splayer.RegisterRedis(dep)
 }

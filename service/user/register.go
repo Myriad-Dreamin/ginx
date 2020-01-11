@@ -2,10 +2,10 @@ package userservice
 
 import (
 	"github.com/Myriad-Dreamin/minimum-lib/controller"
+	"github.com/Myriad-Dreamin/minimum-lib/rbac"
 	"github.com/Myriad-Dreamin/minimum-template/model"
 	ginhelper "github.com/Myriad-Dreamin/minimum-template/service/gin-helper"
 	"github.com/Myriad-Dreamin/minimum-template/types"
-	"github.com/Myriad-Dreamin/minimum-lib/rbac"
 	"net/http"
 	"strconv"
 )
@@ -56,7 +56,6 @@ func (srv *Service) Register(c controller.MContext) {
 		return
 	}
 
-	
 	var user = new(model.User)
 	user.Name = req.Name
 	user.Password = req.Password

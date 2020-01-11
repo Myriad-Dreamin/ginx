@@ -2,8 +2,8 @@ package objectservice
 
 import (
 	"github.com/Myriad-Dreamin/minimum-lib/controller"
-	"github.com/Myriad-Dreamin/minimum-template/model"
 	base_service "github.com/Myriad-Dreamin/minimum-template/lib/base-service"
+	"github.com/Myriad-Dreamin/minimum-template/model"
 )
 
 func (srv *Service) CreateEntity(id uint) base_service.CRUDEntity {

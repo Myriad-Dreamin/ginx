@@ -1,12 +1,10 @@
 package base_service
 
-
 import (
 	"github.com/Myriad-Dreamin/minimum-lib/controller"
 	ginhelper "github.com/Myriad-Dreamin/minimum-template/service/gin-helper"
 	"net/http"
 )
-
 
 type CObjectToolLite interface {
 	FObject

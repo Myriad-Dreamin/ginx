@@ -11,7 +11,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func Register(m module.Module) error {
+func Register(m module.Module) bool {
 	return dblayer.Register(m)
 }
 

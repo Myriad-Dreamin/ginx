@@ -74,7 +74,7 @@ class MinimumCli:
         self.fast_generate()
 
     def fmt(self):
-        pcmds('go fmt github.com/Myriad-Dreamin/minimum-lib/...')
+        pcmds('go fmt github.com/Myriad-Dreamin/minimum-template/...')
 
     def create_service(self, object_name, placeholder, service_folder=None, router_template=None):
         self._update_obj_vars(object_name, placeholder)

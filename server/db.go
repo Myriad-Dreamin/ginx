@@ -36,7 +36,7 @@ func (srv *Server) PrepareDatabase() bool {
 		srv.Logger.Error("open database error", "error", err)
 		return false
 	}
-	srv.Module.Provide(config.ModulePath.Global.GormDB, srv.DB)
+	srv.Module.Provide(config.ModulePath.DBInstance.GormDB, srv.DB)
 
 	srv.Logger.Info("connected to database",
 		"connection-type", cfg.DatabaseConfig.ConnectionType,
@@ -46,9 +46,7 @@ func (srv *Server) PrepareDatabase() bool {
 		"location", cfg.DatabaseConfig.Location,
 	)
 
-	err = model.Register(srv.Module)
-	if err != nil {
-		srv.Logger.Error("register and migrate error", "error", err)
+	if !model.Register(srv.Module) {
 		return false
 	}
 
@@ -93,11 +91,9 @@ func (srv *Server) MockDatabase() bool {
 		srv.Logger.Error("open database error", "error", err)
 		return false
 	}
-	srv.Module.Provide(config.ModulePath.Global.GormDB, srv.DB)
+	srv.Module.Provide(config.ModulePath.DBInstance.GormDB, srv.DB)
 
-	err = model.Register(srv.Module)
-	if err != nil {
-		srv.Logger.Error("register and migrate error", "error", err)
+	if !model.Register(srv.Module) {
 		return false
 	}
 

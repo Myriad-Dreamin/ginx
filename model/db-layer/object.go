@@ -98,7 +98,7 @@ type ObjectQuery struct {
 }
 
 func (objectDB *ObjectDB) QueryChain() *ObjectQuery {
-	return &ObjectQuery{db: p.DB}
+	return &ObjectQuery{db: p.GormDB}
 }
 
 func (objectDB *ObjectQuery) Order(order string, reorder ...bool) *ObjectQuery {

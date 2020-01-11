@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/pelletier/go-toml"
+	"github.com/Myriad-Dreamin/minimum-template/lib/core-cfg"
 	"gopkg.in/yaml.v2"
 )
 
@@ -27,19 +28,6 @@ type RedisConfig struct {
 	Wait              bool          `json:"wait" yaml:"wait" toml:"wait" xml:"wait"`
 }
 
-type DatabaseConfig struct {
-	ConnectionType string `json:"connection-type" yaml:"connection-type" toml:"connection-type" xml:"connection-type"`
-	User           string `json:"user-name" yaml:"user-name" toml:"user-name" xml:"user-name"`
-	Password       string `json:"password" yaml:"password" toml:"password" xml:"password"`
-	Host           string `json:"host" yaml:"host" toml:"host" xml:"host"`
-	DatabaseName   string `json:"database-name" yaml:"database-name" toml:"database-name" xml:"database-name"`
-	Charset        string `json:"charset" yaml:"charset" toml:"charset" xml:"charset"`
-	ParseTime      bool   `json:"parse-time" yaml:"parse-time" toml:"parse-time" xml:"parse-time"`
-	Location       string `json:"location" yaml:"location" toml:"location" xml:"location"`
-	MaxIdle        int    `json:"max-idle" yaml:"max-idle" toml:"max-idle" xml:"max-idle"`
-	MaxActive      int    `json:"max-active" yaml:"max-active" toml:"max-active" xml:"max-active"`
-	Escaper        string `json:"escaper" yaml:"escaper" toml:"escaper" xml:"escaper"`
-}
 
 type PathPlaceholder struct {
 	User string `json:"user" yaml:"user" toml:"user" xml:"user"`
@@ -54,6 +42,8 @@ type Label struct {
 	Value string `json:"value" yaml:"value" toml:"value" xml:"value"`
 }
 
+type DatabaseConfig = core_cfg.DatabaseConfig
+
 type ServerConfig struct {
 	LoadType             string               `json:"-" yaml:"-" toml:"-" xml:"-"`
 	Name                 xml.Name             `json:"-" yaml:"-" toml:"-" xml:"server-config"`
@@ -61,6 +51,10 @@ type ServerConfig struct {
 	DatabaseConfig       DatabaseConfig       `json:"database" yaml:"database" toml:"database" xml:"database"`
 	BaseParametersConfig BaseParametersConfig `json:"base-cfg" yaml:"base-cfg" toml:"base-cfg" xml:"base-cfg"`
 	RedisConfig          RedisConfig          `json:"redis" yaml:"redis" toml:"redis" xml:"redis"`
+}
+
+func (s ServerConfig) GetDatabaseConfiguration() core_cfg.DatabaseConfig {
+	return s.DatabaseConfig
 }
 
 func Default() *ServerConfig {
