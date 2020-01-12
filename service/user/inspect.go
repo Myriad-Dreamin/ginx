@@ -6,7 +6,7 @@ import (
 )
 
 type InspectReply struct {
-	Code types.CodeType `json:"code"`
+	Code types.CodeRawType `json:"code"`
 	User *model.User    `json:"user"`
 }
 

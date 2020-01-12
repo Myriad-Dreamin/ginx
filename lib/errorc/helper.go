@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-type Code = types.CodeType
+type Code = types.CodeRawType
 
 func MaybeSelectError(anyObj interface{}, err error) (Code, string) {
 	if err != nil {

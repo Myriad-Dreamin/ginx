@@ -1,12 +1,13 @@
 //go:generate stringer -type=CodeType
 package types
 
-type CodeType int
+type CodeRawType = int
+type CodeType CodeRawType
 
 const (
 	// Generic Code
 
-	CodeOK CodeType = iota
+	CodeOK CodeRawType = iota
 	// CodeBindError indicates a parameter missing error
 	CodeBindError
 	// CodeUnserializeDataError indicates a parsing data error
@@ -23,7 +24,7 @@ const (
 const (
 	// Generic Code -- Database
 	// CodeInsertError occurs when insert object into database
-	CodeInsertError CodeType = iota + 100
+	CodeInsertError CodeRawType = iota + 100
 	// CodeSelectError occurs when select object from database
 	CodeSelectError
 	// CodeNotFound occurs when object with specific condition is not in the
@@ -55,7 +56,7 @@ const (
 const (
 	// Generic Code -- Authentication
 	// CodeAuthGenerateTokenError occurs when insert object into database
-	CodeAuthGenerateTokenError CodeType = iota + 1000
+	CodeAuthGenerateTokenError CodeRawType = iota + 1000
 	CodeAuthenticatePasswordError
 	CodeAuthenticatePolicyError
 
@@ -72,7 +73,7 @@ const (
 )
 
 const (
-	CodeUserIDMissing CodeType = iota + 10000
+	CodeUserIDMissing CodeRawType = iota + 10000
 	CodeUserWrongPassword
 	CodeWeakPassword
 	CodeInvalidCityCode
@@ -83,7 +84,7 @@ const (
 )
 
 const (
-	CodeSubmissionUploaded CodeType = iota + 11000
+	CodeSubmissionUploaded CodeRawType = iota + 11000
 	CodeFSExecError
 	CodeUploadFileError
 	CodeConfigModifyError
@@ -94,7 +95,7 @@ const (
 )
 
 const (
-	CodeGoodsStatusUnknown CodeType = iota + 12000
+	CodeGoodsStatusUnknown CodeRawType = iota + 12000
 	CodeGoodsStatusFinished
 	CodeGoodsStatusCancelled
 	CodeGoodsLifeTimeout
@@ -109,13 +110,13 @@ const (
 	CodeGoodsServiceErrorL = CodeGoodsStatusUnknown
 )
 
-var CodeDesc map[CodeType]string
+var CodeDesc map[CodeRawType]string
 
 func init() {
-	CodeDesc = make(map[CodeType]string)
+	CodeDesc = make(map[CodeRawType]string)
 	for _, groupCode := range []struct {
-		L CodeType
-		R CodeType
+		L CodeRawType
+		R CodeRawType
 	}{
 		{CodeGenericErrorL, CodeGenericErrorR},
 		{CodeDatabaseErrorL, CodeDatabaseErrorR},
@@ -125,7 +126,7 @@ func init() {
 		{CodeGoodsServiceErrorL, CodeGoodsServiceErrorR},
 	} {
 		for i := groupCode.L; i < groupCode.R; i++ {
-			CodeDesc[i] = i.String()
+			CodeDesc[i] = CodeType(i).String()
 		}
 	}
 }

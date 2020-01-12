@@ -4,13 +4,14 @@ import (
 	"github.com/Myriad-Dreamin/minimum-lib/controller"
 	"github.com/Myriad-Dreamin/minimum-template/control/auth"
 	base_service "github.com/Myriad-Dreamin/minimum-template/lib/base-service"
+	"github.com/Myriad-Dreamin/minimum-template/lib/serial"
 	"github.com/Myriad-Dreamin/minimum-template/model"
 	ginhelper "github.com/Myriad-Dreamin/minimum-template/service/gin-helper"
 	"github.com/Myriad-Dreamin/minimum-template/types"
 )
 
 type PostReply struct {
-	Code types.CodeType `json:"code"`
+	Code types.CodeRawType `json:"code"`
 	User *model.User    `json:"user"`
 }
 
@@ -52,7 +53,7 @@ func (srv *Service) AfterPost(reply PostReplyI) interface{} {
 		if !b {
 			srv.logger.Debug("add failed")
 		}
-		return types.ErrorSerializer{
+		return serial.ErrorSerializer{
 			Code:  types.CodeAddReadPrivilegeError,
 			Error: err.Error(),
 		}
@@ -66,7 +67,7 @@ func (srv *Service) AfterPost(reply PostReplyI) interface{} {
 		if !b {
 			srv.logger.Debug("add failed")
 		}
-		return types.ErrorSerializer{
+		return serial.ErrorSerializer{
 			Code:  types.CodeAddWritePrivilegeError,
 			Error: err.Error(),
 		}

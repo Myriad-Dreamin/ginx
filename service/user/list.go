@@ -7,7 +7,7 @@ import (
 )
 
 type ListReply struct {
-	Code  types.CodeType `json:"code"`
+	Code  types.CodeRawType `json:"code"`
 	Users []GetReply     `json:"users"`
 }
 

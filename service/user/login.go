@@ -2,6 +2,7 @@ package userservice
 
 import (
 	"github.com/Myriad-Dreamin/minimum-lib/controller"
+	"github.com/Myriad-Dreamin/minimum-template/lib/serial"
 	"github.com/Myriad-Dreamin/minimum-template/model"
 	ginhelper "github.com/Myriad-Dreamin/minimum-template/service/gin-helper"
 	"github.com/Myriad-Dreamin/minimum-template/types"
@@ -22,7 +23,7 @@ type LoginRequest struct {
 }
 
 type LoginReply struct {
-	Code         types.CodeType `json:"code"`
+	Code         types.CodeRawType `json:"code"`
 	Identity     []string       `json:"identity"`
 	Phone        string         `json:"phone"`
 	ID           uint           `json:"id"`
@@ -94,7 +95,7 @@ func (srv *Service) Login(c controller.MContext) {
 	} else if len(req.Phone) != 0 {
 		user, err = srv.userDB.QueryPhone(req.Phone)
 	} else {
-		c.JSON(http.StatusOK, &types.Response{
+		c.JSON(http.StatusOK, &serial.Response{
 			Code: types.CodeUserIDMissing,
 		})
 		return
@@ -108,7 +109,7 @@ func (srv *Service) Login(c controller.MContext) {
 	}
 
 	if token, refreshToken, err := srv.middleware.GenerateTokenWithRefreshToken(&types.CustomFields{UID: int64(user.ID)}); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, &types.ErrorSerializer{
+		c.AbortWithStatusJSON(http.StatusInternalServerError, &serial.ErrorSerializer{
 			Code:  types.CodeAuthGenerateTokenError,
 			Error: err.Error(),
 		})

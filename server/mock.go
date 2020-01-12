@@ -8,6 +8,7 @@ import (
 	parser "github.com/Myriad-Dreamin/go-parse-package"
 	"github.com/Myriad-Dreamin/minimum-lib/controller"
 	"github.com/Myriad-Dreamin/minimum-template/control"
+	"github.com/Myriad-Dreamin/minimum-template/lib/serial"
 	"github.com/Myriad-Dreamin/minimum-template/types"
 	"io"
 	"io/ioutil"
@@ -393,7 +394,7 @@ func (mocker *Mocker) NoErr(resp mock.ResponseI) bool {
 		return false
 	}
 	body := resp.Body()
-	var obj types.ErrorSerializer
+	var obj serial.ErrorSerializer
 	if err := json.Unmarshal(body.Bytes(), &obj); err != nil {
 		mocker.contextHelper.Error(err)
 		return false
@@ -408,7 +409,7 @@ func (mocker *Mocker) NoErr(resp mock.ResponseI) bool {
 
 type Error struct {
 	RespCode int
-	Code     types.CodeType `json:"code"`
+	Code     types.CodeRawType `json:"code"`
 	Error    string         `json:"error"`
 }
 

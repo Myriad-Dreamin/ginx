@@ -22,7 +22,7 @@ type Service struct {
 func (svc *Service) AuthSignatureXXX() interface{} { return svc }
 
 type RefreshTokenReply struct {
-	Code  types.CodeType `json:"code"`
+	Code  types.CodeRawType `json:"code"`
 	Token string         `json:"token"`
 }
 

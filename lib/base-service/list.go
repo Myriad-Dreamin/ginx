@@ -2,6 +2,7 @@ package base_service
 
 import (
 	"github.com/Myriad-Dreamin/minimum-lib/controller"
+	"github.com/Myriad-Dreamin/minimum-template/lib/serial"
 	ginhelper "github.com/Myriad-Dreamin/minimum-template/service/gin-helper"
 	"github.com/Myriad-Dreamin/minimum-template/types"
 	"net/http"
@@ -38,7 +39,7 @@ func (srv *ListService) List(c controller.MContext) {
 	}
 	result, err := srv.filterFunc(f)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusOK, types.ErrorSerializer{
+		c.AbortWithStatusJSON(http.StatusOK, serial.ErrorSerializer{
 			Code:  types.CodeSelectError,
 			Error: err.Error(),
 		})

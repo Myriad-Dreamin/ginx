@@ -3,6 +3,7 @@ package userservice
 import (
 	"github.com/Myriad-Dreamin/minimum-lib/controller"
 	"github.com/Myriad-Dreamin/minimum-lib/rbac"
+	"github.com/Myriad-Dreamin/minimum-template/lib/serial"
 	"github.com/Myriad-Dreamin/minimum-template/model"
 	ginhelper "github.com/Myriad-Dreamin/minimum-template/service/gin-helper"
 	"github.com/Myriad-Dreamin/minimum-template/types"
@@ -25,7 +26,7 @@ type RegisterRequest struct {
 
 type RegisterReply struct {
 	// Code: 操作的结果
-	Code types.CodeType `json:"code"`
+	Code types.CodeRawType `json:"code"`
 	// ID: 用户的id
 	ID uint `json:"id"`
 }
@@ -41,7 +42,7 @@ func (srv *Service) Register(c controller.MContext) {
 	}
 
 	if sug := CheckStrongPassword(req.Password); len(sug) != 0 {
-		c.AbortWithStatusJSON(http.StatusOK, types.ErrorSerializer{
+		c.AbortWithStatusJSON(http.StatusOK, serial.ErrorSerializer{
 			Code:  types.CodeWeakPassword,
 			Error: sug,
 		})
@@ -49,7 +50,7 @@ func (srv *Service) Register(c controller.MContext) {
 	}
 
 	if sug := CheckPhone(req.Phone); len(sug) != 0 {
-		c.AbortWithStatusJSON(http.StatusOK, types.ErrorSerializer{
+		c.AbortWithStatusJSON(http.StatusOK, serial.ErrorSerializer{
 			Code:  types.CodeBadPhone,
 			Error: sug,
 		})
@@ -72,13 +73,13 @@ func (srv *Service) Register(c controller.MContext) {
 		if ginhelper.CheckInsertError(c, err) {
 			return
 		}
-		c.AbortWithStatusJSON(http.StatusInternalServerError, &types.ErrorSerializer{
+		c.AbortWithStatusJSON(http.StatusInternalServerError, &serial.ErrorSerializer{
 			Code:  types.CodeInsertError,
 			Error: err.Error(),
 		})
 		return
 	} else if aff == 0 {
-		c.JSON(http.StatusOK, &types.ErrorSerializer{
+		c.JSON(http.StatusOK, &serial.ErrorSerializer{
 			Code:  types.CodeInsertError,
 			Error: "existed",
 		})

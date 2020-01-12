@@ -6,7 +6,7 @@ import (
 )
 
 type GetReply struct {
-	Code   types.CodeType `json:"code"`
+	Code   types.CodeRawType `json:"code"`
 	Object *model.Object  `json:"object"`
 }
 
