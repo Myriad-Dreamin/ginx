@@ -6,17 +6,36 @@ import (
 
 type Context struct {
 	vars     map[string]interface{}
-	method   *Method
+	method   *method
 	svc      ProposingService
 	sources  map[uintptr]*source
-	packages map[string]int
+	packages map[string]bool
+}
+
+func (c *Context) clone() *Context {
+	return &Context{
+		vars:     c.vars,
+		method:   c.method,
+		svc:      c.svc,
+		sources:  c.sources,
+		packages: clonePackage(c.packages),
+	}
+}
+
+func (c *Context) sub() *Context {
+	return &Context{
+		vars:     c.vars,
+		method:   c.method,
+		svc:      c.svc,
+		sources:  c.sources,
+	}
 }
 
 func (c *Context) appendPackage(pkg string) {
 	if c.packages == nil {
-		c.packages = make(map[string]int)
+		c.packages = make(map[string]bool)
 	}
-	c.packages[pkg] = 1
+	c.packages[pkg] = true
 }
 
 func (c *Context) set(k string, v interface{}) {

@@ -1,23 +1,11 @@
 package serial
 
-type methodDescription struct {
-	method   MethodType
-	name     string
-	requests []ObjectDescription
-	replies  []ObjectDescription
-}
-
-type categoryDescription struct {
-	path     string
-	methods  []*methodDescription
-	packages map[string]int
-}
-
 type serviceDescription struct {
 	name       string
+	base string
 	categories []*categoryDescription
 	filePath   string
-	packages   map[string]int
+	//packages   map[string]int
 }
 
 func (description serviceDescription) generateObjects() (result string) {
@@ -34,3 +22,4 @@ func (description serviceDescription) generateObjects() (result string) {
 	}
 	return
 }
+

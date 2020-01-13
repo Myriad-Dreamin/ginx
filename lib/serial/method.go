@@ -14,17 +14,26 @@ const (
 	TRACE
 )
 
-type Method struct {
-	method   MethodType
-	name     string
-	requests []SerializeObjectI
-	replies  []SerializeObjectI
+type Method interface {
+	CreateMethodDescription(ctx *Context) *methodDescription
 }
 
-func (method *Method) create(ctx *Context) *methodDescription {
+
+type method struct {
+	methodType MethodType
+	name       string
+	requests   []SerializeObjectI
+	replies    []SerializeObjectI
+}
+
+func newMethod(methodType MethodType) *method {
+	return &method{methodType: methodType}
+}
+
+func (method *method) CreateMethodDescription(ctx *Context) *methodDescription {
 	desc := new(methodDescription)
 	ctx.method = method
-	desc.method = method.method
+	desc.method = method.methodType
 	desc.name = method.name
 	for _, request := range method.requests {
 		desc.requests = append(desc.requests, request.CreateObjectDescription(ctx))
@@ -33,8 +42,4 @@ func (method *Method) create(ctx *Context) *methodDescription {
 		desc.replies = append(desc.replies, reply.CreateObjectDescription(ctx))
 	}
 	return desc
-}
-
-func newMethod(method MethodType) *Method {
-	return &Method{method: method}
 }

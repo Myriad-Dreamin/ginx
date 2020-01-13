@@ -8,12 +8,12 @@ package serial
 //    Name
 //    FilePath
 type ProposingService interface {
-	CateOf(faz *Category) ProposingService
+	Base(base string) ProposingService
 	UseModel(models ...*model) ProposingService
 	Name(name string) ProposingService
 	ToFile(fileName string) ProposingService
 
-	GetFaz() *Category
+	GetBase() string
 	GetModels() []*model
 	GetName() string
 	GetFilePath() string
@@ -28,7 +28,7 @@ type ProposingService interface {
 //    Name
 //    FilePath
 type VirtualService struct {
-	faz      *Category
+	base      string
 	models   []*model
 	name     string
 	filePath string
@@ -36,8 +36,8 @@ type VirtualService struct {
 
 // Getter of Virtual Service
 
-func (v *VirtualService) GetFaz() *Category {
-	return v.faz
+func (v *VirtualService) GetBase() string {
+	return v.base
 }
 
 func (v *VirtualService) GetModels() []*model {
@@ -54,8 +54,8 @@ func (v *VirtualService) GetFilePath() string {
 
 // Setter of Virtual Service
 
-func (v *VirtualService) CateOf(faz *Category) ProposingService {
-	v.faz = faz
+func (v *VirtualService) Base(base string) ProposingService {
+	v.base = base
 	return v
 }
 

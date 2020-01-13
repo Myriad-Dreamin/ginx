@@ -6,7 +6,7 @@ import (
 )
 
 func (i transferClass) CreateObjectDescription(ctx *Context) ObjectDescription {
-	ctx.appendPackage(reflect.TypeOf(i.base).PkgPath())
+		ctx.appendPackage(reflect.TypeOf(i.base).PkgPath())
 	return i
 }
 

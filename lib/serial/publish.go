@@ -32,7 +32,12 @@ func (c *PublishedServices) writeSVCsAndDTOs() (err error) {
 		}
 		svc := c.svc[i]
 		fmt.Println(svc.filePath)
-		svc.packages["github.com/Myriad-Dreamin/minimum-lib/controller"] = 1
+		var packages = make(map[string]bool)
+		packages["github.com/Myriad-Dreamin/minimum-lib/controller"] = true
+		for j := range svc.categories {
+			packages = inplaceMergePackage(packages, svc.categories[j].getPackages())
+		}
+		fmt.Println(packages)
 		sugar.WithWriteFile(func(f *os.File) {
 			_, err = fmt.Fprintf(f, `
 package %s
@@ -43,11 +48,12 @@ import (
 
 %s
 
-%s`, c.packageName, depList(svc.packages), svcIface(svc), svc.generateObjects())
+%s`, c.packageName, depList(packages), svcIface(svc), svc.generateObjects())
 		}, svc.filePath)
 	}
 	return
 }
+
 
 func svcIface(svc *serviceDescription) string {
 	return fmt.Sprintf(`
@@ -66,7 +72,7 @@ func svcMethods(svc *serviceDescription) (res string) {
 	return
 }
 
-func depList(pkgSet map[string]int) (res string) {
+func depList(pkgSet map[string]bool) (res string) {
 	for k := range pkgSet {
 		if len(k) > 0 {
 			res += `    "` + k + `"

@@ -10,11 +10,11 @@ var codeField = serial.Param("code", new(types.CodeRawType))
 var required = serial.Tag("binding", "required")
 
 func main() {
-	V1Cate := serial.Ink().Path("v1")
+	v1 := "v1"
 
-	userCate := DescribeUserService(V1Cate)
+	userCate := DescribeUserService(v1)
 	userCate.ToFile("user.go")
-	objectCate := DescribeObjectService(V1Cate)
+	objectCate := DescribeObjectService(v1)
 	objectCate.ToFile("object.go")
 	err := serial.NewService(
 		userCate, objectCate).Publish()

@@ -37,33 +37,36 @@ func (c *PublishingServices) Publish() error {
 func (c *PublishingServices) Final() (d *PublishedServices) {
 	d = new(PublishedServices)
 	for _, svc := range c.rawSvc {
+
+		// compile models
 		ctx := &Context{
 			svc: svc,
 		}
 		ctx.makeSources()
 
+		// get name and file path of service
 		desc := &serviceDescription{
-			packages: make(map[string]int),
+			name:     svc.GetName(),
+			base:     svc.GetBase(),
+			filePath: svc.GetFilePath(),
 		}
-		desc.name = svc.GetName()
-		desc.filePath = svc.GetFilePath()
-		faz := svc.GetFaz()
-		value, svcType := reflect.ValueOf(svc), reflect.TypeOf(svc)
-		for svcType.Kind() == reflect.Ptr {
-			value, svcType = value.Elem(), svcType.Elem()
+
+		// build category methods
+		value, svcType := getElements(svc)
+		if svcType.Kind() != reflect.Struct {
+			panic(ErrNotStruct)
 		}
 		for i := 0; i < value.NumField(); i++ {
-			field, fieldType := value.Field(i), svcType.Field(i)
-			if fieldType.Type == cateType {
-				cate := field.Interface().(*Category)
-				if cate != nil {
-					desc.categories = append(desc.categories, cate.CreateCategoryDescription(faz, ctx))
-				}
+			field := value.Field(i)
+			if cate, ok := field.Interface().(Category); ok && cate != nil {
+				desc.categories = append(desc.categories,
+					cate.CreateCategoryDescription(ctx))
 			}
 		}
-		for k := range ctx.packages {
-			desc.packages[k] = 1
-		}
+
+		//// get packages
+		//desc.packages = ctx.packages
+
 		d.svc = append(d.svc, desc)
 	}
 	return d

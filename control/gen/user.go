@@ -7,15 +7,15 @@ import (
 
 type UserCategories struct {
 	serial.VirtualService
-	List           *serial.Category
-	Login          *serial.Category
-	Register       *serial.Category
-	ChangePassword *serial.Category
-	Inspect        *serial.Category
-	IdGroup        *serial.Category
+	List           serial.Category
+	Login          serial.Category
+	Register       serial.Category
+	ChangePassword serial.Category
+	Inspect        serial.Category
+	IdGroup        serial.Category
 }
 
-func DescribeUserService(cat *serial.Category) serial.ProposingService {
+func DescribeUserService(base string) serial.ProposingService {
 	var userModel = new(model.User)
 	var vUserModel model.User
 	svc := &UserCategories{
@@ -96,7 +96,7 @@ func DescribeUserService(cat *serial.Category) serial.ProposingService {
 				)).
 			Method(serial.DELETE, "Delete"),
 	}
-	svc.Name("UserService").CateOf(cat).UseModel(
+	svc.Name("UserService").Base(base).UseModel(
 		serial.Model(serial.Name("user"), &userModel),
 		serial.Model(serial.Name("vUser"), &vUserModel))
 	return svc

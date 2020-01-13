@@ -7,13 +7,13 @@ import (
 
 type ObjectCategories struct {
 	serial.VirtualService
-	List    *serial.Category
-	Post    *serial.Category
-	Inspect *serial.Category
-	IdGroup *serial.Category
+	List    serial.Category
+	Post    serial.Category
+	Inspect serial.Category
+	IdGroup serial.Category
 }
 
-func DescribeObjectService(cat *serial.Category) serial.ProposingService {
+func DescribeObjectService(base string) serial.ProposingService {
 	var objectModel = new(model.Object)
 	svc := &ObjectCategories{
 		List: serial.Ink().
@@ -54,7 +54,7 @@ func DescribeObjectService(cat *serial.Category) serial.ProposingService {
 				serial.Request()).
 			Method(serial.DELETE, "Delete"),
 	}
-	svc.Name("ObjectService").CateOf(cat) //.
+	svc.Name("ObjectService").Base(base) //.
 	//UseModel(serial.Model(serial.Name("object"), &objectModel))
 	return svc
 }
