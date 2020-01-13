@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func (srv *Service) deleteHook(c controller.MContext, object *model.Object) (canDelete bool) {
+func (svc *Service) deleteHook(c controller.MContext, object *model.Object) (canDelete bool) {
 	c.AbortWithStatusJSON(http.StatusOK, serial.ErrorSerializer{
 		Code:  types.CodeDeleteError,
 		Error: "generated delete api has not been implemented yet",

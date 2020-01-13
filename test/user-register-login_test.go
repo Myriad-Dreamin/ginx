@@ -1,7 +1,7 @@
 package tests
 
 import (
-	userservice "github.com/Myriad-Dreamin/minimum-template/service/user"
+	"github.com/Myriad-Dreamin/minimum-template/control"
 	"github.com/Myriad-Dreamin/minimum-template/test/tester"
 )
 
@@ -12,23 +12,23 @@ func testUserRegisterLogin(t *tester.TesterContext) {
 		phone = "10086111"
 		pswd  = normalUserPassword
 	)
-	resp := t.Post("/v1/user", userservice.RegisterRequest{
+	resp := t.Post("/v1/user", control.RegisterRequest{
 		Name:     name,
 		Password: pswd,
 		NickName: nick,
 		Phone:    phone,
 	})
 	id := t.DecodeJSON(resp.Body(),
-		new(userservice.RegisterReply)).(*userservice.RegisterReply).ID
-	resp = t.Post("/v1/login", userservice.LoginRequest{
-		ID:       id,
+		new(control.RegisterReply)).(*control.RegisterReply).Id
+	resp = t.Post("/v1/login", control.LoginRequest{
+		Id:       id,
 		Password: pswd,
 	})
-	resp = t.Post("/v1/login", userservice.LoginRequest{
+	resp = t.Post("/v1/login", control.LoginRequest{
 		NickName: nick,
 		Password: pswd,
 	})
-	resp = t.Post("/v1/login", userservice.LoginRequest{
+	resp = t.Post("/v1/login", control.LoginRequest{
 		Phone:    phone,
 		Password: pswd,
 	})

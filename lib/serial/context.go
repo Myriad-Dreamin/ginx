@@ -42,7 +42,7 @@ func (c *Context) makeSources() {
 	c.sources = make(map[uintptr]*source)
 	models := c.svc.GetModels()
 	for _, xmodel := range models {
-		v, t := reflect.ValueOf(xmodel.refer), reflect.TypeOf(xmodel.refer)
+		v, t := reflect.ValueOf(xmodel.refer).Elem(), reflect.TypeOf(xmodel.refer).Elem()
 		tt := t
 		for t.Kind() == reflect.Ptr {
 			v, t = v.Elem(), t.Elem()

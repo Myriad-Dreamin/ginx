@@ -31,8 +31,8 @@ func BuildObjectRouter(parent H, serviceProvider *service.Provider) (router *Obj
 		AuthRouter: parent.GetAuthRouter().Extend("object"),
 		Auth:       parent.GetAuth().Copy(),
 	}
-	router.GetList = router.GET("object-list", objectService.List)
-	router.Post = router.AuthRouter.POST("/object", objectService.Post)
+	router.GetList = router.GET("object-list", objectService.ListObjects)
+	router.Post = router.AuthRouter.POST("/object", objectService.PostObject)
 
 	router.IDRouter = router.IDRouter.subBuild(router, serviceProvider)
 
@@ -50,8 +50,8 @@ func (*ObjectIDRouter) subBuild(parent *ObjectRouter, serviceProvider *service.P
 		Auth:       parent.Auth.MustGroup("object", "oid"),
 	}
 
-	router.Get = router.GET("", objectService.Get)
-	router.Put = router.AuthRouter.PUT("", objectService.Put)
+	router.Get = router.GET("", objectService.GetObject)
+	router.Put = router.AuthRouter.PUT("", objectService.PutObject)
 	router.Delete = router.AuthRouter.DELETE("", objectService.Delete)
 	return
 }

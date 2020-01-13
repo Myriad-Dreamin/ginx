@@ -2,20 +2,17 @@ package userservice
 
 import (
 	"github.com/Myriad-Dreamin/minimum-lib/controller"
+	"github.com/Myriad-Dreamin/minimum-template/control"
 	"github.com/Myriad-Dreamin/minimum-template/lib/serial"
 	ginhelper "github.com/Myriad-Dreamin/minimum-template/service/gin-helper"
 	"github.com/Myriad-Dreamin/minimum-template/types"
 	"net/http"
 )
 
-type ChangePasswordRequest struct {
-	OldPassword string `form:"old_password" json:"old_password" binding:"required"`
-	NewPassword string `form:"new_password" json:"new_password" binding:"required"`
-}
 
 func (srv *Service) ChangePassword(c controller.MContext) {
-	var req = new(ChangePasswordRequest)
-	id, ok := ginhelper.ParseUintAndBind(c, "id", req)
+	var req control.ChangePasswordRequest
+	id, ok := ginhelper.ParseUintAndBind(c, "id", &req)
 	if !ok {
 		return
 	}

@@ -33,7 +33,7 @@ func BuildUserRouter(parent *RootRouter, serviceProvider *service.Provider) (rou
 		AuthRouter: parent.GetAuthRouter().Extend("user"),
 		Auth:       parent.GetAuth().Copy(),
 	}
-	router.GetList = router.GET("user-list", userService.List)
+	router.GetList = router.GET("user-list", userService.ListUsers)
 	router.Register = router.POST("/user", userService.Register)
 	router.Login = router.POST("/login", userService.Login)
 
@@ -53,9 +53,9 @@ func (*UserIDRouter) subBuild(parent *UserRouter, serviceProvider *service.Provi
 		Auth:       parent.Auth.MustGroup("user", "id"),
 	}
 
-	router.Get = router.GET("", userService.Get)
+	router.Get = router.GET("", userService.GetUser)
 	router.ChangePassword = router.AuthRouter.PUT("/password", userService.ChangePassword)
-	router.Put = router.AuthRouter.PUT("", userService.Put)
+	router.Put = router.AuthRouter.PUT("", userService.PutUser)
 	router.Delete = router.AuthRouter.DELETE("", userService.Delete)
 
 	return

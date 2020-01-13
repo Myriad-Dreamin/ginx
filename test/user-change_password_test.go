@@ -1,7 +1,7 @@
 package tests
 
 import (
-	userservice "github.com/Myriad-Dreamin/minimum-template/service/user"
+	"github.com/Myriad-Dreamin/minimum-template/control"
 	"github.com/Myriad-Dreamin/minimum-template/test/tester"
 	"reflect"
 	"strconv"
@@ -9,7 +9,7 @@ import (
 
 func testUserChangePassword(t *tester.TesterContext) {
 	id := reflect.ValueOf(srv.Get(normalUserIdKey)).Convert(intType).Interface().(int)
-	t.Put("/v1/user/"+strconv.Itoa(id)+"/password", userservice.ChangePasswordRequest{
+	t.Put("/v1/user/"+strconv.Itoa(id)+"/password", control.ChangePasswordRequest{
 		OldPassword: normalUserPassword,
 		NewPassword: normalUserNewPassword,
 	})

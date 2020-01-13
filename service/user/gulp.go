@@ -2,8 +2,10 @@ package userservice
 
 import (
 	"github.com/Myriad-Dreamin/minimum-lib/controller"
+	"github.com/Myriad-Dreamin/minimum-template/control"
 	base_service "github.com/Myriad-Dreamin/minimum-template/lib/base-service"
 	"github.com/Myriad-Dreamin/minimum-template/model"
+	"github.com/Myriad-Dreamin/minimum-template/types"
 )
 
 func (srv *Service) CreateEntity(id uint) base_service.CRUDEntity {
@@ -19,7 +21,8 @@ func (srv *Service) CreateFilter() interface{} {
 }
 
 func (srv *Service) ResponsePost(obj base_service.CRUDEntity) interface{} {
-	return UserToPostReply(obj.(*model.User))
+	panic("abort")
+	//return UserToPostReply(obj.(*model.User))
 }
 
 func (srv *Service) DeleteHook(c controller.MContext, obj base_service.CRUDEntity) bool {
@@ -27,17 +30,39 @@ func (srv *Service) DeleteHook(c controller.MContext, obj base_service.CRUDEntit
 }
 
 func (srv *Service) ResponseGet(_ controller.MContext, obj base_service.CRUDEntity) interface{} {
-	return UserToGetReply(obj.(*model.User))
+	return control.SerializeGetUserReply(types.CodeOK, obj.(*model.User))
 }
 
 func (srv *Service) ResponseInspect(_ controller.MContext, obj base_service.CRUDEntity) interface{} {
-	return UserToInspectReply(obj.(*model.User))
+	return control.SerializeInspectUserReply(types.CodeOK, obj.(*model.User))
 }
 
 func (srv *Service) GetPutRequest() interface{} {
-	return new(PutRequest)
+	return new(control.PutUserRequest)
 }
 
 func (srv *Service) FillPutFields(c controller.MContext, user base_service.CRUDEntity, req interface{}) []string {
-	return srv.fillPutFields(c, user.(*model.User), req.(*PutRequest))
+	return srv.fillPutFields(c, user.(*model.User), req.(*control.PutUserRequest))
 }
+
+
+func (srv *Service) ListUsers(c controller.MContext) {
+	srv.List(c)
+	return
+}
+
+func (srv *Service) InspectUser(c controller.MContext) {
+	srv.Inspect(c)
+	return
+}
+
+func (srv *Service) GetUser(c controller.MContext) {
+	srv.Get(c)
+	return
+}
+
+func (srv *Service) PutUser(c controller.MContext) {
+	srv.Put(c)
+	return
+}
+

@@ -13,6 +13,7 @@ type RObjectToolLite interface {
 
 type RServiceInterface interface {
 	Get(c controller.MContext)
+	Inspect(c controller.MContext)
 }
 
 type RService struct {

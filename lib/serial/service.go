@@ -179,7 +179,7 @@ type %s interface {
 }
 
 func svcMethods(svc *serviceDescription) (res string) {
-	res = "    UserSignatureXXX() interface{}\n"
+	res = fmt.Sprintf("    %sSignatureXXX() interface{}\n", svc.name)
 	for _, cat := range svc.categories {
 		for _, method := range cat.methods {
 			res += "    " + method.name + "(c controller.MContext)\n"

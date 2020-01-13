@@ -7,8 +7,8 @@ import (
 	"github.com/Myriad-Dreamin/minimum-lib/mock"
 	"github.com/Myriad-Dreamin/minimum-lib/rbac"
 	"github.com/Myriad-Dreamin/minimum-lib/sugar"
+	"github.com/Myriad-Dreamin/minimum-template/control"
 	"github.com/Myriad-Dreamin/minimum-template/server"
-	userservice "github.com/Myriad-Dreamin/minimum-template/service/user"
 	"github.com/Myriad-Dreamin/minimum-template/types"
 	"io"
 	"log"
@@ -91,7 +91,7 @@ func (tester *Tester) Release() {
 }
 
 func (tester *Tester) MakeAdminContext() bool {
-	resp := tester.Post("/v1/user", userservice.RegisterRequest{
+	resp := tester.Post("/v1/user", control.RegisterRequest{
 		Name:     "admin_context",
 		Password: "Admin12345678",
 		NickName: "admin_context",
@@ -101,22 +101,22 @@ func (tester *Tester) MakeAdminContext() bool {
 		return false
 	}
 
-	var r userservice.RegisterReply
+	var r control.RegisterReply
 	err := resp.JSON(&r)
 	if err != nil {
 		log.Fatal(err)
 		return false
 	}
 	resp = tester.Post("/v1/login",
-		userservice.LoginRequest{
-			ID:       r.ID,
+		control.LoginRequest{
+			Id:       r.Id,
 			Password: "Admin12345678",
 		}, mock.Comment("admin login for test"))
 	if !tester.NoErr(resp) {
 		return false
 	}
 
-	var r2 userservice.LoginReply
+	var r2 control.LoginReply
 	err = resp.JSON(&r2)
 	if err != nil {
 		log.Fatal(err)
@@ -125,7 +125,7 @@ func (tester *Tester) MakeAdminContext() bool {
 
 	//fmt.Println(r2)
 	//r2.RefreshToken
-	_, err = rbac.AddGroupingPolicy("user:"+strconv.Itoa(int(r2.ID)), types.GroupAdmin)
+	_, err = rbac.AddGroupingPolicy("user:"+strconv.Itoa(int(r2.Id)), types.GroupAdmin)
 	if err != nil {
 		tester.Logger.Debug("update group error", "error", err)
 	}

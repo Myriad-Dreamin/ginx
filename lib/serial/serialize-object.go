@@ -1,7 +1,5 @@
 package serial
 
-import "fmt"
-
 type SerializeObject struct {
 	params []Parameter
 	name   string
@@ -42,12 +40,12 @@ func (obj *SerializeObject) CreateObjectDescription(ctx *Context) ObjectDescript
 			}
 		}
 	}
-	fmt.Println("creating", desc.name)
-	for i := range desc.params {
-		fmt.Print("    ")
-		param := desc.params[i]
-		fmt.Println(param.fieldName, param.typeString, param.tags, "||", param.embedObjects)
-	}
+	//fmt.Println("creating", desc.name)
+	//for i := range desc.params {
+	//	fmt.Print("    ")
+	//	param := desc.params[i]
+	//	fmt.Println(param.fieldName, param.typeString, param.tags, "||", param.embedObjects)
+	//}
 	return desc
 }
 

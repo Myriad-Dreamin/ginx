@@ -3,6 +3,7 @@ package userservice
 import (
 	"github.com/Myriad-Dreamin/minimum-lib/controller"
 	"github.com/Myriad-Dreamin/minimum-lib/rbac"
+	"github.com/Myriad-Dreamin/minimum-template/control"
 	"github.com/Myriad-Dreamin/minimum-template/lib/serial"
 	"github.com/Myriad-Dreamin/minimum-template/model"
 	ginhelper "github.com/Myriad-Dreamin/minimum-template/service/gin-helper"
@@ -11,32 +12,9 @@ import (
 	"strconv"
 )
 
-type RegisterRequest struct {
-	// UserName: 注册用户的名字
-	Name string `form:"name" json:"name" binding:"required"`
-	// Password: 密码
-	Password string `form:"password" json:"password" binding:"required"`
-	// NickName: 昵称
-	NickName string `form:"nick_name" json:"nick_name" binding:"required"`
-	Phone    string `form:"phone" json:"phone" binding:"required"`
-	//Email string `form:"email" json:"email" binding:"email"`
-	// Gender: 0表示保密, 1表示女, 2表示男, 3~255表示其他
-	//Gender uint8 `form:"gender" json:"gender"`
-}
-
-type RegisterReply struct {
-	// Code: 操作的结果
-	Code types.CodeRawType `json:"code"`
-	// ID: 用户的id
-	ID uint `json:"id"`
-}
-
-func (p RegisterReply) GetID() uint {
-	return p.ID
-}
 
 func (srv *Service) Register(c controller.MContext) {
-	var req = new(RegisterRequest)
+	var req = new(control.RegisterRequest)
 	if !ginhelper.BindRequest(c, req) {
 		return
 	}
@@ -85,10 +63,7 @@ func (srv *Service) Register(c controller.MContext) {
 		})
 		return
 	}
-	c.JSON(http.StatusOK, srv.AfterPost(&RegisterReply{
-		Code: types.CodeOK,
-		ID:   user.ID,
-	}))
+	c.JSON(http.StatusOK, srv.AfterPost(control.SerializeRegisterReply(types.CodeOK, user)))
 
 	_, err = rbac.AddGroupingPolicy("user:"+strconv.Itoa(int(user.ID)), "norm")
 	if err != nil {

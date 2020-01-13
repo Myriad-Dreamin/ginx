@@ -4,7 +4,6 @@ package service
 import (
 	"fmt"
 	"github.com/Myriad-Dreamin/minimum-lib/module"
-	"github.com/Myriad-Dreamin/minimum-template/control"
 	"path"
 )
 
@@ -55,13 +54,13 @@ func (s *Provider) Register(name string, service interface{}) {
 	switch ss := service.(type) {
 	case UserService:
 		s.userService = ss
-		s.subControllers = append(s.subControllers, JustProvide(append([]interface{}{&ss}, control.UserCates...)...))
+		//s.subControllers = append(s.subControllers, JustProvide(append([]interface{}{&ss}, control.UserCates...)...))
 	case AuthService:
 		s.authService = ss
-		s.subControllers = append(s.subControllers, JustProvide(append([]interface{}{&ss}, control.AuthCates...)...))
+		//s.subControllers = append(s.subControllers, JustProvide(append([]interface{}{&ss}, control.AuthCates...)...))
 	case ObjectService:
 		s.objectService = ss
-		s.subControllers = append(s.subControllers, JustProvide(append([]interface{}{&ss}, control.ObjectCates...)...))
+		//s.subControllers = append(s.subControllers, JustProvide(append([]interface{}{&ss}, control.ObjectCates...)...))
 	default:
 		panic(fmt.Errorf("unknown service %T", service))
 	}

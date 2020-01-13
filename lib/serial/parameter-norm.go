@@ -27,6 +27,14 @@ func (n *norm) Create(ctx *Context) *ParameterDescription {
 	} else {
 		desc.typeString = parseParamType(ctx, n)
 		desc.source = parseSource(ctx, n)
+		t := n.param.Type()
+		for t.Kind() == reflect.Ptr {
+			t = t.Elem()
+		}
+		pk := t.PkgPath()
+		if len(pk) != 0 {
+			ctx.appendPackage(pk)
+		}
 	}
 	desc.tags = make(map[string]string)
 	desc.tags["json"] = desc.name
