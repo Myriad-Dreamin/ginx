@@ -1,55 +1,32 @@
 package serial
 
 import (
-	"bytes"
 	"reflect"
-	"unicode"
 )
 
 type norm struct {
 	name string
 	tags []*tag
 	fieldName string
-	paramType interface{}
+	param reflect.Value
 }
 
-func fromSnake(src string) string {
-	if len(src) == 0 {
-		return ""
-	}
-	var b = bytes.NewBuffer(make([]byte, 0, len(src)))
-	var bo = true
-	for i := range src {
-		if src[i] == '_' {
-			bo = true
-		} else {
-			if bo {
-				bo = false
-				b.WriteByte(byte(unicode.ToUpper(rune(src[i]))))
-			} else {
-				b.WriteByte(src[i])
-			}
-		}
-	}
-	return b.String()
-}
 
-func (n *norm) Create(ctx *context) *ParameterDescription {
+func (n *norm) Create(ctx *Context) *ParameterDescription {
 	desc := new(ParameterDescription)
 	desc.name = n.name
 	desc.fieldName = n.fieldName
 	if len(desc.fieldName) == 0 {
-		desc.fieldName = fromSnake(desc.name)
+		desc.fieldName = fromSnakeToBigCamel(desc.name)
 	}
 
-	if embedType, ok := n.paramType.(interface{
-		create(ctx *context) *objectDescription
-	}); ok {
-		objDesc := embedType.create(ctx)
+	if embedType, ok := n.param.Interface().(SerializeObjectI); ok {
+		objDesc := embedType.CreateObjectDescription(ctx)
 		desc.embedObjects = append(desc.embedObjects, objDesc)
-		desc.TypeString = objDesc.name
+		desc.typeString = objDesc.GetTypeString()
 	} else {
-		desc.TypeString = parseParamType(ctx, n)
+		desc.typeString = parseParamType(ctx, n)
+		desc.source = parseSource(ctx, n)
 	}
 	desc.tags = make(map[string]string)
 	desc.tags["json"] = desc.name
@@ -65,20 +42,32 @@ func (n *norm) Create(ctx *context) *ParameterDescription {
 	return desc
 }
 
-func parseParamType(ctx *context, n *norm) string {
-	//fmt.Println(svc, n)
-	switch v := n.paramType.(type) {
-	case *SerializeObject:
-	default:
-		t := reflect.TypeOf(v)
-		if t != nil {
-			ctx.appendPackage(t.PkgPath())
-			return t.String()
-		} else {
-			panic("nil type")
-		}
+type source struct {
+	modelName string
+	faz        reflect.Type
+	fazElem    reflect.Type
+	fieldIndex int
+}
+
+func (s source) paramName() string {
+	if len(s.modelName) != 0 {
+		return s.modelName
 	}
-	return "todo"
+	return "_" + toSmallCamel(s.fazElem.Name())
+}
+
+func parseSource(context *Context, n *norm) *source {
+	return context.getSource(n.param.UnsafeAddr())
+}
+
+func parseParamType(ctx *Context, n *norm) string {
+	t := n.param.Type()
+	if t != nil {
+		ctx.appendPackage(t.PkgPath())
+		return t.String()
+	} else {
+		panic("nil type")
+	}
 }
 
 type tag struct {
@@ -96,8 +85,10 @@ func Param(name string, descriptions...interface{}) Parameter {
 			param.tags = append(param.tags, desc)
 		case FieldName:
 			param.fieldName = string(desc)
+		case SerializeObjectI:
+			param.param = reflect.ValueOf(desc)
 		default:
-			param.paramType = desc
+			param.param = reflect.ValueOf(desc).Elem()
 		}
 	}
 	return param

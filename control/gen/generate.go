@@ -17,7 +17,7 @@ type UserCategories struct {
 	IdGroup        *serial.Category
 }
 
-var codeField = serial.Param("code", *new(types.CodeRawType))
+var codeField = serial.Param("code", new(types.CodeRawType))
 var required = serial.Tag("binding", "required")
 
 func DescribeUserService(cat *serial.Category) serial.ProposingService {
@@ -25,16 +25,16 @@ func DescribeUserService(cat *serial.Category) serial.ProposingService {
 	svc := &UserCategories{
 		List: serial.Ink().
 			Path("user-list").
-			Method(serial.POST, "List",
+			Method(serial.POST, "ListUsers",
 				serial.Request(
-					serial.Transfer(model.Filter{}),
+					serial.Transfer("ListUsersRequest", model.Filter{}),
 				),
 				serial.Reply(
 					codeField,
 					serial.ArrayParam(serial.Param("users", serial.Object(
 						"ListUserReply",
-						serial.Param("nick_name", userModel.NickName),
-						serial.Param("last_login", userModel.LastLogin),
+						serial.Param("nick_name", &userModel.NickName),
+						serial.Param("last_login", &userModel.LastLogin),
 					))),
 				),
 			),
@@ -42,60 +42,60 @@ func DescribeUserService(cat *serial.Category) serial.ProposingService {
 			Path("login").
 			Method(serial.POST, "Login",
 				serial.Request(
-					serial.Param("id", userModel.ID),
-					serial.Param("nick_name", userModel.NickName),
-					serial.Param("phone", userModel.Phone),
-					serial.Param("password", serial.String, required),
+					serial.Param("id", &userModel.ID),
+					serial.Param("nick_name", &userModel.NickName),
+					serial.Param("phone", &userModel.Phone),
+					serial.Param("password", &serial.String, required),
 				),
 				serial.Reply(
 					codeField,
-					serial.Param("id", userModel.ID),
-					serial.Param("identity", serial.Strings),
-					serial.Param("phone", userModel.Phone),
-					serial.Param("nick_name", userModel.NickName),
-					serial.Param("name", userModel.Name),
-					serial.Param("token", serial.String),
-					serial.Param("refresh_token", serial.String),
+					serial.Param("id", &userModel.ID),
+					serial.Param("identity", &serial.Strings),
+					serial.Param("phone", &userModel.Phone),
+					serial.Param("nick_name", &userModel.NickName),
+					serial.Param("name", &userModel.Name),
+					serial.Param("token", &serial.String),
+					serial.Param("refresh_token", &serial.String),
 				),
 			),
 		Register: serial.Ink().
 			Path("register").
 			Method(serial.POST, "Register",
 				serial.Request(
-					serial.Param("name", serial.String, required),
-					serial.Param("password", serial.String, required),
-					serial.Param("nick_name", serial.String, required),
-					serial.Param("phone", serial.String, required),
+					serial.Param("name", &serial.String, required),
+					serial.Param("password", &serial.String, required),
+					serial.Param("nick_name", &serial.String, required),
+					serial.Param("phone", &serial.String, required),
 				),
 				serial.Reply(
 					codeField,
-					serial.Param("id", userModel.ID)),
+					serial.Param("id", &userModel.ID)),
 			),
 		ChangePassword: serial.Ink().
 			Path("user/:id/password").
 			Method(serial.PUT, "ChangePassword",
 				serial.Request(
-					serial.Param("old_password", serial.String, required),
-					serial.Param("new_password", serial.String, required),
+					serial.Param("old_password", &serial.String, required),
+					serial.Param("new_password", &serial.String, required),
 				),
 			),
 		IdGroup: serial.Ink().
-			Method(serial.GET, serial.PUT, serial.DELETE).
 			Path("user/:id").
-			Method(serial.GET, "Get",
+			Method(serial.GET, "GetUser",
 				serial.Reply(
 					codeField,
-					serial.Param("nick_name", userModel.NickName),
-					serial.Param("last_login", userModel.LastLogin),
+					serial.Param("nick_name", &userModel.NickName),
+					serial.Param("last_login", &userModel.LastLogin),
 				)).
-			Method(serial.PUT, "Put",
+			Method(serial.PUT, "PutUser",
 				serial.Request(
 					codeField,
-					serial.Param("phone", userModel.Phone),
+					serial.Param("phone", &userModel.Phone),
 				)).
 			Method(serial.DELETE, "Delete"),
 	}
-	svc.Name("UserService").CateOf(cat).UseModel(userModel)
+	svc.Name("UserService").CateOf(cat).UseModel(
+		serial.Model(serial.Name("user"), userModel))
 	return svc
 }
 

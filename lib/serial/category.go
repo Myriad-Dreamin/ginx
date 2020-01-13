@@ -17,10 +17,10 @@ func (c *Category) Method(m MethodType, descriptions...interface{}) *Category {
 		switch desc := description.(type) {
 		case string:
 			method.name = desc
-		case *RequestObj:
+		case RequestObj:
 			method.requests = append(method.requests, desc)
-		case *ReplyObj:
-			method.replies = append(method.replies, desc)
+		case ReplyObj:
+			method.requests = append(method.requests, desc)
 		}
 	}
 	c.methods = append(c.methods, method)
@@ -32,7 +32,7 @@ func (c *Category) Path(path string) *Category {
 	return c
 }
 
-func (c *Category) create(faz *Category, ctx *context) *categoryDescription {
+func (c *Category) CreateCategoryDescription(faz *Category, ctx *Context) *categoryDescription {
 
 	desc := new(categoryDescription)
 	if faz != nil {

@@ -1,28 +1,25 @@
 package serial
 
-import "reflect"
-
 type inheritClass struct {
 	name string
 	bases []interface{}
 }
 
-func (i inheritClass) Create(svc ProposingService) *ParameterDescription {
-	desc := new(ParameterDescription)
-	if len(i.name) == 0 {
-		base := i.bases[0]
-		t := reflect.TypeOf(base)
-		desc.name = ""
-		desc.TypeString = t.Name()
-	} else {
-		//desc.embedObjects = append()
-		panic("todo")
-	}
-	return desc
+func (i inheritClass) String() string {
+	panic("implement me")
+	//return fmt.Sprintf("type %s = %s", i.name, reflect.TypeOf(i.base))
 }
 
-func Transfer(base interface{}) *inheritClass {
-	return &inheritClass{name:"", bases:[]interface{}{base}}
+func (i inheritClass) GetTypeString() string {
+	return i.name
+}
+
+func (i inheritClass) GetEmbedObject() []ObjectDescription {
+	return nil
+}
+
+func (i inheritClass) CreateObjectDescription(ctx *Context) ObjectDescription {
+	return i
 }
 
 func Inherit(name string, bases ...interface{}) *inheritClass {

@@ -1,7 +1,7 @@
 package serial
 
 type Parameter interface{
-	Create(ctx *context) *ParameterDescription
+	Create(ctx *Context) *ParameterDescription
 }
 
 
@@ -9,9 +9,9 @@ type arrayParam struct {
 	p Parameter
 }
 
-func (a arrayParam) Create(ctx *context) *ParameterDescription {
+func (a arrayParam) Create(ctx *Context) *ParameterDescription {
 	desc := a.p.Create(ctx)
-	desc.TypeString = "[]" + desc.TypeString
+	desc.typeString = "[]" + desc.typeString
 	return desc
 }
 

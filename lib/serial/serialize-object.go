@@ -7,19 +7,29 @@ type SerializeObject struct {
 	name   string
 }
 
-type RequestObj SerializeObject
+type requestSerializeObjectI struct {
+	s SerializeObjectI
+}
 
-func (obj *RequestObj) create(ctx *context) *objectDescription {
+func (r requestSerializeObjectI) CreateObjectDescription(ctx *Context) ObjectDescription {
 	ctx.set("obj_suf", "Request")
-	return (*SerializeObject)(obj).create(ctx)
+	return r.s.CreateObjectDescription(ctx)
 }
 
-func (obj *ReplyObj) create(ctx *context) *objectDescription {
+type replySerializeObjectI struct {
+	s SerializeObjectI
+}
+
+
+func (r replySerializeObjectI) CreateObjectDescription(ctx *Context) ObjectDescription {
 	ctx.set("obj_suf", "Reply")
-	return (*SerializeObject)(obj).create(ctx)
+	return r.s.CreateObjectDescription(ctx)
 }
 
-func (obj *SerializeObject) create(ctx *context) *objectDescription {
+type RequestObj = requestSerializeObjectI
+type ReplyObj = replySerializeObjectI
+
+func (obj *SerializeObject) CreateObjectDescription(ctx *Context) ObjectDescription {
 	desc := new(objectDescription)
 	for _, param := range obj.params {
 		desc.params = append(desc.params, param.Create(ctx))
@@ -36,25 +46,28 @@ func (obj *SerializeObject) create(ctx *context) *objectDescription {
 	for i := range desc.params {
 		fmt.Print("    ")
 		param := desc.params[i]
-		fmt.Println(param.fieldName, param.TypeString, param.tags, "||", param.embedObjects)
+		fmt.Println(param.fieldName, param.typeString, param.tags, "||", param.embedObjects)
 	}
 	return desc
 }
-type ReplyObj SerializeObject
 
-func Request(descriptions ...interface{}) *RequestObj {
-	return (*RequestObj)(Object(descriptions...))
+func Request(descriptions ...interface{}) RequestObj {
+
+
+	return requestSerializeObjectI{s: Object(descriptions...)}
 }
 
-func Reply(descriptions ...interface{}) *ReplyObj {
-	return (*ReplyObj)(Object(descriptions...))
+func Reply(descriptions ...interface{}) ReplyObj {
+	return replySerializeObjectI{s: Object(descriptions...)}
 }
 
-func Object(descriptions ...interface{}) *SerializeObject {
+func Object(descriptions ...interface{}) SerializeObjectI {
 	var parameters []Parameter
 	var name string
 	for i := range descriptions {
 		switch desc := descriptions[i].(type) {
+		case SerializeObjectI:
+			return desc
 		case Parameter:
 			parameters = append(parameters, desc)
 		case string:

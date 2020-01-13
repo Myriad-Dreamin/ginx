@@ -10,7 +10,7 @@ import (
 
 type VirtualService struct {
 	faz      *Category
-	models   []interface{}
+	models   []*model
 	name string
 	fileName string
 }
@@ -32,8 +32,8 @@ func (v *VirtualService) GetName() string {
 	return v.name
 }
 
-func (v *VirtualService) UseModel(models ...interface{}) *VirtualService {
-	v.models = append(v.models, models)
+func (v *VirtualService) UseModel(models ...*model) *VirtualService {
+	v.models = append(v.models, models...)
 	return v
 }
 
@@ -47,11 +47,36 @@ func (v *VirtualService) ToFile(fileName string) ProposingService {
 	return v
 }
 
+func (v *VirtualService) GetModels() []*model {
+	return v.models
+}
+
+type model struct {
+	name string
+	refer interface{}
+}
+
+type Name string
+
+func Model(descriptions ...interface{}) *model {
+	m := new(model)
+	for i := range descriptions {
+		switch desc := descriptions[i].(type) {
+		case Name:
+			m.name = string(desc)
+		default:
+			m.refer = desc
+		}
+	}
+	return m
+}
+
 type ProposingService interface {
 	ToFile(fileName string) ProposingService
 	GetName() string
 	GetFilePath() string
 	GetFaz() *Category
+	GetModels() []*model
 }
 
 type PublishingServices struct {
@@ -77,9 +102,10 @@ func NewService(rawSvc ...ProposingService) *PublishingServices {
 var cateType = reflect.TypeOf(new(Category))
 func (c *PublishingServices) Publish() error {
 	for _, svc := range c.rawSvc {
-		ctx := &context{
+		ctx := &Context{
 			svc:      svc,
 		}
+		ctx.makeSources()
 
 		desc := &serviceDescription{
 			packages: make(map[string]int),
@@ -99,7 +125,7 @@ func (c *PublishingServices) Publish() error {
 			if fieldType.Type == cateType {
 				cate := field.Interface().(*Category)
 				if cate != nil {
-					desc.categories = append(desc.categories, cate.create(faz, ctx))
+					desc.categories = append(desc.categories, cate.CreateCategoryDescription(faz, ctx))
 				}
 			}
 		}
@@ -115,9 +141,20 @@ func (c *PublishingServices) Publish() error {
 }
 
 func (c *PublishingServices) writeToFiles() (err error) {
+	if err = c.writeSVCsAndDTOs(); err != nil {
+		return
+	}
+	return
+}
+
+func (c *PublishingServices) writeSVCsAndDTOs() (err error) {
 	for i := range c.svc {
+		if err != nil {
+			return
+		}
 		svc := c.svc[i]
 		fmt.Println(svc.filePath)
+		svc.packages["github.com/Myriad-Dreamin/minimum-lib/controller"] = 1
 		sugar.WithWriteFile(func(f *os.File) {
 			_, err = fmt.Fprintf(f, `
 package %s
@@ -126,11 +163,32 @@ import (
 %s
 )
 
-%s`, c.packageName, depList(svc.packages), svc.generateObjects())
+%s
+
+%s`, c.packageName, depList(svc.packages), svcIface(svc), svc.generateObjects())
 		}, svc.filePath)
 	}
 	return
 }
+
+func svcIface(svc *serviceDescription) string {
+	return fmt.Sprintf(`
+type %s interface {
+%s
+}`, svc.name, svcMethods(svc))
+}
+
+func svcMethods(svc *serviceDescription) (res string) {
+	res = "    UserSignatureXXX() interface{}\n"
+	for _, cat := range svc.categories {
+		for _, method := range cat.methods {
+			res += "    " + method.name + "(c controller.MContext)\n"
+		}
+	}
+	return
+}
+
+
 
 func depList(pkgSet map[string]int) (res string) {
 	for k := range pkgSet {
