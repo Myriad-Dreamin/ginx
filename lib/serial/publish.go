@@ -7,7 +7,7 @@ import (
 )
 
 type PublishedServices struct {
-	svc         []*serviceDescription
+	svc         []ServiceDescription
 	packageName string
 }
 
@@ -31,13 +31,13 @@ func (c *PublishedServices) writeSVCsAndDTOs() (err error) {
 			return
 		}
 		svc := c.svc[i]
-		fmt.Println(svc.filePath)
+		//fmt.Println(svc.filePath)
 		var packages = make(map[string]bool)
 		packages["github.com/Myriad-Dreamin/minimum-lib/controller"] = true
-		for j := range svc.categories {
-			packages = inplaceMergePackage(packages, svc.categories[j].getPackages())
+		for _, cate := range svc.GetCategories() {
+			packages = inplaceMergePackage(packages, cate.GetPackages())
 		}
-		fmt.Println(packages)
+		//fmt.Println(packages)
 		sugar.WithWriteFile(func(f *os.File) {
 			_, err = fmt.Fprintf(f, `
 package %s
@@ -48,25 +48,24 @@ import (
 
 %s
 
-%s`, c.packageName, depList(packages), svcIface(svc), svc.generateObjects())
-		}, svc.filePath)
+%s`, c.packageName, depList(packages), svcIface(svc), svc.GenerateObjects())
+		}, svc.GetFilePath())
 	}
 	return
 }
 
-
-func svcIface(svc *serviceDescription) string {
+func svcIface(svc ServiceDescription) string {
 	return fmt.Sprintf(`
 type %s interface {
 %s
-}`, svc.name, svcMethods(svc))
+}`, svc.GetName(), svcMethods(svc))
 }
 
-func svcMethods(svc *serviceDescription) (res string) {
-	res = fmt.Sprintf("    %sSignatureXXX() interface{}\n", svc.name)
-	for _, cat := range svc.categories {
-		for _, method := range cat.methods {
-			res += "    " + method.name + "(c controller.MContext)\n"
+func svcMethods(svc ServiceDescription) (res string) {
+	res = fmt.Sprintf("    %sSignatureXXX() interface{}\n", svc.GetName())
+	for _, cat := range svc.GetCategories() {
+		for _, method := range cat.GetMethods() {
+			res += "    " + method.GetName() + "(c controller.MContext)\n"
 		}
 	}
 	return

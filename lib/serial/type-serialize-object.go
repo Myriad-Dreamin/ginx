@@ -35,7 +35,7 @@ func (obj *SerializeObject) CreateObjectDescription(ctx *Context) ObjectDescript
 	if len(desc.name) == 0 {
 		if suf := ctx.get("obj_suf"); suf != nil {
 			if suf, ok := suf.(string); ok {
-				desc.name = ctx.method.name + suf
+				desc.name = ctx.method.GetName() + suf
 			}
 		}
 	}

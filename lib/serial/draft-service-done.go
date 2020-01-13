@@ -28,7 +28,7 @@ type ProposingService interface {
 //    Name
 //    FilePath
 type VirtualService struct {
-	base      string
+	base     string
 	models   []*model
 	name     string
 	filePath string

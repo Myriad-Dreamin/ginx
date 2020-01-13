@@ -1,6 +1,10 @@
 package serial
 
-import "reflect"
+import (
+	"bytes"
+	"reflect"
+	"unicode"
+)
 
 type packageSet = map[string]bool
 
@@ -36,7 +40,6 @@ func inplaceMergePackage(pac packageSet, oth packageSet) packageSet {
 	return pac
 }
 
-
 func getElements(i interface{}) (reflect.Value, reflect.Type) {
 	v, t := reflect.ValueOf(i), reflect.TypeOf(i)
 	for t.Kind() == reflect.Ptr {
@@ -48,4 +51,32 @@ func getElements(i interface{}) (reflect.Value, reflect.Type) {
 func getElementValue(i interface{}) reflect.Value {
 	v, _ := getElements(i)
 	return v
+}
+
+func fromSnakeToCamel(src string, big bool) string {
+	if len(src) == 0 {
+		return ""
+	}
+	var b = bytes.NewBuffer(make([]byte, 0, len(src)))
+	for i := range src {
+		if src[i] == '_' {
+			big = true
+		} else {
+			if big {
+				big = false
+				b.WriteByte(byte(unicode.ToUpper(rune(src[i]))))
+			} else {
+				b.WriteByte(src[i])
+			}
+		}
+	}
+	return b.String()
+}
+
+func fromSnakeToSmallCamel(src string) string {
+	return fromSnakeToCamel(src, false)
+}
+
+func fromSnakeToBigCamel(src string) string {
+	return fromSnakeToCamel(src, true)
 }

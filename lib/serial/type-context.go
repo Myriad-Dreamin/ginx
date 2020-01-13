@@ -6,7 +6,7 @@ import (
 
 type Context struct {
 	vars     map[string]interface{}
-	method   *method
+	method   Method
 	svc      ProposingService
 	sources  map[uintptr]*source
 	packages map[string]bool
@@ -24,10 +24,10 @@ func (c *Context) clone() *Context {
 
 func (c *Context) sub() *Context {
 	return &Context{
-		vars:     c.vars,
-		method:   c.method,
-		svc:      c.svc,
-		sources:  c.sources,
+		vars:    c.vars,
+		method:  c.method,
+		svc:     c.svc,
+		sources: c.sources,
 	}
 }
 

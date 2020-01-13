@@ -15,15 +15,20 @@ const (
 )
 
 type Method interface {
+	GetName() string
+
 	CreateMethodDescription(ctx *Context) *methodDescription
 }
-
 
 type method struct {
 	methodType MethodType
 	name       string
 	requests   []SerializeObjectI
 	replies    []SerializeObjectI
+}
+
+func (method method) GetName() string {
+	return method.name
 }
 
 func newMethod(methodType MethodType) *method {
@@ -33,7 +38,7 @@ func newMethod(methodType MethodType) *method {
 func (method *method) CreateMethodDescription(ctx *Context) *methodDescription {
 	desc := new(methodDescription)
 	ctx.method = method
-	desc.method = method.methodType
+	desc.methodType = method.methodType
 	desc.name = method.name
 	for _, request := range method.requests {
 		desc.requests = append(desc.requests, request.CreateObjectDescription(ctx))

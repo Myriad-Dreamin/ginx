@@ -1,6 +1,5 @@
 package serial
 
-
 // todo middleware
 type Category interface {
 	Path(path string) Category
@@ -12,15 +11,13 @@ type Category interface {
 
 	GetPath() string
 
-
-	CreateCategoryDescription(ctx *Context) *categoryDescription
+	CreateCategoryDescription(ctx *Context) CategoryDescription
 }
-
 
 type category struct {
 	path    string
 	methods []Method
-	subs map[string]Category
+	subs    map[string]Category
 }
 
 func newCategory() *category {
@@ -46,7 +43,7 @@ func (c *category) SubCate(path string, cat Category) Category {
 
 func (c *category) DiveIn(path string) Category {
 	cat := &category{
-		path:    path,
+		path: path,
 	}
 	c.SubCate(path, cat)
 	return cat
@@ -56,7 +53,7 @@ func (c *category) GetPath() string {
 	return c.path
 }
 
-func (c *category) RawMethod(m... Method) Category {
+func (c *category) RawMethod(m ...Method) Category {
 	c.methods = append(c.methods, m...)
 	return c
 }
@@ -79,7 +76,7 @@ func (c *category) Method(m MethodType, descriptions ...interface{}) Category {
 	return c
 }
 
-func (c *category) CreateCategoryDescription(ctx *Context) *categoryDescription {
+func (c *category) CreateCategoryDescription(ctx *Context) CategoryDescription {
 	desc := new(categoryDescription)
 	for _, method := range c.methods {
 		subCtx := ctx.sub()
@@ -89,7 +86,7 @@ func (c *category) CreateCategoryDescription(ctx *Context) *categoryDescription 
 
 	for _, sub := range c.subs {
 		subDesc := sub.CreateCategoryDescription(ctx.sub())
-		desc.subCates[subDesc.name] = subDesc
+		desc.subCates[subDesc.GetName()] = subDesc
 	}
 	return desc
 }
