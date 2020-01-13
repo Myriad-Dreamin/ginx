@@ -1,10 +1,8 @@
 package mcore
 
-
 import (
 	"github.com/Myriad-Dreamin/minimum-lib/module"
 )
-
 
 type ModelCallbacks interface {
 	Migrates() error

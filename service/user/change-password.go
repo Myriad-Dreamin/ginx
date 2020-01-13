@@ -9,7 +9,6 @@ import (
 	"net/http"
 )
 
-
 func (srv *Service) ChangePassword(c controller.MContext) {
 	var req control.ChangePasswordRequest
 	id, ok := ginhelper.ParseUintAndBind(c, "id", &req)

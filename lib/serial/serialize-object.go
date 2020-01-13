@@ -18,7 +18,6 @@ type replySerializeObjectI struct {
 	s SerializeObjectI
 }
 
-
 func (r replySerializeObjectI) CreateObjectDescription(ctx *Context) ObjectDescription {
 	ctx.set("obj_suf", "Reply")
 	return r.s.CreateObjectDescription(ctx)
@@ -51,7 +50,6 @@ func (obj *SerializeObject) CreateObjectDescription(ctx *Context) ObjectDescript
 
 func Request(descriptions ...interface{}) RequestObj {
 
-
 	return requestSerializeObjectI{s: Object(descriptions...)}
 }
 
@@ -72,8 +70,8 @@ func Object(descriptions ...interface{}) SerializeObjectI {
 			name = desc
 		}
 	}
-	return &SerializeObject {
-		name: name,
+	return &SerializeObject{
+		name:   name,
 		params: parameters,
 	}
 }

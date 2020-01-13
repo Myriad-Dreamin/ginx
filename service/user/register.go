@@ -12,7 +12,6 @@ import (
 	"strconv"
 )
 
-
 func (srv *Service) Register(c controller.MContext) {
 	var req = new(control.RegisterRequest)
 	if !ginhelper.BindRequest(c, req) {

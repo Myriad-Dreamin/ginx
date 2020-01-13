@@ -3,7 +3,7 @@ package serial
 import "path/filepath"
 
 type Category struct {
-	path string
+	path    string
 	methods []*Method
 }
 
@@ -11,7 +11,7 @@ func Ink(_ ...interface{}) *Category {
 	return new(Category)
 }
 
-func (c *Category) Method(m MethodType, descriptions...interface{}) *Category {
+func (c *Category) Method(m MethodType, descriptions ...interface{}) *Category {
 	method := newMethod(m)
 	for _, description := range descriptions {
 		switch desc := description.(type) {
@@ -46,4 +46,3 @@ func (c *Category) CreateCategoryDescription(faz *Category, ctx *Context) *categ
 	}
 	return desc
 }
-

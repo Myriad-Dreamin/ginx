@@ -4,7 +4,6 @@ import (
 	"github.com/Myriad-Dreamin/minimum-lib/module"
 	"github.com/Myriad-Dreamin/minimum-template/model/db-layer"
 	"github.com/Myriad-Dreamin/minimum-template/model/sp-layer"
-	
 )
 
 func InstallFromContext(dep module.Module) bool {
@@ -33,7 +32,6 @@ func Close(dep module.Module) bool {
 	return x
 }
 
-
 type Provider = splayer.Provider
 
 func NewProvider(namespace string) *Provider {
@@ -43,4 +41,3 @@ func NewProvider(namespace string) *Provider {
 func SetProvider(p *Provider) *Provider {
 	return splayer.SetProvider(p)
 }
-

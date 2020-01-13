@@ -32,4 +32,3 @@ func fromSnakeToSmallCamel(src string) string {
 func fromSnakeToBigCamel(src string) string {
 	return fromSnakeToCamel(src, true)
 }
-

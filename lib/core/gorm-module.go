@@ -1,10 +1,10 @@
 package mcore
 
 import (
+	"errors"
 	"github.com/Myriad-Dreamin/minimum-lib/module"
 	"github.com/Myriad-Dreamin/minimum-template/lib/core-cfg"
 	"github.com/jinzhu/gorm"
-	"errors"
 )
 
 type GormModule struct {
@@ -41,11 +41,9 @@ func (m *GormModule) InstallMockFromConfiguration(dep module.Module) bool {
 	return m.installFromConfiguration(MockGORM, dep)
 }
 
-
 func (m *GormModule) GetGormInstance() *gorm.DB {
 	return m.GormDB
 }
-
 
 func booleanString(b bool) string {
 	if b {
@@ -64,13 +62,11 @@ func concatQueryString(options string) string {
 }
 
 func getDatabaseConfiguration(dep module.Module) core_cfg.DatabaseConfig {
-	return dep.Require(DefaultNamespace.Global.Configuration).
-		(DatabaseConfiguration).GetDatabaseConfiguration()
+	return dep.Require(DefaultNamespace.Global.Configuration).(DatabaseConfiguration).GetDatabaseConfiguration()
 }
 
 func getRedisConfiguration(dep module.Module) core_cfg.RedisConfig {
-	return dep.Require(DefaultNamespace.Global.Configuration).
-		(RedisConfiguration).GetRedisConfiguration()
+	return dep.Require(DefaultNamespace.Global.Configuration).(RedisConfiguration).GetRedisConfiguration()
 }
 
 func parseConfig(dep module.Module) (string, string, error) {
@@ -117,4 +113,3 @@ func MockGORM(_ module.Module) (*gorm.DB, error) {
 
 	return gorm.Open("sqlite3", ":memory:")
 }
-

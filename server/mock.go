@@ -17,7 +17,7 @@ import (
 	"net/url"
 	"strings"
 	"testing"
-	
+
 	"github.com/Myriad-Dreamin/gin-middleware/mock"
 	abstract_test "github.com/Myriad-Dreamin/minimum-lib/abstract-test"
 	"github.com/Myriad-Dreamin/minimum-lib/mock"
@@ -55,7 +55,6 @@ func Mock(options ...Option) (srv *Mocker) {
 		srv = nil
 		return
 	}
-
 
 	defer func() {
 		if err := recover(); err != nil {
@@ -410,7 +409,7 @@ func (mocker *Mocker) NoErr(resp mock.ResponseI) bool {
 type Error struct {
 	RespCode int
 	Code     types.CodeRawType `json:"code"`
-	Error    string         `json:"error"`
+	Error    string            `json:"error"`
 }
 
 func (mocker *Mocker) FetchError(resp mock.ResponseI) Error {

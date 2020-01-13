@@ -6,7 +6,6 @@ import (
 	"github.com/Myriad-Dreamin/minimum-template/model"
 )
 
-
 func (svc *Service) fillPutFields(
 	c controller.MContext, object *model.Object,
 	req *control.PutObjectRequest) (fields []string) {

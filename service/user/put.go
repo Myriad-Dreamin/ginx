@@ -9,7 +9,6 @@ import (
 	"net/http"
 )
 
-
 func (srv *Service) fillPutFields(c controller.MContext, user *model.User, req *control.PutUserRequest) (fields []string) {
 	if len(req.Phone) != 0 {
 		if sug := CheckPhone(req.Phone); len(sug) != 0 {

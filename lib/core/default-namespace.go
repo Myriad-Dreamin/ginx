@@ -3,19 +3,19 @@ package mcore
 import "path/filepath"
 
 var (
-	joiner = filepath.Join
-	mini = "minimum"
+	joiner              = filepath.Join
+	mini                = "minimum"
 	global              = joiner(mini, "global")
 	middleware          = joiner(mini, "middleware")
 	provider            = joiner(mini, "provider")
-	dbinstance = joiner(mini, "dbinstance")
+	dbinstance          = joiner(mini, "dbinstance")
 	middlewareJWT       = joiner(middleware, "jwt")
 	middlewareRouteAuth = joiner(middleware, "route-auth")
 	middlewareCORS      = joiner(middleware, "cors")
 	globalLogger        = joiner(global, "logger")
 	dbinstanceGormDB    = joiner(dbinstance, "gormDB")
 	dbinstanceDormDB    = joiner(dbinstance, "dormDB")
-	dbinstanceRawDB    = joiner(dbinstance, "rawDB")
+	dbinstanceRawDB     = joiner(dbinstance, "rawDB")
 	dbinstanceRedisPool = joiner(dbinstance, "redisPool")
 	globalConfiguration = joiner(global, "configuration")
 	globalHttpEngine    = joiner(global, "httpEngine")
@@ -26,9 +26,9 @@ var (
 
 var DefaultNamespace = ModulePathS{
 	DBInstance: dbInstancesS{
-		DormDB: dbinstanceDormDB,
-		GormDB: dbinstanceGormDB,
-		RawDB: dbinstanceRawDB,
+		DormDB:    dbinstanceDormDB,
+		GormDB:    dbinstanceGormDB,
+		RawDB:     dbinstanceRawDB,
 		RedisPool: dbinstanceRedisPool,
 	},
 	Global: globalS{
@@ -55,9 +55,9 @@ type middlewareS struct {
 }
 
 type dbInstancesS struct {
-	GormDB string
-	DormDB string
-	RawDB string
+	GormDB    string
+	DormDB    string
+	RawDB     string
 	RedisPool string
 }
 

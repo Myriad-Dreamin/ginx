@@ -5,10 +5,10 @@ import (
 )
 
 type Context struct {
-	vars map[string]interface{}
-	method *Method
-	svc ProposingService
-	sources map[uintptr]*source
+	vars     map[string]interface{}
+	method   *Method
+	svc      ProposingService
+	sources  map[uintptr]*source
 	packages map[string]int
 }
 
@@ -49,13 +49,9 @@ func (c *Context) makeSources() {
 		}
 		c.appendPackage(t.PkgPath())
 		for i := 0; i < t.NumField(); i++ {
-			c.sources[v.Addr().Pointer() + t.Field(i).Offset] = &source{
+			c.sources[v.Addr().Pointer()+t.Field(i).Offset] = &source{
 				modelName: xmodel.name, faz: tt, fazElem: t, fieldIndex: i}
 		}
 	}
 	//fmt.Println(c.sources)
 }
-
-
-
-

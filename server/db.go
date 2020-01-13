@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/Myriad-Dreamin/functional-go"
 	"github.com/Myriad-Dreamin/minimum-lib/rbac"
-	"github.com/Myriad-Dreamin/minimum-template/model"
 	"github.com/Myriad-Dreamin/minimum-template/config"
+	"github.com/Myriad-Dreamin/minimum-template/model"
 )
 
 type dbResult struct {

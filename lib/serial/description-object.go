@@ -9,9 +9,8 @@ type SerializeObjectI interface {
 	CreateObjectDescription(ctx *Context) ObjectDescription
 }
 
-
 type objectDescription struct {
-	name string
+	name   string
 	params []*ParameterDescription
 }
 
@@ -37,7 +36,7 @@ type %s struct {
 %s
 
 %s
-`, desc.name, genStructFields(desc.params),desc.genPMethod(), desc.genMethod(), desc.genPackMethod() )
+`, desc.name, genStructFields(desc.params), desc.genPMethod(), desc.genMethod(), desc.genPackMethod())
 }
 
 func (desc objectDescription) genPMethod() string {
@@ -88,7 +87,7 @@ func (desc objectDescription) genParams() (res string) {
 
 type xParam struct {
 	name, typeOf string
-	source *ParameterDescription
+	source       *ParameterDescription
 }
 
 func (desc objectDescription) genXParams() (params []xParam) {
@@ -194,15 +193,11 @@ func search(params []xParam, sp *ParameterDescription) string {
 	panic("not found")
 }
 
-
-
-
 type ObjectDescription interface {
 	fmt.Stringer
 	GetTypeString() string
 	GetEmbedObject() []ObjectDescription
 }
-
 
 func dumpObj(res string, desc ObjectDescription) (result string) {
 	result = res
@@ -212,4 +207,3 @@ func dumpObj(res string, desc ObjectDescription) (result string) {
 	}
 	return
 }
-

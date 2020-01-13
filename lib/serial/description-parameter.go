@@ -11,7 +11,6 @@ type ParameterDescription struct {
 	tags         map[string]string
 }
 
-
 func genStructFields(descriptions []*ParameterDescription) (res string) {
 	for i := range descriptions {
 		desc := descriptions[i]
@@ -31,4 +30,3 @@ func genTag(tags map[string]string) (res string) {
 	res += "`"
 	return res
 }
-

@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/pelletier/go-toml"
 	"github.com/Myriad-Dreamin/minimum-template/lib/core-cfg"
+	"github.com/pelletier/go-toml"
 	"gopkg.in/yaml.v2"
 )
 
@@ -27,7 +27,6 @@ type RedisConfig struct {
 	IdleTimeout       time.Duration `json:"idle-timeout" yaml:"idle-timeout" toml:"idle-timeout" xml:"idle-timeout"`
 	Wait              bool          `json:"wait" yaml:"wait" toml:"wait" xml:"wait"`
 }
-
 
 type PathPlaceholder struct {
 	User string `json:"user" yaml:"user" toml:"user" xml:"user"`

@@ -5,4 +5,3 @@ import (
 )
 
 var ModulePath = mcore.DefaultNamespace
-

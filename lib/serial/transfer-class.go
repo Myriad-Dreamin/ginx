@@ -14,7 +14,6 @@ func (i transferClass) GetTypeString() string {
 	return i.name
 }
 
-
 type transferClass struct {
 	name string
 	base interface{}
@@ -29,6 +28,5 @@ func (i transferClass) GetEmbedObject() []ObjectDescription {
 }
 
 func Transfer(name string, base interface{}) *transferClass {
-	return &transferClass{name:name, base: base}
+	return &transferClass{name: name, base: base}
 }
-

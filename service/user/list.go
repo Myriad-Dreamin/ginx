@@ -7,7 +7,6 @@ import (
 	"github.com/Myriad-Dreamin/minimum-template/types"
 )
 
-
 func (srv *Service) ProcessListResults(c controller.MContext, result interface{}) interface{} {
 	return control.SerializeListUsersReply(
 		types.CodeOK,

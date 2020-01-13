@@ -1,8 +1,8 @@
 package splayer
 
 import (
-	"github.com/Myriad-Dreamin/minimum-template/lib/core"
 	"github.com/Myriad-Dreamin/minimum-lib/module"
+	"github.com/Myriad-Dreamin/minimum-template/lib/core"
 )
 
 var p = newModelModule()
@@ -42,14 +42,14 @@ func newModelModule() modelModule {
 }
 
 func (m *modelModule) FromContext(dep module.Module) bool {
-	m.Opened = true && 
+	m.Opened = true &&
 		m.LoggerModule.Install(dep) &&
 		m.RedisPoolModule.FromContext(dep)
 	return m.Opened
 }
 
 func (m *modelModule) Install(dep module.Module) bool {
-	m.Opened = true && 
+	m.Opened = true &&
 		m.LoggerModule.Install(dep) &&
 		m.RedisPoolModule.InstallFromConfiguration(dep)
 	return m.Opened

@@ -82,7 +82,7 @@ func newModelModule() modelModule {
 
 func (m *modelModule) install(
 	initFunc func(dep module.Module) bool, dep module.Module) bool {
-	return true && 
+	return true &&
 		m.LoggerModule.Install(dep) &&
 		initFunc(dep) &&
 		m.RawSQLModule.FromRaw(m.GormDB.DB(), dep) &&
@@ -103,6 +103,7 @@ func (m *modelModule) InstallMock(dep module.Module) bool {
 	m.Opened = m.install(m.GormModule.InstallMockFromConfiguration, dep)
 	return m.Opened
 }
+
 // var p = &P
 
 func (modelModule) Migrates() error {

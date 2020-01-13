@@ -5,13 +5,12 @@ import (
 	"github.com/Myriad-Dreamin/minimum-template/model"
 )
 
-
 type ObjectCategories struct {
 	serial.VirtualService
-	List           *serial.Category
-	Post          *serial.Category
-	Inspect          *serial.Category
-	IdGroup        *serial.Category
+	List    *serial.Category
+	Post    *serial.Category
+	Inspect *serial.Category
+	IdGroup *serial.Category
 }
 
 func DescribeObjectService(cat *serial.Category) serial.ProposingService {
@@ -31,8 +30,7 @@ func DescribeObjectService(cat *serial.Category) serial.ProposingService {
 		Post: serial.Ink().
 			Path("object").
 			Method(serial.POST, "PostObject",
-				serial.Request(
-				),
+				serial.Request(),
 				serial.Reply(
 					codeField,
 					serial.Param("object", &objectModel),
@@ -53,11 +51,10 @@ func DescribeObjectService(cat *serial.Category) serial.ProposingService {
 					serial.Param("object", &objectModel),
 				)).
 			Method(serial.PUT, "PutObject",
-				serial.Request(
-				)).
+				serial.Request()).
 			Method(serial.DELETE, "Delete"),
 	}
-	svc.Name("ObjectService").CateOf(cat)//.
-		//UseModel(serial.Model(serial.Name("object"), &objectModel))
+	svc.Name("ObjectService").CateOf(cat) //.
+	//UseModel(serial.Model(serial.Name("object"), &objectModel))
 	return svc
 }

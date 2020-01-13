@@ -1,9 +1,9 @@
 package mcore
 
 import (
-	"time"
 	"github.com/Myriad-Dreamin/minimum-lib/module"
 	"github.com/gomodule/redigo/redis"
+	"time"
 )
 
 type RedisPoolModule struct {
@@ -28,7 +28,8 @@ func (m *RedisPoolModule) Install(dep module.Module) bool {
 func (m *RedisPoolModule) InstallFromConfiguration(dep module.Module) bool {
 	xdb, err := OpenRedis(dep)
 	m.FromRaw(xdb, dep)
-	return Maybe(dep, "init redis error", err)}
+	return Maybe(dep, "init redis error", err)
+}
 
 func (m *RedisPoolModule) GetRedisPoolInstance() *redis.Pool {
 	return m.RedisPool
@@ -57,4 +58,3 @@ func OpenRedis(dep module.Module) (*redis.Pool, error) {
 	}
 	return pool, nil
 }
-

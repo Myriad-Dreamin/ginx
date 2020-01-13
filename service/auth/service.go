@@ -23,7 +23,7 @@ func (svc *Service) AuthSignatureXXX() interface{} { return svc }
 
 type RefreshTokenReply struct {
 	Code  types.CodeRawType `json:"code"`
-	Token string         `json:"token"`
+	Token string            `json:"token"`
 }
 
 func (svc *Service) RefreshToken(c controller.MContext) {

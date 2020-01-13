@@ -4,7 +4,6 @@ import (
 	"time"
 )
 
-
 type DatabaseConfig struct {
 	ConnectionType string `json:"connection-type" yaml:"connection-type" toml:"connection-type" xml:"connection-type"`
 	User           string `json:"user-name" yaml:"user-name" toml:"user-name" xml:"user-name"`
@@ -33,7 +32,6 @@ type RedisConfig struct {
 	Wait              bool          `json:"wait" yaml:"wait" toml:"wait" xml:"wait"`
 }
 
-
 type DebugLogger interface {
 	Debug(msg string, keyvals ...interface{})
 }
@@ -50,5 +48,3 @@ func (cfg DatabaseConfig) Debug(debugLogger DebugLogger) {
 	)
 
 }
-
-

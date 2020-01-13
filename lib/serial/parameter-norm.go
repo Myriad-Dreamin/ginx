@@ -5,12 +5,11 @@ import (
 )
 
 type norm struct {
-	name string
-	tags []*tag
+	name      string
+	tags      []*tag
 	fieldName string
-	param reflect.Value
+	param     reflect.Value
 }
-
 
 func (n *norm) Create(ctx *Context) *ParameterDescription {
 	desc := new(ParameterDescription)
@@ -51,7 +50,7 @@ func (n *norm) Create(ctx *Context) *ParameterDescription {
 }
 
 type source struct {
-	modelName string
+	modelName  string
 	faz        reflect.Type
 	fazElem    reflect.Type
 	fieldIndex int
@@ -79,13 +78,12 @@ func parseParamType(ctx *Context, n *norm) string {
 }
 
 type tag struct {
-	key string
+	key   string
 	value string
 }
 type FieldName string
 
-
-func Param(name string, descriptions...interface{}) Parameter {
+func Param(name string, descriptions ...interface{}) Parameter {
 	param := newNorm(name)
 	for _, description := range descriptions {
 		switch desc := description.(type) {
@@ -104,12 +102,11 @@ func Param(name string, descriptions...interface{}) Parameter {
 
 func Tag(key, value string) *tag {
 	return &tag{
-		key: key,
+		key:   key,
 		value: value,
 	}
 }
 
 func newNorm(name string) *norm {
-	return &norm{name:name}
+	return &norm{name: name}
 }
-

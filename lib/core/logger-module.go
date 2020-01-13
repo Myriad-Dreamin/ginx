@@ -1,8 +1,8 @@
 package mcore
 
 import (
-	"github.com/Myriad-Dreamin/minimum-lib/module"
 	"github.com/Myriad-Dreamin/minimum-lib/logger"
+	"github.com/Myriad-Dreamin/minimum-lib/module"
 )
 
 type LoggerModule struct {

@@ -8,7 +8,6 @@ import (
 	ginhelper "github.com/Myriad-Dreamin/minimum-template/service/gin-helper"
 )
 
-
 func (svc *Service) SerializePost(c controller.MContext) base_service.CRUDEntity {
 	var req control.PostObjectRequest
 	if !ginhelper.BindRequest(c, &req) {

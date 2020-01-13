@@ -5,14 +5,13 @@ import (
 	"github.com/Myriad-Dreamin/minimum-template/model"
 )
 
-
 type UserCategories struct {
 	serial.VirtualService
 	List           *serial.Category
 	Login          *serial.Category
 	Register       *serial.Category
 	ChangePassword *serial.Category
-	Inspect *serial.Category
+	Inspect        *serial.Category
 	IdGroup        *serial.Category
 }
 

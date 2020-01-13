@@ -4,7 +4,6 @@ import (
 	"github.com/Myriad-Dreamin/minimum-lib/module"
 )
 
-
 type ErrorLogger interface {
 	Error(msg string, keyvals ...interface{})
 }

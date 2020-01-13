@@ -1,7 +1,7 @@
 package serial
 
 type inheritClass struct {
-	name string
+	name  string
 	bases []interface{}
 }
 
@@ -23,6 +23,5 @@ func (i inheritClass) CreateObjectDescription(ctx *Context) ObjectDescription {
 }
 
 func Inherit(name string, bases ...interface{}) *inheritClass {
-	return &inheritClass{name:name, bases:bases}
+	return &inheritClass{name: name, bases: bases}
 }
-

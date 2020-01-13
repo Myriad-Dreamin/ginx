@@ -1,20 +1,24 @@
 package serial
 
 type MethodType int
+
 const (
 	POST MethodType = iota
 	GET
+	PATCH
+	HEAD
 	PUT
 	DELETE
 	OPTION
+	CONNECT
+	TRACE
 )
-
 
 type Method struct {
 	method   MethodType
 	name     string
 	requests []SerializeObjectI
-	replies []SerializeObjectI
+	replies  []SerializeObjectI
 }
 
 func (method *Method) create(ctx *Context) *methodDescription {
@@ -32,7 +36,5 @@ func (method *Method) create(ctx *Context) *methodDescription {
 }
 
 func newMethod(method MethodType) *Method {
-	return &Method{method:method}
+	return &Method{method: method}
 }
-
-

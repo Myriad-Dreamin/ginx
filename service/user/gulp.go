@@ -45,7 +45,6 @@ func (srv *Service) FillPutFields(c controller.MContext, user base_service.CRUDE
 	return srv.fillPutFields(c, user.(*model.User), req.(*control.PutUserRequest))
 }
 
-
 func (srv *Service) ListUsers(c controller.MContext) {
 	srv.List(c)
 	return
@@ -65,4 +64,3 @@ func (srv *Service) PutUser(c controller.MContext) {
 	srv.Put(c)
 	return
 }
-

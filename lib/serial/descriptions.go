@@ -1,11 +1,10 @@
 package serial
 
-
 type methodDescription struct {
-	method MethodType
-	name   string
+	method   MethodType
+	name     string
 	requests []ObjectDescription
-	replies []ObjectDescription
+	replies  []ObjectDescription
 }
 
 type categoryDescription struct {
@@ -35,4 +34,3 @@ func (description serviceDescription) generateObjects() (result string) {
 	}
 	return
 }
-

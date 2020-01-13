@@ -12,7 +12,6 @@ import (
 	"time"
 )
 
-
 func (srv *Service) Login(c controller.MContext) {
 	var req = new(control.LoginRequest)
 

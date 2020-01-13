@@ -3,8 +3,8 @@ package mcore
 import (
 	"database/sql"
 	"github.com/Myriad-Dreamin/dorm"
-	"github.com/Myriad-Dreamin/minimum-lib/module"
 	"github.com/Myriad-Dreamin/minimum-lib/logger"
+	"github.com/Myriad-Dreamin/minimum-lib/module"
 	"github.com/Myriad-Dreamin/minimum-template/lib/core-cfg"
 )
 
@@ -18,18 +18,17 @@ func (m *DormModule) FromRaw(db *dorm.DB, dep module.Module) bool {
 	return true
 }
 
-
 func (m *DormModule) FromRawSQL(db *sql.DB, dep module.Module) bool {
 	logger := dep.Require(DefaultNamespace.Global.Logger).(logger.Logger)
 	options := []interface{}{adapt(logger)}
 
 	escaper := m.getEscaper(dep)
-	if len(escaper) != 0 { 
+	if len(escaper) != 0 {
 		options = append(options, dorm.Escaper(escaper))
 	}
 
 	xdb, err := dorm.FromRaw(db, options)
-	
+
 	m.DormDB = xdb
 	dep.Provide(DefaultNamespace.DBInstance.DormDB, xdb)
 
@@ -58,8 +57,7 @@ type RedisConfiguration interface {
 }
 
 func (m *DormModule) getEscaper(dep module.Module) string {
-	return dep.Require(DefaultNamespace.Global.Configuration).
-		(DatabaseConfiguration).GetDatabaseConfiguration().Escaper
+	return dep.Require(DefaultNamespace.Global.Configuration).(DatabaseConfiguration).GetDatabaseConfiguration().Escaper
 }
 
 type L struct {
