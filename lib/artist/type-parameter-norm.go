@@ -1,39 +1,40 @@
-package serial
+package artist
 
 import (
 	"reflect"
 )
 
 type norm struct {
-	name      string
-	tags      []*tag
-	fieldName string
-	param     reflect.Value
+	name  string
+	tags  []*tag
+	field Field
+	param reflect.Value
 }
 
-func (n *norm) Create(ctx *Context) *ParameterDescription {
-	desc := new(ParameterDescription)
+type pureField struct {
+	s string
+}
+
+func (p pureField) String() string {
+	return p.s
+}
+
+func (n *norm) CreateParameterDescription(ctx *Context) ParameterDescription {
+	desc := new(parameterDescription)
 	desc.name = n.name
-	desc.fieldName = n.fieldName
-	if len(desc.fieldName) == 0 {
-		desc.fieldName = fromSnakeToBigCamel(desc.name)
+	desc.field = n.field
+	if desc.field == nil {
+		desc.field = pureField{fromSnakeToBigCamel(desc.name)}
 	}
 
-	if embedType, ok := n.param.Interface().(SerializeObjectI); ok {
+	if embedType, ok := n.param.Interface().(SerializeObject); ok {
 		objDesc := embedType.CreateObjectDescription(ctx)
 		desc.embedObjects = append(desc.embedObjects, objDesc)
-		desc.typeString = objDesc.GetTypeString()
+		desc.pType = objDesc.GetType()
 	} else {
-		desc.typeString = parseParamType(ctx, n)
+		desc.pType = parseParamType(ctx, n)
 		desc.source = parseSource(ctx, n)
-		t := n.param.Type()
-		for t.Kind() == reflect.Ptr {
-			t = t.Elem()
-		}
-		pk := t.PkgPath()
-		if len(pk) != 0 {
-			ctx.appendPackage(pk)
-		}
+		ctx.appendPackage(getReflectElementType(n.param).PkgPath())
 	}
 	desc.tags = make(map[string]string)
 	desc.tags["json"] = desc.name
@@ -63,15 +64,23 @@ func (s source) paramName() string {
 	return "_" + toSmallCamel(s.fazElem.Name())
 }
 
+func (s source) memberName() string {
+	return s.fazElem.Field(s.fieldIndex).Name
+}
+
 func parseSource(context *Context, n *norm) *source {
 	return context.getSource(n.param.UnsafeAddr())
 }
 
-func parseParamType(ctx *Context, n *norm) string {
+type reflectType struct {
+	reflect.Type
+}
+
+func parseParamType(ctx *Context, n *norm) Type {
 	t := n.param.Type()
 	if t != nil {
 		ctx.appendPackage(t.PkgPath())
-		return t.String()
+		return reflectType{t}
 	} else {
 		panic("nil type")
 	}
@@ -83,21 +92,25 @@ type tag struct {
 }
 type FieldName string
 
-func Param(name string, descriptions ...interface{}) Parameter {
+func createNorm(name string, descriptions ...interface{}) *norm {
 	param := newNorm(name)
 	for _, description := range descriptions {
 		switch desc := description.(type) {
 		case *tag:
 			param.tags = append(param.tags, desc)
 		case FieldName:
-			param.fieldName = string(desc)
-		case SerializeObjectI:
+			param.field = pureField{string(desc)}
+		case SerializeObject:
 			param.param = reflect.ValueOf(desc)
 		default:
 			param.param = reflect.ValueOf(desc).Elem()
 		}
 	}
 	return param
+}
+
+func Param(name string, descriptions ...interface{}) Parameter {
+	return createNorm(name, descriptions...)
 }
 
 func Tag(key, value string) *tag {

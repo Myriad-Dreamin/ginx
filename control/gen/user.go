@@ -1,103 +1,101 @@
 package main
 
 import (
-	"github.com/Myriad-Dreamin/minimum-template/lib/serial"
+	"github.com/Myriad-Dreamin/minimum-template/lib/artist"
 	"github.com/Myriad-Dreamin/minimum-template/model"
 )
 
 type UserCategories struct {
-	serial.VirtualService
-	List           serial.Category
-	Login          serial.Category
-	Register       serial.Category
-	ChangePassword serial.Category
-	Inspect        serial.Category
-	IdGroup        serial.Category
+	artist.VirtualService
+	List           artist.Category
+	Login          artist.Category
+	Register       artist.Category
+	ChangePassword artist.Category
+	Inspect        artist.Category
+	IdGroup        artist.Category
 }
 
-func DescribeUserService(base string) serial.ProposingService {
+func DescribeUserService(base string) artist.ProposingService {
 	var userModel = new(model.User)
 	var vUserModel model.User
 	svc := &UserCategories{
-		List: serial.Ink().
+		List: artist.Ink().
 			Path("user-list").
-			Method(serial.POST, "ListUsers",
-				serial.Request(
-					serial.Transfer("ListUsersRequest", model.Filter{}),
-				),
-				serial.Reply(
+			Method(artist.POST, "ListUsers",
+				artist.QT("ListUsersRequest", model.Filter{}),
+				artist.Reply(
 					codeField,
-					serial.ArrayParam(serial.Param("users", serial.Object(
+					artist.ArrayParam(artist.Param("users", artist.Object(
 						"ListUserReply",
-						serial.Param("nick_name", &vUserModel.NickName),
-						serial.Param("last_login", &vUserModel.LastLogin),
+						artist.SnakeParam(&vUserModel.NickName),
+						artist.SnakeParam(&vUserModel.LastLogin),
 					))),
 				),
 			),
-		Login: serial.Ink().
+		Login: artist.Ink().
 			Path("login").
-			Method(serial.POST, "Login",
-				serial.Request(
-					serial.Param("id", &userModel.ID),
-					serial.Param("nick_name", &userModel.NickName),
-					serial.Param("phone", &userModel.Phone),
-					serial.Param("password", &serial.String, required),
+			Method(artist.POST, "Login",
+				artist.Request(
+					artist.SnakeParam(&userModel.ID),
+					artist.SnakeParam(&userModel.NickName),
+					artist.SnakeParam(&userModel.Phone),
+					artist.Param("password", &artist.String, required),
 				),
-				serial.Reply(
+				artist.Reply(
 					codeField,
-					serial.Param("id", &userModel.ID),
-					serial.Param("identity", &serial.Strings),
-					serial.Param("phone", &userModel.Phone),
-					serial.Param("nick_name", &userModel.NickName),
-					serial.Param("name", &userModel.Name),
-					serial.Param("token", &serial.String),
-					serial.Param("refresh_token", &serial.String),
+					artist.SnakeParam(&userModel.ID),
+					artist.SnakeParam(&userModel.Phone),
+					artist.SnakeParam(&userModel.NickName),
+					artist.SnakeParam(&userModel.Name),
+					artist.Param("identity", &artist.Strings),
+					artist.Param("token", &artist.String),
+					artist.Param("refresh_token", &artist.String),
 				),
 			),
-		Register: serial.Ink().
+		Register: artist.Ink().
 			Path("register").
-			Method(serial.POST, "Register",
-				serial.Request(
-					serial.Param("name", &serial.String, required),
-					serial.Param("password", &serial.String, required),
-					serial.Param("nick_name", &serial.String, required),
-					serial.Param("phone", &serial.String, required),
+			Method(artist.POST, "Register",
+				artist.Request(
+					artist.SnakeParam(&userModel.Name, required),
+					artist.SnakeParam(&userModel.NickName, required),
+					artist.SnakeParam(&userModel.Phone, required),
+					artist.Param("password", &artist.String, required),
 				),
-				serial.Reply(
+				artist.Reply(
 					codeField,
-					serial.Param("id", &userModel.ID)),
+					artist.Param("id", &userModel.ID)),
 			),
-		ChangePassword: serial.Ink().
+		ChangePassword: artist.Ink().
 			Path("user/:id/password").
-			Method(serial.PUT, "ChangePassword",
-				serial.Request(
-					serial.Param("old_password", &serial.String, required),
-					serial.Param("new_password", &serial.String, required),
+			Method(artist.PUT, "ChangePassword",
+				artist.Request(
+					artist.Param("old_password", &artist.String, required),
+					artist.Param("new_password", &artist.String, required),
 				),
 			),
-		Inspect: serial.Ink().Path("user/:id/inspect").
-			Method(serial.GET, "InspectUser",
-				serial.Reply(
+		Inspect: artist.Ink().Path("user/:id/inspect").
+			Method(artist.GET, "InspectUser",
+				artist.Reply(
 					codeField,
-					serial.Param("user", &userModel),
+					artist.Param("user", &userModel),
 				),
 			),
-		IdGroup: serial.Ink().
+		IdGroup: artist.Ink().
 			Path("user/:id").
-			Method(serial.GET, "GetUser",
-				serial.Reply(
+			Method(artist.GET, "GetUser",
+				artist.Reply(
 					codeField,
-					serial.Param("nick_name", &userModel.NickName),
-					serial.Param("last_login", &userModel.LastLogin),
+					artist.SnakeParam(&userModel.NickName),
+					artist.SnakeParam(&userModel.LastLogin),
 				)).
-			Method(serial.PUT, "PutUser",
-				serial.Request(
-					serial.Param("phone", &userModel.Phone),
+			Method(artist.PUT, "PutUser",
+				artist.Request(
+					artist.Param("phone", &userModel.Phone),
 				)).
-			Method(serial.DELETE, "Delete"),
+			Method(artist.DELETE, "Delete"),
 	}
 	svc.Name("UserService").Base(base).UseModel(
-		serial.Model(serial.Name("user"), &userModel),
-		serial.Model(serial.Name("vUser"), &vUserModel))
+		artist.Model(artist.Name("user"), &userModel),
+		artist.Model(artist.Name("vUser"), &vUserModel))
 	return svc
 }

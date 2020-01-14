@@ -1,26 +1,22 @@
-package serial
+package artist
 
 import (
 	"fmt"
 	"unicode"
 )
 
-type SerializeObjectI interface {
-	CreateObjectDescription(ctx *Context) ObjectDescription
-}
-
 type objectDescription struct {
 	name   string
-	params []*ParameterDescription
+	params []ParameterDescription
 }
 
-func (desc objectDescription) GetTypeString() string {
-	return desc.name
+func (desc objectDescription) GetType() Type {
+	return pureType{typeString: desc.name}
 }
 
 func (desc objectDescription) GetEmbedObject() (dx []ObjectDescription) {
 	for _, param := range desc.params {
-		dx = append(dx, param.embedObjects...)
+		dx = append(dx, param.GetEmbedObjects()...)
 	}
 	return dx
 }
@@ -80,29 +76,30 @@ func (desc objectDescription) genParams() (res string) {
 		if len(res) != 0 {
 			res += ", "
 		}
-		res += "_" + fromSnakeToSmallCamel(param.name) + " " + param.typeString
+		res += "_" + fromSnakeToSmallCamel(param.GetDTOName()) + " " + param.GetType().String()
 	}
 	return res
 }
 
 type xParam struct {
 	name, typeOf string
-	source       *ParameterDescription
+	source       ParameterDescription
 }
 
 func (desc objectDescription) genXParams() (params []xParam) {
 	//desc.params
 	for _, param := range desc.params {
-		if param.source != nil {
+		source := param.GetSource()
+		if source != nil {
 			params = append(params, xParam{
-				name:   param.source.paramName(),
-				typeOf: param.source.faz.String(),
+				name:   source.paramName(),
+				typeOf: source.faz.String(),
 				source: param,
 			})
 		} else {
 			params = append(params, xParam{
-				name:   "_" + fromSnakeToSmallCamel(param.name),
-				typeOf: param.typeString,
+				name:   "_" + fromSnakeToSmallCamel(param.GetDTOName()),
+				typeOf: param.GetType().String(),
 				source: param,
 			})
 		}
@@ -121,7 +118,7 @@ func toSmallCamel(name string) string {
 func fromXParam(p []xParam) (res string) {
 	var appended = make(map[string]bool)
 	for _, param := range p {
-		if param.source.source != nil {
+		if param.source.GetSource() != nil {
 			if _, ok := appended[param.name]; ok {
 				continue
 			}
@@ -138,7 +135,7 @@ func fromXParam(p []xParam) (res string) {
 func fromFXParam(p []xParam) (res string) {
 	var appended = make(map[string]bool)
 	for _, param := range p {
-		if param.source.source != nil {
+		if param.source.GetSource() != nil {
 			if _, ok := appended[param.name]; ok {
 				continue
 			}
@@ -155,7 +152,7 @@ func fromFXParam(p []xParam) (res string) {
 func fromSXParam(p []xParam) (res string) {
 	var appended = make(map[string]bool)
 	for _, param := range p {
-		if param.source.source != nil {
+		if param.source.GetSource() != nil {
 			if _, ok := appended[param.name]; ok {
 				continue
 			}
@@ -175,18 +172,19 @@ func (desc objectDescription) genResultFields(x []xParam) (res string) {
 		if len(res) != 0 {
 			res += "\n"
 		}
-		res += "        " + param.fieldName + ": " + search(x, param) + ","
+		res += "        " + param.GetField().String() + ": " + search(x, param) + ","
 	}
 	return
 }
 
-func search(params []xParam, sp *ParameterDescription) string {
+func search(params []xParam, sp ParameterDescription) string {
 	for _, param := range params {
 		if sp == param.source {
-			if sp.source == nil {
+			source := sp.GetSource()
+			if source == nil {
 				return param.name
 			} else {
-				return param.name + "." + sp.source.fazElem.Field(sp.source.fieldIndex).Name
+				return param.name + "." + source.memberName()
 			}
 		}
 	}
@@ -195,7 +193,7 @@ func search(params []xParam, sp *ParameterDescription) string {
 
 type ObjectDescription interface {
 	fmt.Stringer
-	GetTypeString() string
+	GetType() Type
 	GetEmbedObject() []ObjectDescription
 }
 

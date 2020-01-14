@@ -1,4 +1,4 @@
-package serial
+package artist
 
 import (
 	"reflect"
@@ -32,10 +32,15 @@ func (c *Context) sub() *Context {
 }
 
 func (c *Context) appendPackage(pkg string) {
-	if c.packages == nil {
-		c.packages = make(map[string]bool)
+	if len(pkg) != 0 {
+		if pkg == "reflect" {
+			panic("?W")
+		}
+		if c.packages == nil {
+			c.packages = make(map[string]bool)
+		}
+		c.packages[pkg] = true
 	}
-	c.packages[pkg] = true
 }
 
 func (c *Context) set(k string, v interface{}) {

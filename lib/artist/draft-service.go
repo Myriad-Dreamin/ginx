@@ -1,4 +1,4 @@
-package serial
+package artist
 
 // ProposingService is the Interface of VirtualService
 // Getter of Virtual Service

@@ -1,4 +1,4 @@
-package serial
+package artist
 
 type MethodType int
 
@@ -23,8 +23,8 @@ type Method interface {
 type method struct {
 	methodType MethodType
 	name       string
-	requests   []SerializeObjectI
-	replies    []SerializeObjectI
+	requests   []SerializeObject
+	replies    []SerializeObject
 }
 
 func (method method) GetName() string {

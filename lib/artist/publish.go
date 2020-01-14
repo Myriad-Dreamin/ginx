@@ -1,4 +1,4 @@
-package serial
+package artist
 
 import (
 	"fmt"

@@ -20,7 +20,7 @@ type ListObjectsRequest = gorm_crud_dao.Filter
 
 type ListObjectsReply struct {
 	Code    int              `json:"code"form:"code"`
-	Objects []dblayer.Object `json:"objects"form:"objects"`
+	Objects []dblayer.Object `form:"objects"json:"objects"`
 }
 
 func PSerializeListObjectsReply(_code int, _objects []dblayer.Object) *ListObjectsReply {
@@ -86,27 +86,27 @@ func PackSerializePostObjectReply(_code []int, _object []*dblayer.Object) (pack 
 }
 
 type InspectObjectReply struct {
-	Code int             `json:"code"form:"code"`
-	User *dblayer.Object `json:"user"form:"user"`
+	Code   int             `form:"code"json:"code"`
+	Object *dblayer.Object `json:"object"form:"object"`
 }
 
-func PSerializeInspectObjectReply(_code int, _user *dblayer.Object) *InspectObjectReply {
+func PSerializeInspectObjectReply(_code int, _object *dblayer.Object) *InspectObjectReply {
 	return &InspectObjectReply{
-		Code: _code,
-		User: _user,
+		Code:   _code,
+		Object: _object,
 	}
 }
 
-func SerializeInspectObjectReply(_code int, _user *dblayer.Object) InspectObjectReply {
+func SerializeInspectObjectReply(_code int, _object *dblayer.Object) InspectObjectReply {
 	return InspectObjectReply{
-		Code: _code,
-		User: _user,
+		Code:   _code,
+		Object: _object,
 	}
 }
 
-func PackSerializeInspectObjectReply(_code []int, _user []*dblayer.Object) (pack []InspectObjectReply) {
+func PackSerializeInspectObjectReply(_code []int, _object []*dblayer.Object) (pack []InspectObjectReply) {
 	for i := range _code {
-		pack = append(pack, SerializeInspectObjectReply(_code[i], _user[i]))
+		pack = append(pack, SerializeInspectObjectReply(_code[i], _object[i]))
 	}
 	return
 }

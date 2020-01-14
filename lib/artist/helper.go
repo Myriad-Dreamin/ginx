@@ -1,8 +1,9 @@
-package serial
+package artist
 
 import (
 	"bytes"
 	"reflect"
+	"strings"
 	"unicode"
 )
 
@@ -41,7 +42,11 @@ func inplaceMergePackage(pac packageSet, oth packageSet) packageSet {
 }
 
 func getElements(i interface{}) (reflect.Value, reflect.Type) {
-	v, t := reflect.ValueOf(i), reflect.TypeOf(i)
+	return getReflectElements(reflect.ValueOf(i))
+}
+
+func getReflectElements(v reflect.Value) (reflect.Value, reflect.Type) {
+	t := v.Type()
 	for t.Kind() == reflect.Ptr {
 		v, t = v.Elem(), t.Elem()
 	}
@@ -51,6 +56,16 @@ func getElements(i interface{}) (reflect.Value, reflect.Type) {
 func getElementValue(i interface{}) reflect.Value {
 	v, _ := getElements(i)
 	return v
+}
+
+func getElementType(i interface{}) reflect.Type {
+	_, t := getElements(i)
+	return t
+}
+
+func getReflectElementType(v reflect.Value) reflect.Type {
+	_, t := getReflectElements(v)
+	return t
 }
 
 func fromSnakeToCamel(src string, big bool) string {
@@ -68,6 +83,38 @@ func fromSnakeToCamel(src string, big bool) string {
 			} else {
 				b.WriteByte(src[i])
 			}
+		}
+	}
+	return b.String()
+}
+
+func allBig(name string) bool {
+	for i := range name {
+		if unicode.IsLower(rune(name[i])) {
+			return false
+		}
+	}
+	return true
+}
+
+func fromBigCamelToSnake(name string) string {
+	// ID, etc...
+	if allBig(name) {
+		return strings.ToLower(name)
+	}
+
+	if len(name) == 0 {
+		return ""
+	}
+	var b = bytes.NewBuffer(make([]byte, 0, len(name)))
+	b.WriteByte(byte(unicode.ToLower(rune(name[0]))))
+	name = name[1:]
+	for i := range name {
+		if unicode.IsUpper(rune(name[i])) {
+			b.WriteByte('_')
+			b.WriteByte(byte(unicode.ToLower(rune(name[i]))))
+		} else {
+			b.WriteByte(name[i])
 		}
 	}
 	return b.String()

@@ -1,4 +1,4 @@
-package serial
+package artist
 
 type model struct {
 	name  string

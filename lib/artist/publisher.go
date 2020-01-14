@@ -1,4 +1,4 @@
-package serial
+package artist
 
 import (
 	"reflect"
@@ -36,6 +36,7 @@ func (c *PublishingServices) Publish() error {
 
 func (c *PublishingServices) Final() (d *PublishedServices) {
 	d = new(PublishedServices)
+	d.packageName = c.packageName
 	for _, svc := range c.rawSvc {
 
 		// compile models

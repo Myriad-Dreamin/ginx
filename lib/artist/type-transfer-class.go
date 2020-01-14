@@ -1,4 +1,4 @@
-package serial
+package artist
 
 import (
 	"fmt"
@@ -15,12 +15,17 @@ func (i transferClass) GetTypeString() string {
 }
 
 type transferClass struct {
-	name string
-	base interface{}
+	name     string
+	base     interface{}
+	baseType reflect.Type
+}
+
+func (i transferClass) GetType() Type {
+	return i.baseType
 }
 
 func (i transferClass) String() string {
-	return fmt.Sprintf("type %s = %s", i.name, reflect.TypeOf(i.base))
+	return fmt.Sprintf("type %s = %s", i.name, i.baseType)
 }
 
 func (i transferClass) GetEmbedObject() []ObjectDescription {
@@ -28,5 +33,5 @@ func (i transferClass) GetEmbedObject() []ObjectDescription {
 }
 
 func Transfer(name string, base interface{}) *transferClass {
-	return &transferClass{name: name, base: base}
+	return &transferClass{name: name, base: base, baseType: reflect.TypeOf(base)}
 }

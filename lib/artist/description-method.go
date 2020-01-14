@@ -1,4 +1,4 @@
-package serial
+package artist
 
 type MethodDescription interface {
 	GetMethodType() MethodType

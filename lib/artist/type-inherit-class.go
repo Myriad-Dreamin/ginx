@@ -1,8 +1,12 @@
-package serial
+package artist
 
 type inheritClass struct {
 	name  string
 	bases []interface{}
+}
+
+func (i inheritClass) GetType() Type {
+	panic("implement")
 }
 
 func (i inheritClass) String() string {

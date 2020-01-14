@@ -1,4 +1,4 @@
-package serial
+package artist
 
 type CategoryDescription interface {
 	GetName() string
