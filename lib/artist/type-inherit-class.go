@@ -5,8 +5,12 @@ type inheritClass struct {
 	bases []interface{}
 }
 
+func (i inheritClass) GenObjectTemplate() ObjectTemplate {
+	panic("implement me")
+}
+
 func (i inheritClass) GetType() Type {
-	panic("implement")
+	panic("implement me")
 }
 
 func (i inheritClass) String() string {

@@ -13,6 +13,8 @@ func Object(descriptions ...interface{}) SerializeObject {
 			return desc
 		case Parameter:
 			parameters = append(parameters, desc)
+		case []Parameter:
+			parameters = append(parameters, desc...)
 		case string:
 			name = desc
 		}

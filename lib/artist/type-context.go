@@ -33,9 +33,6 @@ func (c *Context) sub() *Context {
 
 func (c *Context) appendPackage(pkg string) {
 	if len(pkg) != 0 {
-		if pkg == "reflect" {
-			panic("?W")
-		}
 		if c.packages == nil {
 			c.packages = make(map[string]bool)
 		}
@@ -70,6 +67,9 @@ func (c *Context) makeSources() {
 		tt := t
 		for t.Kind() == reflect.Ptr {
 			v, t = v.Elem(), t.Elem()
+		}
+		if t.Kind() != reflect.Struct {
+			panic(ErrNotStruct)
 		}
 		c.appendPackage(t.PkgPath())
 		for i := 0; i < t.NumField(); i++ {

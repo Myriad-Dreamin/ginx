@@ -20,6 +20,26 @@ type transferClass struct {
 	baseType reflect.Type
 }
 
+func (i transferClass) GenObjectTemplate() ObjectTemplate {
+	x := &XParam{
+		name:   fromBigCamelToSnake(getReflectTypeElementType(i.baseType).Name()),
+		typeOf: i.baseType.String(),
+		source: nil,
+	}
+	f := &ObjectTemplateFieldImpl{
+		Name:   "",
+		PType:  i.baseType,
+		Tag:    nil,
+		Source: x,
+	}
+	return &ObjectTemplateImpl{
+		Name:   i.name,
+		TType:  TemplateTypeEq,
+		Fields: []ObjectTemplateField{f},
+		Xps:    []*XParam{x},
+	}
+}
+
 func (i transferClass) GetType() Type {
 	return i.baseType
 }

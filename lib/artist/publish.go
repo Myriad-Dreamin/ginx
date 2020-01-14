@@ -31,12 +31,12 @@ func (c *PublishedServices) writeSVCsAndDTOs() (err error) {
 			return
 		}
 		svc := c.svc[i]
-		//fmt.Println(svc.filePath)
-		var packages = make(map[string]bool)
-		packages["github.com/Myriad-Dreamin/minimum-lib/controller"] = true
-		for _, cate := range svc.GetCategories() {
-			packages = inplaceMergePackage(packages, cate.GetPackages())
-		}
+
+		ctx := newTemplateContext(svc)
+		ctx.AppendPackage("github.com/Myriad-Dreamin/minimum-lib/controller")
+
+		objs, funcs := svc.GenerateObjects(nil, ctx)
+
 		//fmt.Println(packages)
 		sugar.WithWriteFile(func(f *os.File) {
 			_, err = fmt.Fprintf(f, `
@@ -46,9 +46,32 @@ import (
 %s
 )
 
-%s
+%s`, c.packageName, depList(ctx.GetPackages()), svcIface(svc))
+			if err != nil {
+				return
+			}
 
-%s`, c.packageName, depList(packages), svcIface(svc), svc.GenerateObjects())
+			for _, obj := range objs {
+				_, err = f.WriteString(obj.String())
+				if err != nil {
+					return
+				}
+				_, err = f.WriteString("\n")
+				if err != nil {
+					return
+				}
+			}
+
+			for _, v := range funcs {
+				_, err = f.WriteString(v.String())
+				if err != nil {
+					return
+				}
+				_, err = f.WriteString("\n")
+				if err != nil {
+					return
+				}
+			}
 		}, svc.GetFilePath())
 	}
 	return

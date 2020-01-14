@@ -11,6 +11,7 @@ type Field interface {
 }
 
 type ParameterDescription interface {
+	Hash() []byte
 	GetSource() *source
 	GetDTOName() string
 	GetType() Type

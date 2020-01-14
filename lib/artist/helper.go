@@ -7,21 +7,56 @@ import (
 	"unicode"
 )
 
-type packageSet = map[string]bool
+func searchSource(params []*XParam, sp ParameterDescription) *XParam {
+	for _, param := range params {
+		if bytes.Equal(sp.Hash(), param.source.Hash()) {
+			return param
+		}
+	}
+	panic("not found")
+}
 
-func clonePackage(m packageSet) (n packageSet) {
+func search(params []*XParam, sp ParameterDescription) string {
+	source, param := sp.GetSource(), searchSource(params, sp)
+	if source == nil {
+		return param.name
+	} else {
+		return param.name + "." + source.memberName()
+	}
+}
+
+func dumpObj(ctx TemplateContext, factories []FunctionTemplateFactory,
+	desc ObjectDescription) (objs []ObjectTemplate, funcs []FunctionTemplate) {
+
+	tmpl := desc.GenObjectTemplate()
+	objs = append(objs, tmpl)
+	for _, fac := range factories {
+		funcs = append(funcs, fac(tmpl, ctx)...)
+	}
+
+	for _, obj := range desc.GetEmbedObject() {
+		os, fs := dumpObj(ctx, factories, obj)
+		objs = append(objs, os...)
+		funcs = append(funcs, fs...)
+	}
+	return objs, funcs
+}
+
+type PackageSet = map[string]bool
+
+func clonePackage(m PackageSet) (n PackageSet) {
 	if m == nil {
 		return nil
 	}
-	n = make(packageSet)
+	n = make(PackageSet)
 	for k, v := range m {
 		n[k] = v
 	}
 	return n
 }
 
-func mergePackage(pac packageSet, oth packageSet) packageSet {
-	newPac := make(packageSet)
+func mergePackage(pac PackageSet, oth PackageSet) PackageSet {
+	newPac := make(PackageSet)
 	for k, v := range pac {
 		newPac[k] = v
 	}
@@ -31,9 +66,9 @@ func mergePackage(pac packageSet, oth packageSet) packageSet {
 	return newPac
 }
 
-func inplaceMergePackage(pac packageSet, oth packageSet) packageSet {
+func inplaceMergePackage(pac PackageSet, oth PackageSet) PackageSet {
 	if pac == nil {
-		pac = make(packageSet)
+		pac = make(PackageSet)
 	}
 	for k, v := range oth {
 		pac[k] = v
@@ -65,6 +100,13 @@ func getElementType(i interface{}) reflect.Type {
 
 func getReflectElementType(v reflect.Value) reflect.Type {
 	_, t := getReflectElements(v)
+	return t
+}
+
+func getReflectTypeElementType(t reflect.Type) reflect.Type {
+	for t.Kind() == reflect.Ptr {
+		t = t.Elem()
+	}
 	return t
 }
 
@@ -126,4 +168,12 @@ func fromSnakeToSmallCamel(src string) string {
 
 func fromSnakeToBigCamel(src string) string {
 	return fromSnakeToCamel(src, true)
+}
+
+func toSmallCamel(name string) string {
+	if len(name) == 0 {
+		return name
+	} else {
+		return string(unicode.ToLower(rune(name[0]))) + name[1:]
+	}
 }

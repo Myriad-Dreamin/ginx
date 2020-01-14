@@ -1,19 +1,34 @@
 package artist
 
+type GenTreeNode interface {
+	GenerateObjects(ts []FunctionTemplateFactory, c TemplateContext) (objs []ObjectTemplate, funcs []FunctionTemplate)
+	GetCategories() []CategoryDescription
+	GetTemplateFunctionFactory() []FunctionTemplateFactory
+	GetPackages() PackageSet
+}
+
 type ServiceDescription interface {
+	GenTreeNode
 	GetName() string
 	GetBase() string
-	GetCategories() []CategoryDescription
 	GetFilePath() string
-	GenerateObjects() string
 }
 
 type serviceDescription struct {
-	name       string
-	base       string
-	categories []CategoryDescription
-	filePath   string
+	name          string
+	base          string
+	tmplFactories []FunctionTemplateFactory
+	categories    []CategoryDescription
+	filePath      string
 	//packages   map[string]int
+}
+
+func (description serviceDescription) GetPackages() PackageSet {
+	return nil
+}
+
+func (description serviceDescription) GetTemplateFunctionFactory() []FunctionTemplateFactory {
+	return description.tmplFactories
 }
 
 func (description serviceDescription) GetName() string {
@@ -32,17 +47,40 @@ func (description serviceDescription) GetFilePath() string {
 	return description.filePath
 }
 
-func (description serviceDescription) GenerateObjects() (result string) {
-	for _, cat := range description.categories {
+func GenerateObjects(
+	g GenTreeNode, ts []FunctionTemplateFactory, c TemplateContext) (
+	objs []ObjectTemplate, funcs []FunctionTemplate) {
+	ctx := c.Clone()
+	ctx.MergePackages(g.GetPackages())
+	tmplFactories := append(g.GetTemplateFunctionFactory(), ts...)
+
+	for _, cat := range g.GetCategories() {
+		ctx.PushCategory(cat)
+
+		os, fs := cat.GenerateObjects(tmplFactories, ctx)
+		objs = append(objs, os...)
+		funcs = append(funcs, fs...)
+
 		for _, method := range cat.GetMethods() {
+			ctx.SetObjectType(ObjectTypeRequest)
 			for _, req := range method.GetRequests() {
-				result = dumpObj(result, req)
+
+				os, fs := dumpObj(ctx, tmplFactories, req)
+				objs = append(objs, os...)
+				funcs = append(funcs, fs...)
 			}
 
+			ctx.SetObjectType(ObjectTypeReply)
 			for _, res := range method.GetReplies() {
-				result = dumpObj(result, res)
+				os, fs := dumpObj(ctx, tmplFactories, res)
+				objs = append(objs, os...)
+				funcs = append(funcs, fs...)
 			}
 		}
+		ctx.PopCategory()
 	}
 	return
+}
+func (description serviceDescription) GenerateObjects(ts []FunctionTemplateFactory, c TemplateContext) (objs []ObjectTemplate, funcs []FunctionTemplate) {
+	return GenerateObjects(description, ts, c)
 }

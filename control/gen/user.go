@@ -27,8 +27,7 @@ func DescribeUserService(base string) artist.ProposingService {
 					codeField,
 					artist.ArrayParam(artist.Param("users", artist.Object(
 						"ListUserReply",
-						artist.SnakeParam(&vUserModel.NickName),
-						artist.SnakeParam(&vUserModel.LastLogin),
+						artist.SPsC(&vUserModel.NickName, &vUserModel.LastLogin),
 					))),
 				),
 			),
@@ -36,30 +35,23 @@ func DescribeUserService(base string) artist.ProposingService {
 			Path("login").
 			Method(artist.POST, "Login",
 				artist.Request(
-					artist.SnakeParam(&userModel.ID),
-					artist.SnakeParam(&userModel.NickName),
-					artist.SnakeParam(&userModel.Phone),
-					artist.Param("password", &artist.String, required),
+					artist.SPsC(&userModel.ID, &userModel.NickName, &userModel.Phone),
+					artist.Param("password", artist.String, required),
 				),
 				artist.Reply(
 					codeField,
-					artist.SnakeParam(&userModel.ID),
-					artist.SnakeParam(&userModel.Phone),
-					artist.SnakeParam(&userModel.NickName),
-					artist.SnakeParam(&userModel.Name),
-					artist.Param("identity", &artist.Strings),
-					artist.Param("token", &artist.String),
-					artist.Param("refresh_token", &artist.String),
+					artist.SPsC(&userModel.ID, &userModel.Phone, &userModel.NickName, &userModel.Name),
+					artist.Param("identity", artist.Strings),
+					artist.Param("token", artist.String),
+					artist.Param("refresh_token", artist.String),
 				),
 			),
 		Register: artist.Ink().
 			Path("register").
 			Method(artist.POST, "Register",
 				artist.Request(
-					artist.SnakeParam(&userModel.Name, required),
-					artist.SnakeParam(&userModel.NickName, required),
-					artist.SnakeParam(&userModel.Phone, required),
-					artist.Param("password", &artist.String, required),
+					artist.SPs(artist.C(&userModel.Name, &userModel.NickName, &userModel.Phone), required),
+					artist.Param("password", artist.String, required),
 				),
 				artist.Reply(
 					codeField,
@@ -69,8 +61,8 @@ func DescribeUserService(base string) artist.ProposingService {
 			Path("user/:id/password").
 			Method(artist.PUT, "ChangePassword",
 				artist.Request(
-					artist.Param("old_password", &artist.String, required),
-					artist.Param("new_password", &artist.String, required),
+					artist.Param("old_password", artist.String, required),
+					artist.Param("new_password", artist.String, required),
 				),
 			),
 		Inspect: artist.Ink().Path("user/:id/inspect").
@@ -85,8 +77,7 @@ func DescribeUserService(base string) artist.ProposingService {
 			Method(artist.GET, "GetUser",
 				artist.Reply(
 					codeField,
-					artist.SnakeParam(&userModel.NickName),
-					artist.SnakeParam(&userModel.LastLogin),
+					artist.SPsC(&userModel.NickName, &userModel.LastLogin),
 				)).
 			Method(artist.PUT, "PutUser",
 				artist.Request(
