@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/Myriad-Dreamin/minimum-template/lib/artisan"
+	"github.com/Myriad-Dreamin/artisan"
 	"github.com/Myriad-Dreamin/minimum-template/model"
 )
 

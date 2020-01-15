@@ -5,7 +5,7 @@ go 1.12
 require (
 	github.com/BurntSushi/toml v0.3.1
 	github.com/DeanThompson/ginpprof v0.0.0-20190408063150-3be636683586
-	github.com/Myriad-Dreamin/core-oj v1.0.1
+	github.com/Myriad-Dreamin/artisan v0.0.0-20200115154652-199d34b1d050
 	github.com/Myriad-Dreamin/dorm v0.0.0-20191205101004-33dbc61bb34e
 	github.com/Myriad-Dreamin/functional-go v0.0.0-20191102095642-532e6dc9bfd5
 	github.com/Myriad-Dreamin/gin-middleware v0.0.0-20191222015112-6e9c660fff45
