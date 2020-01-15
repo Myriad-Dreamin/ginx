@@ -1,92 +1,92 @@
 package main
 
 import (
-	"github.com/Myriad-Dreamin/minimum-template/lib/artist"
+	"github.com/Myriad-Dreamin/minimum-template/lib/artisan"
 	"github.com/Myriad-Dreamin/minimum-template/model"
 )
 
 type UserCategories struct {
-	artist.VirtualService
-	List           artist.Category
-	Login          artist.Category
-	Register       artist.Category
-	ChangePassword artist.Category
-	Inspect        artist.Category
-	IdGroup        artist.Category
+	artisan.VirtualService
+	List           artisan.Category
+	Login          artisan.Category
+	Register       artisan.Category
+	ChangePassword artisan.Category
+	Inspect        artisan.Category
+	IdGroup        artisan.Category
 }
 
-func DescribeUserService(base string) artist.ProposingService {
+func DescribeUserService(base string) artisan.ProposingService {
 	var userModel = new(model.User)
 	var vUserModel model.User
 	svc := &UserCategories{
-		List: artist.Ink().
+		List: artisan.Ink().
 			Path("user-list").
-			Method(artist.POST, "ListUsers",
-				artist.QT("ListUsersRequest", model.Filter{}),
-				artist.Reply(
+			Method(artisan.POST, "ListUsers",
+				artisan.QT("ListUsersRequest", model.Filter{}),
+				artisan.Reply(
 					codeField,
-					artist.ArrayParam(artist.Param("users", artist.Object(
+					artisan.ArrayParam(artisan.Param("users", artisan.Object(
 						"ListUserReply",
-						artist.SPsC(&vUserModel.NickName, &vUserModel.LastLogin),
+						artisan.SPsC(&vUserModel.NickName, &vUserModel.LastLogin),
 					))),
 				),
 			),
-		Login: artist.Ink().
+		Login: artisan.Ink().
 			Path("login").
-			Method(artist.POST, "Login",
-				artist.Request(
-					artist.SPsC(&userModel.ID, &userModel.NickName, &userModel.Phone),
-					artist.Param("password", artist.String, required),
+			Method(artisan.POST, "Login",
+				artisan.Request(
+					artisan.SPsC(&userModel.ID, &userModel.NickName, &userModel.Phone),
+					artisan.Param("password", artisan.String, required),
 				),
-				artist.Reply(
+				artisan.Reply(
 					codeField,
-					artist.SPsC(&userModel.ID, &userModel.Phone, &userModel.NickName, &userModel.Name),
-					artist.Param("identity", artist.Strings),
-					artist.Param("token", artist.String),
-					artist.Param("refresh_token", artist.String),
+					artisan.SPsC(&userModel.ID, &userModel.Phone, &userModel.NickName, &userModel.Name),
+					artisan.Param("identity", artisan.Strings),
+					artisan.Param("token", artisan.String),
+					artisan.Param("refresh_token", artisan.String),
 				),
 			),
-		Register: artist.Ink().
+		Register: artisan.Ink().
 			Path("register").
-			Method(artist.POST, "Register",
-				artist.Request(
-					artist.SPs(artist.C(&userModel.Name, &userModel.NickName, &userModel.Phone), required),
-					artist.Param("password", artist.String, required),
+			Method(artisan.POST, "Register",
+				artisan.Request(
+					artisan.SPs(artisan.C(&userModel.Name, &userModel.NickName, &userModel.Phone), required),
+					artisan.Param("password", artisan.String, required),
 				),
-				artist.Reply(
+				artisan.Reply(
 					codeField,
-					artist.Param("id", &userModel.ID)),
+					artisan.Param("id", &userModel.ID)),
 			),
-		ChangePassword: artist.Ink().
+		ChangePassword: artisan.Ink().
 			Path("user/:id/password").
-			Method(artist.PUT, "ChangePassword",
-				artist.Request(
-					artist.Param("old_password", artist.String, required),
-					artist.Param("new_password", artist.String, required),
+			Method(artisan.PUT, "ChangePassword",
+				artisan.Request(
+					artisan.Param("old_password", artisan.String, required),
+					artisan.Param("new_password", artisan.String, required),
 				),
 			),
-		Inspect: artist.Ink().Path("user/:id/inspect").
-			Method(artist.GET, "InspectUser",
-				artist.Reply(
+		Inspect: artisan.Ink().Path("user/:id/inspect").
+			Method(artisan.GET, "InspectUser",
+				artisan.Reply(
 					codeField,
-					artist.Param("user", &userModel),
+					artisan.Param("user", &userModel),
 				),
 			),
-		IdGroup: artist.Ink().
+		IdGroup: artisan.Ink().
 			Path("user/:id").
-			Method(artist.GET, "GetUser",
-				artist.Reply(
+			Method(artisan.GET, "GetUser",
+				artisan.Reply(
 					codeField,
-					artist.SPsC(&userModel.NickName, &userModel.LastLogin),
+					artisan.SPsC(&userModel.NickName, &userModel.LastLogin),
 				)).
-			Method(artist.PUT, "PutUser",
-				artist.Request(
-					artist.Param("phone", &userModel.Phone),
+			Method(artisan.PUT, "PutUser",
+				artisan.Request(
+					artisan.Param("phone", &userModel.Phone),
 				)).
-			Method(artist.DELETE, "Delete"),
+			Method(artisan.DELETE, "Delete"),
 	}
 	svc.Name("UserService").Base(base).UseModel(
-		artist.Model(artist.Name("user"), &userModel),
-		artist.Model(artist.Name("vUser"), &vUserModel))
+		artisan.Model(artisan.Name("user"), &userModel),
+		artisan.Model(artisan.Name("vUser"), &vUserModel))
 	return svc
 }

@@ -1,56 +1,56 @@
 package main
 
 import (
-	"github.com/Myriad-Dreamin/minimum-template/lib/artist"
+	"github.com/Myriad-Dreamin/minimum-template/lib/artisan"
 	"github.com/Myriad-Dreamin/minimum-template/model"
 )
 
 type ObjectCategories struct {
-	artist.VirtualService
-	List    artist.Category
-	Post    artist.Category
-	Inspect artist.Category
-	IdGroup artist.Category
+	artisan.VirtualService
+	List    artisan.Category
+	Post    artisan.Category
+	Inspect artisan.Category
+	IdGroup artisan.Category
 }
 
-func DescribeObjectService(base string) artist.ProposingService {
+func DescribeObjectService(base string) artisan.ProposingService {
 	var objectModel = new(model.Object)
 	svc := &ObjectCategories{
-		List: artist.Ink().
+		List: artisan.Ink().
 			Path("object-list").
-			Method(artist.POST, "ListObjects",
-				artist.QT("ListObjectsRequest", model.Filter{}),
-				artist.Reply(
+			Method(artisan.POST, "ListObjects",
+				artisan.QT("ListObjectsRequest", model.Filter{}),
+				artisan.Reply(
 					codeField,
-					artist.ArrayParam(artist.Param("objects", objectModel)),
+					artisan.ArrayParam(artisan.Param("objects", objectModel)),
 				),
 			),
-		Post: artist.Ink().
+		Post: artisan.Ink().
 			Path("object").
-			Method(artist.POST, "PostObject",
-				artist.Request(),
-				artist.Reply(
+			Method(artisan.POST, "PostObject",
+				artisan.Request(),
+				artisan.Reply(
 					codeField,
-					artist.Param("object", &objectModel),
+					artisan.Param("object", &objectModel),
 				),
 			),
-		Inspect: artist.Ink().Path("object/:oid/inspect").
-			Method(artist.GET, "InspectObject",
-				artist.Reply(
+		Inspect: artisan.Ink().Path("object/:oid/inspect").
+			Method(artisan.GET, "InspectObject",
+				artisan.Reply(
 					codeField,
-					artist.Param("object", &objectModel),
+					artisan.Param("object", &objectModel),
 				),
 			),
-		IdGroup: artist.Ink().
+		IdGroup: artisan.Ink().
 			Path("object/:oid").
-			Method(artist.GET, "GetObject",
-				artist.Reply(
+			Method(artisan.GET, "GetObject",
+				artisan.Reply(
 					codeField,
-					artist.Param("object", &objectModel),
+					artisan.Param("object", &objectModel),
 				)).
-			Method(artist.PUT, "PutObject",
-				artist.Request()).
-			Method(artist.DELETE, "Delete"),
+			Method(artisan.PUT, "PutObject",
+				artisan.Request()).
+			Method(artisan.DELETE, "Delete"),
 	}
 	svc.Name("ObjectService").Base(base) //.
 	//UseModel(serial.Model(serial.Name("object"), &objectModel))
