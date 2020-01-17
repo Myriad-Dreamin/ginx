@@ -11,8 +11,8 @@ require (
 	github.com/Myriad-Dreamin/gin-middleware v0.0.0-20191222015112-6e9c660fff45
 	github.com/Myriad-Dreamin/go-magic-package v0.0.0-20191102120213-a407f918fece
 	github.com/Myriad-Dreamin/go-model-traits v0.0.0-20191209220601-85cd28b274b0
-	github.com/Myriad-Dreamin/go-parse-package v1.0.0
-	github.com/Myriad-Dreamin/minimum-lib v0.0.0-20191222020721-aa5c7417baf3
+	github.com/Myriad-Dreamin/go-parse-package v1.0.1
+	github.com/Myriad-Dreamin/minimum-lib v0.0.0-20200117225041-ec905257618d
 	github.com/casbin/casbin/v2 v2.1.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-contrib/cors v1.3.0
