@@ -1,8 +1,8 @@
 package fcg
 
-type MaybeInitor func() error
+type MaybeInitializer func() error
 
-func Calls(funcs []MaybeInitor) error {
+func Calls(funcs []MaybeInitializer) error {
 	for _, f := range funcs {
 		if err := f(); err != nil {
 			return err

@@ -82,8 +82,7 @@ func newModelModule() modelModule {
 
 func (m *modelModule) install(
 	initFunc func(dep module.Module) bool, dep module.Module) bool {
-	return true &&
-		m.LoggerModule.Install(dep) &&
+	return m.LoggerModule.Install(dep) &&
 		initFunc(dep) &&
 		m.RawSQLModule.FromRaw(m.GormDB.DB(), dep) &&
 		m.DormModule.FromRawSQL(m.RawDB, dep) && mcore.ModelCallback(m, dep)
@@ -104,16 +103,16 @@ func (m *modelModule) InstallMock(dep module.Module) bool {
 	return m.Opened
 }
 
-// var p = &P
-
 func (modelModule) Migrates() error {
-	return fcg.Calls([]fcg.MaybeInitor{
+	//migrations
+	return fcg.Calls([]fcg.MaybeInitializer{
 		User{}.migrate,
 	})
 }
 
 func (modelModule) Injects() error {
-	return fcg.Calls([]fcg.MaybeInitor{
+	//injections
+	return fcg.Calls([]fcg.MaybeInitializer{
 		injectUserTraits,
 	})
 }

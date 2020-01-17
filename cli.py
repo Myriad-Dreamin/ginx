@@ -1,8 +1,14 @@
+import json
+import os
+import re
+import subprocess
+import urllib.request
 
 import fire
-import shutil, json, os, subprocess, re, urllib.request
+
 from makefile import Makefile
 from pymake import entry
+
 
 def to_camel_case(snake_str):
     components = snake_str.split('_')
@@ -17,7 +23,8 @@ _placeholder = 'oid'
 
 
 def cmd(cmd_str, cwd=None):
-    return subprocess.Popen(cmd_str, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=cwd).stdout.read()
+    return subprocess.Popen(cmd_str, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                            cwd=cwd).stdout.read()
 
 
 def cmds(cmd_str, cwd=None):
@@ -28,9 +35,55 @@ def cmds(cmd_str, cwd=None):
 def pcmds(cmd_str, cwd=None, encoding='utf-8'):
     print(cmds(cmd_str, cwd).decode(encoding))
 
+from collections import namedtuple
+
+
+dependencies = namedtuple(
+    'Dependencies',
+    ['package_path',
+     'magic_package_bin',
+     'stringer_generator',
+     'pure_object_template_router_path',
+     'pure_object_template_service_path', # 5
+     'model_db_object_file',
+     'model_sp_object_file',
+     'model_object_file',
+     'object_template_service_path',
+     'service_object_entry_file', # 10
+     'service_provider_file',
+     'server_init_service_file',
+     'root_provider_file',
+     'object_router_file',
+     'register_file', # 15
+     'model_provider_file',
+     'server_init_db_file',
+     ])(
+    ['github.com/Myriad-Dreamin/minimum-template',
+     'github.com/Myriad-Dreamin/go-magic-package/package-attach-to-path',
+     'golang.org/x/tools/cmd/stringer',
+     'template/control/pure-object/pure-object-router.go.template',
+     'template/service/pure-object/', # 5
+     'model/db-layer/object.go',
+     'model/sp-layer/object.go',
+     'model/object.go',
+     'service/object/',
+     'service/object.go', # 10
+     'service/provider.go',
+     'server/service.go'
+     'control/router/provider.go',
+     'control/router/object-router.go',
+     'model/db-layer/register.go', # 15
+     'model/sp-layer/provider.go',
+     'server/db.go'
+     ]
+)
+
+#
+
 
 class MinimumCli:
     python_interpreter = 'python3'
+
     def __init__(self):
         self.qut_object_name = None
         self.object_name = None
@@ -43,7 +96,7 @@ class MinimumCli:
         return entry(Makefile, make_args)
 
     def apply_context(self, *key_values, f=None, c=False):
-        key_values = map(lambda x: x if x[1] else x,map(lambda x: x.split('=', 2), key_values))
+        key_values = map(lambda x: x if x[1] else x, map(lambda x: x.split('=', 2), key_values))
         with open('.minimum-lib-env.json', 'r+') as f1:
             content = f1.read()
             context = json.loads('{}' if len(content) == 0 or c else content)
@@ -57,10 +110,7 @@ class MinimumCli:
             json.dump(context, f1, indent=4)
 
     def hello(self):
-        print('minimum-cli v0.2')
-
-    def get_cities(self):
-        urllib.request.urlretrieve('https://raw.githubusercontent.com/wecatch/china_regions/master/json/city_object.json', 'city_object.json')
+        print('minimum-cli v0.3')
 
     def redeploy(self):
         pcmds("git pull")
@@ -69,12 +119,12 @@ class MinimumCli:
         pcmds('%s cli.py make up' % MinimumCli.python_interpreter)
 
     def install(self):
-        pcmds('go install github.com/Myriad-Dreamin/go-magic-package/package-attach-to-path')
-        pcmds('go install golang.org/x/tools/cmd/stringer')
+        pcmds('go install %s' % dependencies.magic_package_bin)
+        pcmds('go install %s' % dependencies.stringer_generator)
         self.fast_generate()
 
     def fmt(self):
-        pcmds('go fmt github.com/Myriad-Dreamin/minimum-template/...')
+        pcmds('go fmt %s/...' % dependencies.package_path)
 
     def create_service(self, object_name, placeholder, service_folder=None, router_template=None):
         self._update_obj_vars(object_name, placeholder)
@@ -83,9 +133,8 @@ class MinimumCli:
 
     def create_pure_service(self, object_name, placeholder):
         self._update_obj_vars(object_name, placeholder)
-        self._create_router(object_name, placeholder, 'template/control/pure-object/pure-object-router.go.template')
-        self._create_service(object_name, placeholder, 'template/pure-object/',
-                             'template/control/pure-object/pure-object.go')
+        self._create_router(object_name, placeholder, dependencies.pure_object_template_router_path)
+        self._create_service(object_name, placeholder, dependencies.pure_object_template_service_path)
 
     def create_router(self, object_name, placeholder, __object_router_file=None):
         self._update_obj_vars(object_name, placeholder)
@@ -93,44 +142,9 @@ class MinimumCli:
 
     def create_template(self, object_name, placeholder):
         self._update_obj_vars(object_name, placeholder)
+        self._create_model(object_name, placeholder)
         self.create_service(object_name, placeholder)
         self.create_router(object_name, placeholder)
-
-        object_file = 'model/db-layer/' + self.m_snake_name + '.go'
-        object_entry_file = 'model/' + self.m_snake_name + '.go'
-        object_sp_file = 'model/sp-layer/' + self.m_snake_name + '.go'
-        register_file = 'model/db-layer/register.go'
-        model_provider_file = 'model/sp-layer/provider.go'
-
-        server_init_db_file = 'server/db.go'
-
-        self.template_to('model/db-layer/object.go', object_file)
-        self.template_to('model/object.go', object_entry_file)
-        self.template_to('model/sp-layer/object.go', object_sp_file)
-        self.replace(
-            register_file,
-            'for _, migrate := range []func() error {',
-            'for _, migrate := range []func() error {\n\t\t%s{}.migrate,' % self.up_camel,
-        )
-
-        self.replace(
-            model_provider_file,
-            'objectDB *ObjectDB',
-            'objectDB *ObjectDB\n\t\t%sDB *%sDB,' % (self.camel, self.up_camel),
-        )
-
-        self.replace(
-            model_provider_file,
-            'switch ss := database.(type) {',
-            'switch ss := database.(type) {\n\tcase *%sDB:\n\t\ts.%sDB = ss' % (self.up_camel, self.camel),
-        )
-
-        self.replace(
-            server_init_db_file,
-            'for _, dbResult := range []dbResult{',
-            'for _, dbResult := range []dbResult{\n'
-            '\t\t{"%sDB", functional.Decay(model.New%sDB(srv.Module))},' % (self.camel, self.up_camel),
-        )
 
     def template_to(self, src, dst):
         # shutil.copyfile(src, dst)
@@ -205,55 +219,112 @@ class MinimumCli:
         self.up_camel = self.camel.title()
         self.placeholder = placeholder
 
-    def _create_service(self, object_name, placeholder, __object_service_folder=None, __control_service_template=None):
+    def _create_service(self, object_name, placeholder, __object_service_folder=None):
         object_service_folder = 'service/' + self.m_snake_name + '/'
         object_service_entry_file = 'service/' + self.m_snake_name + '.go'
-        object_interface_entry_file = 'control/' + self.m_snake_name + '.go'
-        service_provider_file = 'service/provider.go'
+        service_provider_file = dependencies.service_provider_file
+        server_init_service_file = dependencies.server_init_service_file
 
-        self.templates_to(__object_service_folder or 'service/object/', object_service_folder)
-        self.template_to('service/object.go', object_service_entry_file)
-        self.template_to(__control_service_template or 'control/interface.go', object_interface_entry_file)
+        self.templates_to(__object_service_folder or dependencies.object_template_service_path, object_service_folder)
+        self.template_to(dependencies.service_object_entry_file, object_service_entry_file)
 
         self.replace(
             service_provider_file,
             'type Provider struct {',
-            'type Provider struct {\n\t%sService %sService' % (self.camel, self.up_camel),
+            'type Provider struct {\n    %sService %sService' % (self.camel, self.up_camel),
         )
 
         self.replace(
             service_provider_file,
             'switch ss := service.(type) {',
             'switch ss := service.(type) {'
-            '\n\tcase %sService:'
-            '\n\t\ts.%sService = ss'
-            '\n\t\ts.subControllers = append(s.subControllers, JustProvide(&ss))' % (self.up_camel, self.camel),
+            '\n    case %sService:'
+            '\n        s.%sService = ss'
+            '\n        s.subControllers = append(s.subControllers, JustProvide(&ss))'
+            '\n        return' % (self.up_camel, self.camel),
         )
-        server_init_service_file = 'server/service.go'
         self.replace(
             server_init_service_file,
             'for _, serviceResult := range []serviceResult{',
-            'for _, serviceResult := range []serviceResult{\n'
-            '\t\t{"%sService", functional.Decay(service.New%sService(srv.Module))},' % (self.camel, self.up_camel),
+            'for _, serviceResult := range []serviceResult{'
+            '\n        {"%sService", functional.Decay(service.New%sService(srv.Module))},' % (self.camel, self.up_camel),
         )
 
     def _create_router(self, object_name, placeholder, __object_router_file=None):
         self._update_obj_vars(object_name, placeholder)
         object_router_file = 'control/router/' + self.m_snake_name + '-router.go'
-        root_provider_file = 'control/router/provider.go'
+        root_provider_file = dependencies.root_provider_file
 
-        self.template_to(__object_router_file or 'control/router/object-router.go', object_router_file)
+        self.template_to(__object_router_file or dependencies.object_router_file, object_router_file)
 
         self.replace(
             root_provider_file,
             'objectRouter *ObjectRouter\n',
-            'objectRouter *ObjectRouter\n\n\t%sRouter *%sRouter' % (self.camel, self.up_camel),
+            'objectRouter *ObjectRouter\n'
+            '\n    %sRouter *%sRouter' % (self.camel, self.up_camel),
         )
+
         self.replace(
             root_provider_file,
             'switch ss := router.(type) {',
-            'switch ss := router.(type) {\n\tcase *%sRouter:\n\t\ts.%sRouter = ss' % (self.up_camel, self.camel),
+            'switch ss := router.(type) {'
+            '\n    case *%sRouter:'
+            '\n        s.%sRouter = ss' % (self.up_camel, self.camel),
         )
+
+    def _create_model(self, object_name, placeholder):
+        self._update_obj_vars(object_name, placeholder)
+        object_file = 'model/db-layer/' + self.m_snake_name + '.go'
+        object_entry_file = 'model/' + self.m_snake_name + '.go'
+        object_sp_file = 'model/sp-layer/' + self.m_snake_name + '.go'
+        register_file = dependencies.register_file
+        model_provider_file = dependencies.model_provider_file
+        server_init_db_file = dependencies.server_init_db_file
+
+        self.template_to(dependencies.model_db_object_file, object_file)
+        self.template_to(dependencies.model_object_file, object_entry_file)
+        self.template_to(dependencies.model_sp_object_file, object_sp_file)
+
+        # todo
+
+        self.replace(
+            register_file,
+            '//migrations'
+            '\n    return fcg.Calls([]fcg.MaybeInitializer{',
+            '//migrations'
+            '\n    return fcg.Calls([]fcg.MaybeInitializer{'
+            '\n        %s{}.migrate,' % self.up_camel,
+            )
+
+        self.replace(
+            register_file,
+            '//injections\n    return fcg.Calls([]fcg.MaybeInitializer{',
+            '//injections\n    return fcg.Calls([]fcg.MaybeInitializer{'
+            '\n        inject%sTraits,' % self.up_camel,
+            )
+
+        self.replace(
+            model_provider_file,
+            'objectDB *ObjectDB',
+            'objectDB *ObjectDB'
+            '\n        %sDB *%sDB,' % (self.camel, self.up_camel),
+            )
+
+        self.replace(
+            model_provider_file,
+            'switch ss := database.(type) {',
+            'switch ss := database.(type) {'
+            '\n    case *%sDB:'
+            '\n        s.%sDB = ss' % (self.up_camel, self.camel),
+            )
+
+        self.replace(
+            server_init_db_file,
+            'for _, dbResult := range []dbResult{',
+            'for _, dbResult := range []dbResult{\n'
+            '        {"%sDB", functional.Decay(model.New%sDB(srv.Module))},' % (self.camel, self.up_camel),
+            )
+
 
 minimum = MinimumCli()
 

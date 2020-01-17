@@ -4,6 +4,7 @@ package service
 import (
 	"fmt"
 	"github.com/Myriad-Dreamin/minimum-lib/module"
+	"github.com/Myriad-Dreamin/minimum-template/control"
 	"path"
 )
 
@@ -40,6 +41,7 @@ func NewProvider(namespace string) *Provider {
 		BaseModuler: module.BaseModuler{
 			Namespace: namespace,
 		},
+		subControllers: []SubController{JustProvide(control.AdditionControllerDescs...)},
 	}
 }
 
@@ -47,21 +49,24 @@ func (s *Provider) Register(name string, service interface{}) {
 	if err := s.Provide(path.Join(s.Namespace, name), service); err != nil {
 		panic(fmt.Errorf("unknown/registered service %T, err %v", service, err))
 	}
-	if ss, ok := service.(SubController); ok {
-		s.subControllers = append(s.subControllers, ss)
-	}
 
 	switch ss := service.(type) {
 	case UserService:
 		s.userService = ss
-		//s.subControllers = append(s.subControllers, JustProvide(append([]interface{}{&ss}, control.UserCates...)...))
+		s.subControllers = append(s.subControllers, JustProvide(&ss))
+		return
 	case AuthService:
 		s.authService = ss
-		//s.subControllers = append(s.subControllers, JustProvide(append([]interface{}{&ss}, control.AuthCates...)...))
+		s.subControllers = append(s.subControllers, JustProvide(&ss))
+		return
 	case ObjectService:
 		s.objectService = ss
-		//s.subControllers = append(s.subControllers, JustProvide(append([]interface{}{&ss}, control.ObjectCates...)...))
+		s.subControllers = append(s.subControllers, JustProvide(&ss))
+		return
 	default:
+		//if ss, ok := service.(SubController); ok {
+		//	s.subControllers = append(s.subControllers, ss)
+		//}
 		panic(fmt.Errorf("unknown service %T", service))
 	}
 }
