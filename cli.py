@@ -54,10 +54,12 @@ dependencies = namedtuple(
      'server_init_service_file',
      'root_provider_file',
      'object_router_file',
-     'register_file', # 15
+     'db_core_file', # 15
      'model_provider_file',
      'server_init_db_file',
-     ])(
+     'control_gen_file',
+     'control_gen_main_file',
+     ])(*
     ['github.com/Myriad-Dreamin/minimum-template',
      'github.com/Myriad-Dreamin/go-magic-package/package-attach-to-path',
      'golang.org/x/tools/cmd/stringer',
@@ -69,12 +71,14 @@ dependencies = namedtuple(
      'service/object/',
      'service/object.go', # 10
      'service/provider.go',
-     'server/service.go'
+     'server/service.go',
      'control/router/provider.go',
      'control/router/object-router.go',
-     'model/db-layer/register.go', # 15
+     'model/db-layer/core.go', # 15
      'model/sp-layer/provider.go',
-     'server/db.go'
+     'server/db.go',
+     'control/gen/object.go',
+     'control/gen/generate.go',
      ]
 )
 
@@ -143,8 +147,8 @@ class MinimumCli:
     def create_template(self, object_name, placeholder):
         self._update_obj_vars(object_name, placeholder)
         self._create_model(object_name, placeholder)
-        self.create_service(object_name, placeholder)
-        self.create_router(object_name, placeholder)
+        self._create_service(object_name, placeholder)
+        self._create_router(object_name, placeholder)
 
     def template_to(self, src, dst):
         # shutil.copyfile(src, dst)
@@ -222,11 +226,34 @@ class MinimumCli:
     def _create_service(self, object_name, placeholder, __object_service_folder=None):
         object_service_folder = 'service/' + self.m_snake_name + '/'
         object_service_entry_file = 'service/' + self.m_snake_name + '.go'
+        object_control_gen_file = 'control/gen/' + self.m_snake_name + '.go'
         service_provider_file = dependencies.service_provider_file
         server_init_service_file = dependencies.server_init_service_file
-
+        control_gen_main_file = dependencies.control_gen_main_file
         self.templates_to(__object_service_folder or dependencies.object_template_service_path, object_service_folder)
         self.template_to(dependencies.service_object_entry_file, object_service_entry_file)
+        self.template_to(dependencies.control_gen_file, object_control_gen_file)
+
+        self.replace(
+            control_gen_main_file,
+            '//instantiate',
+            '//instantiate'
+            '\n    %sCate := Describe%sService(v1)' % (self.camel, self.up_camel),
+        )
+
+        self.replace(
+            control_gen_main_file,
+            '//to files',
+            '//to files'
+            '\n    %sCate.ToFile("%s.go")' % (self.camel, self.m_snake_name),
+        )
+
+        self.replace(
+            control_gen_main_file,
+            'err := artisan.NewService(',
+            'err := artisan.NewService('
+            '\n        %sCate,' % self.camel,
+        )
 
         self.replace(
             service_provider_file,
@@ -277,7 +304,7 @@ class MinimumCli:
         object_file = 'model/db-layer/' + self.m_snake_name + '.go'
         object_entry_file = 'model/' + self.m_snake_name + '.go'
         object_sp_file = 'model/sp-layer/' + self.m_snake_name + '.go'
-        register_file = dependencies.register_file
+        db_core_file = dependencies.db_core_file
         model_provider_file = dependencies.model_provider_file
         server_init_db_file = dependencies.server_init_db_file
 
@@ -288,18 +315,16 @@ class MinimumCli:
         # todo
 
         self.replace(
-            register_file,
+            db_core_file,
+            '//migrations',
             '//migrations'
-            '\n    return fcg.Calls([]fcg.MaybeInitializer{',
-            '//migrations'
-            '\n    return fcg.Calls([]fcg.MaybeInitializer{'
             '\n        %s{}.migrate,' % self.up_camel,
             )
 
         self.replace(
-            register_file,
-            '//injections\n    return fcg.Calls([]fcg.MaybeInitializer{',
-            '//injections\n    return fcg.Calls([]fcg.MaybeInitializer{'
+            db_core_file,
+            '//injections',
+            '//injections'
             '\n        inject%sTraits,' % self.up_camel,
             )
 
@@ -307,7 +332,7 @@ class MinimumCli:
             model_provider_file,
             'objectDB *ObjectDB',
             'objectDB *ObjectDB'
-            '\n        %sDB *%sDB,' % (self.camel, self.up_camel),
+            '\n    %sDB *%sDB' % (self.camel, self.up_camel),
             )
 
         self.replace(

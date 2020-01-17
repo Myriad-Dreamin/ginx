@@ -12,12 +12,18 @@ var required = artisan.Tag("binding", "required")
 func main() {
 	v1 := "v1"
 
+	//instantiate
 	userCate := DescribeUserService(v1)
-	userCate.ToFile("user.go")
 	objectCate := DescribeObjectService(v1)
+
+	//to files
+	userCate.ToFile("user.go")
 	objectCate.ToFile("object.go")
+
 	err := artisan.NewService(
-		userCate, objectCate).Publish()
+		userCate,
+		objectCate,
+	).Publish()
 	if err != nil {
 		fmt.Println(err)
 	}

@@ -104,15 +104,15 @@ func (m *modelModule) InstallMock(dep module.Module) bool {
 }
 
 func (modelModule) Migrates() error {
-	//migrations
 	return fcg.Calls([]fcg.MaybeInitializer{
+		//migrations
 		User{}.migrate,
 	})
 }
 
 func (modelModule) Injects() error {
-	//injections
 	return fcg.Calls([]fcg.MaybeInitializer{
+		//injections
 		injectUserTraits,
 	})
 }
