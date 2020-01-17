@@ -2,9 +2,9 @@
 package objectservice
 
 import (
-	"github.com/Myriad-Dreamin/minimum-lib/config"
 	"github.com/Myriad-Dreamin/minimum-lib/module"
-	"github.com/Myriad-Dreamin/minimum-lib/types"
+	"github.com/Myriad-Dreamin/minimum-template/config"
+	"github.com/Myriad-Dreamin/minimum-template/types"
 )
 
 type Service struct {

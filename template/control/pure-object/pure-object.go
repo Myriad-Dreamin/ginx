@@ -1,7 +1,7 @@
 package control
 
 import (
-	"github.com/Myriad-Dreamin/minimum-lib/lib/controller"
+	"github.com/Myriad-Dreamin/minimum-lib/controller"
 )
 
 //go:generate package-attach-to-path -generate_register_map

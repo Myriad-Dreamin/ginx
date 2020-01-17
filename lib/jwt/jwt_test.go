@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/Myriad-Dreamin/minimum-lib/controller"
-	mgin "github.com/Myriad-Dreamin/minimum-lib/lib/gin"
+	mgin "github.com/Myriad-Dreamin/minimum-template/lib/gin"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"net/http/httptest"
